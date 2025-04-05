@@ -1,6 +1,7 @@
 # Resume Editor
 
 내 이력서 한 번 예쁘게 만들어볼까? 하다가 시작된 프로젝트 🎨
+코딩을 잘 모른다면, AI로 어디까지 가능할지 궁금해서 시작한 프로젝트...!
 
 **[👉 데모 페이지 보기](https://wanzargen.github.io/resume-playground/)**
 
