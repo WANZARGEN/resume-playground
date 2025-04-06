@@ -1,12 +1,12 @@
 import React, { ChangeEvent } from 'react'
-import { Contact, Profile, TextStyle, Paragraph } from '../../types/resume'
+import { Contact, Profile, TextStyle } from '../../types/resume'
 import { Button } from '../common/Button'
 import { TextInput } from '../common/TextInput'
 import { TextArea } from '../common/TextArea'
 
-interface Props {
-  data: Profile
-  onChange: (data: Profile) => void
+interface ProfileEditorProps {
+  data?: Profile;
+  onChange: (profile: Profile) => void;
 }
 
 function parseText(text: string): TextStyle[] {
@@ -98,45 +98,55 @@ function stringifySegments(segments: TextStyle[] = []): string {
   }).join('')
 }
 
-export function ProfileEditor({ data, onChange }: Props) {
+export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange }) => {
+  const emptyProfile: Profile = {
+    photo: '',
+    name: '',
+    position: '',
+    contacts: [],
+    paragraphs: []
+  };
+  
+  const profile = data || emptyProfile;
+
   const handleChange = (field: keyof Profile, value: any) => {
     onChange({
-      ...data,
+      ...profile,
       [field]: value
     })
   }
 
   const handleParagraphChange = (index: number, text: string) => {
     const segments = parseText(text)
-    const newParagraphs = [...(data.paragraphs || [])]
+    const newParagraphs = [...(profile.paragraphs || [])]
     newParagraphs[index] = { segments }
     handleChange('paragraphs', newParagraphs)
   }
 
   const addParagraph = () => {
-    const newParagraphs = [...(data.paragraphs || []), { segments: [{ type: 'normal', text: '' }] }]
+    const newParagraphs = [...(profile.paragraphs || []), { segments: [{ type: 'normal', text: '' }] }]
     handleChange('paragraphs', newParagraphs)
   }
 
   const removeParagraph = (index: number) => {
-    const newParagraphs = [...(data.paragraphs || [])]
+    const newParagraphs = [...(profile.paragraphs || [])]
     newParagraphs.splice(index, 1)
     handleChange('paragraphs', newParagraphs)
   }
 
   const handleContactChange = (index: number, field: keyof Contact, value: Contact[keyof Contact]) => {
-    const newContacts = [...(data.contacts || [])]
+    const newContacts = [...(profile.contacts || [])]
     newContacts[index] = { ...newContacts[index], [field]: value }
     handleChange('contacts', newContacts)
   }
 
   const addContact = () => {
-    const newContacts = [...(data.contacts || []), { type: 'email' }]
+    const newContacts = [...(profile.contacts || []), { type: 'email' }]
     handleChange('contacts', newContacts)
   }
 
   const removeContact = (index: number) => {
-    const newContacts = [...(data.contacts || [])]
+    const newContacts = [...(profile.contacts || [])]
     newContacts.splice(index, 1)
     handleChange('contacts', newContacts)
   }
@@ -160,9 +170,9 @@ export function ProfileEditor({ data, onChange }: Props) {
           프로필 사진
         </label>
         <div className="flex items-center gap-4">
-          {data.photo && (
+          {profile.photo && (
             <img
-              src={data.photo}
+              src={profile.photo}
               alt="Profile"
               className="w-24 h-24 rounded-full object-cover"
             />
@@ -186,7 +196,7 @@ export function ProfileEditor({ data, onChange }: Props) {
       <div>
         <label className="block text-sm font-medium text-gray-700">이름</label>
         <TextInput
-          value={data.name || ''}
+          value={profile.name || ''}
           onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange('name', e.target.value)}
           placeholder="이름을 입력하세요"
         />
@@ -195,7 +205,7 @@ export function ProfileEditor({ data, onChange }: Props) {
       <div>
         <label className="block text-sm font-medium text-gray-700">직무</label>
         <TextInput
-          value={data.position || ''}
+          value={profile.position || ''}
           onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange('position', e.target.value)}
           placeholder="직무를 입력하세요"
         />
@@ -204,7 +214,7 @@ export function ProfileEditor({ data, onChange }: Props) {
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">연락처</label>
         <div className="space-y-4">
-          {(data.contacts || []).map((contact, index) => (
+          {(profile.contacts || []).map((contact, index) => (
             <div key={index} className="flex gap-4">
               <select
                 value={contact.type || 'email'}
@@ -245,7 +255,7 @@ export function ProfileEditor({ data, onChange }: Props) {
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">프로필</label>
         <div className="space-y-4">
-          {(data.paragraphs || []).map((paragraph, index) => (
+          {(profile.paragraphs || []).map((paragraph, index) => (
             <div key={index} className="relative p-4 border rounded-lg">
               <TextArea
                 value={stringifySegments(paragraph.segments)}
@@ -256,7 +266,7 @@ export function ProfileEditor({ data, onChange }: Props) {
               <div className="flex justify-end">
                 <Button
                   onClick={() => removeParagraph(index)}
-                  disabled={(data.paragraphs?.length || 0) <= 1}
+                  disabled={(profile.paragraphs?.length || 0) <= 1}
                   variant="danger"
                 >
                   단락 삭제

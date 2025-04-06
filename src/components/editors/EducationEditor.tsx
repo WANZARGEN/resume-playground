@@ -1,15 +1,17 @@
 import type { Education, Activity } from '../../types/resume';
 import { PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 
-interface Props {
-  data: Education[];
-  onChange: (data: Education[]) => void;
+interface EducationEditorProps {
+  data?: Education[];
+  onChange: (education: Education[]) => void;
 }
 
-export default function EducationEditor({ data, onChange }: Props) {
+export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange }) => {
+  const education = data || [];
+
   const handleAddEducation = () => {
     onChange([
-      ...data,
+      ...education,
       {
         type: 'presentation',
         items: []
@@ -18,7 +20,7 @@ export default function EducationEditor({ data, onChange }: Props) {
   };
 
   const handleRemoveEducation = (index: number) => {
-    onChange(data.filter((_, i) => i !== index));
+    onChange(education.filter((_, i) => i !== index));
   };
 
   const handleEducationChange = (
@@ -26,7 +28,7 @@ export default function EducationEditor({ data, onChange }: Props) {
     field: keyof Education,
     value: Education['type']
   ) => {
-    const newData = [...data];
+    const newData = [...education];
     newData[index] = {
       ...newData[index],
       [field]: value,
@@ -36,7 +38,7 @@ export default function EducationEditor({ data, onChange }: Props) {
   };
 
   const handleAddActivity = (educationIndex: number) => {
-    const newData = [...data];
+    const newData = [...education];
     if (!newData[educationIndex]) {
       newData[educationIndex] = {
         type: 'presentation',
@@ -57,7 +59,7 @@ export default function EducationEditor({ data, onChange }: Props) {
     field: keyof Activity,
     value: string
   ) => {
-    const newData = [...data];
+    const newData = [...education];
     const activity = newData[educationIndex].items[activityIndex] || { title: '', url: '', description: '' };
     newData[educationIndex].items[activityIndex] = {
       ...activity,
@@ -67,7 +69,7 @@ export default function EducationEditor({ data, onChange }: Props) {
   };
 
   const handleRemoveActivity = (educationIndex: number, activityIndex: number) => {
-    const newData = [...data];
+    const newData = [...education];
     newData[educationIndex].items = newData[educationIndex].items.filter(
       (_, i) => i !== activityIndex
     );
@@ -88,7 +90,7 @@ export default function EducationEditor({ data, onChange }: Props) {
         </button>
       </div>
 
-      {data.map((education, educationIndex) => (
+      {education.map((education, educationIndex) => (
         <div key={educationIndex} className="bg-white rounded-lg shadow p-6">
           <div className="flex items-start justify-between mb-6">
             <div className="space-y-4 flex-1">
@@ -222,4 +224,4 @@ export default function EducationEditor({ data, onChange }: Props) {
       ))}
     </div>
   );
-} 
+}; 

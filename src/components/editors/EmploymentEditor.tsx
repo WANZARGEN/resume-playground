@@ -1,15 +1,16 @@
 import { Employment, TechStack, WorkDetail, WorkItem } from '../../types/resume';
-import { PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 
-interface Props {
-  data: Employment[];
-  onChange: (data: Employment[]) => void;
+interface EmploymentEditorProps {
+  data?: Employment[];
+  onChange: (employments: Employment[]) => void;
 }
 
-export default function EmploymentEditor({ data, onChange }: Props) {
+export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChange }) => {
+  const employments = data || [];
+
   const handleAdd = () => {
     onChange([
-      ...data,
+      ...employments,
       {
         company: '',
         position: '',
@@ -24,12 +25,12 @@ export default function EmploymentEditor({ data, onChange }: Props) {
   };
 
   const handleRemove = (index: number) => {
-    onChange(data.filter((_, i) => i !== index));
+    onChange(employments.filter((_, i) => i !== index));
   };
 
   const handleChange = (index: number, field: keyof Employment, value: any) => {
     onChange(
-      data.map((item, i) =>
+      employments.map((item, i) =>
         i === index ? { ...item, [field]: value } : item
       )
     );
@@ -37,7 +38,7 @@ export default function EmploymentEditor({ data, onChange }: Props) {
 
   const handleTechStackAdd = (index: number) => {
     onChange(
-      data.map((item, i) =>
+      employments.map((item, i) =>
         i === index
           ? {
               ...item,
@@ -50,7 +51,7 @@ export default function EmploymentEditor({ data, onChange }: Props) {
 
   const handleTechStackRemove = (index: number, techIndex: number) => {
     onChange(
-      data.map((item, i) =>
+      employments.map((item, i) =>
         i === index
           ? {
               ...item,
@@ -67,7 +68,7 @@ export default function EmploymentEditor({ data, onChange }: Props) {
     value: string
   ) => {
     onChange(
-      data.map((item, i) =>
+      employments.map((item, i) =>
         i === index
           ? {
               ...item,
@@ -81,108 +82,108 @@ export default function EmploymentEditor({ data, onChange }: Props) {
   };
 
   const handleDetailAdd = (index: number) => {
-    const newDetails = [...(data[index].details || [])]
+    const newDetails = [...(employments[index].details || [])]
     newDetails.push({
       title: '',
       items: []
     })
     onChange(
-      data.map((item, i) =>
+      employments.map((item, i) =>
         i === index ? { ...item, details: newDetails } : item
       )
     )
   }
 
   const handleDetailChange = (index: number, detail: WorkDetail) => {
-    const newDetails = [...(data[index].details || [])]
+    const newDetails = [...(employments[index].details || [])]
     newDetails[index] = detail
     onChange(
-      data.map((item, i) =>
+      employments.map((item, i) =>
         i === index ? { ...item, details: newDetails } : item
       )
     )
   }
 
   const handleDetailRemove = (index: number) => {
-    const newDetails = [...(data[index].details || [])]
+    const newDetails = [...(employments[index].details || [])]
     newDetails.splice(index, 1)
     onChange(
-      data.map((item, i) =>
+      employments.map((item, i) =>
         i === index ? { ...item, details: newDetails } : item
       )
     )
   }
 
   const handleItemAdd = (detailIndex: number) => {
-    const newDetails = [...(data[detailIndex].details || [])]
+    const newDetails = [...(employments[detailIndex].details || [])]
     const detail = newDetails[detailIndex]
     detail.items.push({
       text: '',
       subItems: []
     })
     onChange(
-      data.map((item, i) =>
+      employments.map((item, i) =>
         i === detailIndex ? { ...item, details: newDetails } : item
       )
     )
   }
 
   const handleItemChange = (detailIndex: number, itemIndex: number, item: WorkItem) => {
-    const newDetails = [...(data[detailIndex].details || [])]
+    const newDetails = [...(employments[detailIndex].details || [])]
     const detail = newDetails[detailIndex]
     detail.items[itemIndex] = item
     onChange(
-      data.map((item, i) =>
+      employments.map((item, i) =>
         i === detailIndex ? { ...item, details: newDetails } : item
       )
     )
   }
 
   const handleItemRemove = (detailIndex: number, itemIndex: number) => {
-    const newDetails = [...(data[detailIndex].details || [])]
+    const newDetails = [...(employments[detailIndex].details || [])]
     const detail = newDetails[detailIndex]
     detail.items.splice(itemIndex, 1)
     onChange(
-      data.map((item, i) =>
+      employments.map((item, i) =>
         i === detailIndex ? { ...item, details: newDetails } : item
       )
     )
   }
 
   const handleSubItemAdd = (detailIndex: number, itemIndex: number) => {
-    const newDetails = [...(data[detailIndex].details || [])]
+    const newDetails = [...(employments[detailIndex].details || [])]
     const detail = newDetails[detailIndex]
     const item = detail.items[itemIndex]
     if (!item.subItems) item.subItems = []
     item.subItems.push('')
     onChange(
-      data.map((item, i) =>
+      employments.map((item, i) =>
         i === detailIndex ? { ...item, details: newDetails } : item
       )
     )
   }
 
   const handleSubItemChange = (detailIndex: number, itemIndex: number, subItemIndex: number, value: string) => {
-    const newDetails = [...(data[detailIndex].details || [])]
+    const newDetails = [...(employments[detailIndex].details || [])]
     const detail = newDetails[detailIndex]
     const item = detail.items[itemIndex]
     if (!item.subItems) item.subItems = []
     item.subItems[subItemIndex] = value
     onChange(
-      data.map((item, i) =>
+      employments.map((item, i) =>
         i === detailIndex ? { ...item, details: newDetails } : item
       )
     )
   }
 
   const handleSubItemRemove = (detailIndex: number, itemIndex: number, subItemIndex: number) => {
-    const newDetails = [...(data[detailIndex].details || [])]
+    const newDetails = [...(employments[detailIndex].details || [])]
     const detail = newDetails[detailIndex]
     const item = detail.items[itemIndex]
     if (!item.subItems) return
     item.subItems.splice(subItemIndex, 1)
     onChange(
-      data.map((item, i) =>
+      employments.map((item, i) =>
         i === detailIndex ? { ...item, details: newDetails } : item
       )
     )
@@ -190,7 +191,7 @@ export default function EmploymentEditor({ data, onChange }: Props) {
 
   return (
     <div className="space-y-6">
-      {data.map((employment, index) => (
+      {employments.map((employment, index) => (
         <div key={index} className="space-y-4">
           {/* 회사 정보 */}
           <div className="grid grid-cols-2 gap-4">
@@ -402,7 +403,7 @@ export default function EmploymentEditor({ data, onChange }: Props) {
             </button>
           </div>
 
-          {index < data.length - 1 && <hr className="border-gray-200" />}
+          {index < employments.length - 1 && <hr className="border-gray-200" />}
         </div>
       ))}
 
@@ -418,4 +419,4 @@ export default function EmploymentEditor({ data, onChange }: Props) {
       </div>
     </div>
   );
-} 
+}; 
