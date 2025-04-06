@@ -9,7 +9,7 @@ export interface Profile {
   photo: string
   name: string
   position: string
-  contacts: Contact[]
+  contacts: string[]
   introduction: string
 }
 
@@ -26,12 +26,9 @@ export interface WorkDetail {
 export interface Employment {
   company: string
   position: string
-  period: {
-    start: string
-    end: string
-  }
-  techStack: TechStack[]
-  details: WorkDetail[]
+  startDate: string
+  endDate: string
+  description: string
 }
 
 export interface Activity {
@@ -42,11 +39,12 @@ export interface Activity {
 }
 
 export interface Education {
-  type: 'presentation' | 'certificate' | 'education' | 'language'
-  title: string
-  url?: string
-  description?: string
-  activities?: Activity[]
+  school: string
+  degree: string
+  field: string
+  startDate: string
+  endDate: string
+  description: string
 }
 
 export interface Resume {

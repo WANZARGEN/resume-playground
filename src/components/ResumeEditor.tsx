@@ -1,42 +1,80 @@
-import { useResume } from '../contexts/ResumeContext'
+import { useEditorUI } from '../contexts/EditorUIContext'
+import { useResumeActions } from '../hooks/useResumeActions'
 import ProfileEditor from './editors/ProfileEditor'
 import EmploymentEditor from './editors/EmploymentEditor'
 import EducationEditor from './editors/EducationEditor'
 import ResumePreview from './preview/ResumePreview'
+import { Resume, Profile, Employment, Education } from '../types/resume'
+
+interface EditAreaProps {
+  data: Resume
+  handleProfileChange: (profile: Profile) => void
+  handleEmploymentChange: (employments: Employment[]) => void
+  handleEducationChange: (education: Education[]) => void
+}
+
+interface PreviewAreaProps {
+  data: Resume
+  fullWidth?: boolean
+}
+
+const EditArea = ({ data, handleProfileChange, handleEmploymentChange, handleEducationChange }: EditAreaProps) => (
+  <div className="flex-1 space-y-6">
+    <ProfileEditor
+      data={data.profile}
+      onChange={handleProfileChange}
+    />
+    <EmploymentEditor
+      data={data.employments}
+      onChange={handleEmploymentChange}
+    />
+    <EducationEditor
+      data={data.education}
+      onChange={handleEducationChange}
+    />
+  </div>
+)
+
+const PreviewArea = ({ data, fullWidth = false }: PreviewAreaProps) => (
+  <div className={`bg-white shadow-lg rounded-lg overflow-hidden ${fullWidth ? 'min-w-[1000px] mx-auto' : 'min-w-[800px]'}`}>
+    <ResumePreview data={data} />
+  </div>
+)
 
 export default function ResumeEditor() {
-  const { activeTab, editData, setEditData } = useResume()
+  const { activeTab } = useEditorUI()
+  const {
+    data,
+    handleProfileChange,
+    handleEmploymentChange,
+    handleEducationChange,
+  } = useResumeActions()
 
   return (
-    <div className="max-w-[2400px] mx-auto px-8 py-8">
-      {activeTab === 'edit' ? (
+    <div className="max-w-[2400px] mx-auto px-8 py-6">
+      {activeTab === 'edit-only' && (
+        <EditArea
+          data={data}
+          handleProfileChange={handleProfileChange}
+          handleEmploymentChange={handleEmploymentChange}
+          handleEducationChange={handleEducationChange}
+        />
+      )}
+      
+      {activeTab === 'split' && (
         <div className="flex gap-8">
-          {/* 편집 영역 */}
-          <div className="flex-1 space-y-8">
-            <ProfileEditor 
-              data={editData.profile} 
-              onChange={(profile) => setEditData({ ...editData, profile })} 
-            />
-            <EmploymentEditor
-              data={editData.employments}
-              onChange={(employments) => setEditData({ ...editData, employments })}
-            />
-            <EducationEditor
-              data={editData.education}
-              onChange={(education) => setEditData({ ...editData, education })}
-            />
-          </div>
-
-          {/* 미리보기 영역 */}
-          <div className="min-w-[800px] bg-white shadow-lg rounded-lg overflow-hidden">
-            <ResumePreview data={editData} />
-          </div>
+          <EditArea
+            data={data}
+            handleProfileChange={handleProfileChange}
+            handleEmploymentChange={handleEmploymentChange}
+            handleEducationChange={handleEducationChange}
+          />
+          <PreviewArea data={data} />
         </div>
-      ) : (
-        /* 미리보기 전체화면 */
-        <div className="bg-white shadow-lg rounded-lg overflow-hidden min-w-[1000px] mx-auto">
-          <ResumePreview data={editData} />
-        </div>
+      )}
+      
+      {activeTab === 'preview-only' && (
+        <PreviewArea data={data} fullWidth />
       )}
     </div>
   )
