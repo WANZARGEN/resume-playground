@@ -108,15 +108,15 @@
 
 /* 기술 스택 */
 .tech-list {
-  @apply text-gray-600 break-keep;
+  @apply text-gray-600 flex flex-wrap gap-y-1;
 }
 
 .tech-item {
-  @apply relative font-mono font-medium;
+  @apply relative font-mono font-medium whitespace-normal;
 }
 
 .tech-item:not(:last-child)::after {
-  @apply content-['⋅'] ml-1 font-bold;
+  @apply content-['⋅'] ml-1 mr-1 font-bold;
 }
 
 /* 업무 리스트 */

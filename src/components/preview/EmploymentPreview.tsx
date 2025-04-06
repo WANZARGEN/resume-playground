@@ -35,7 +35,11 @@ export function EmploymentPreview({ employments }: Props) {
                     <p className="tech-list">
                       {employment.techStack.map((tech, techIndex) => (
                         <span key={techIndex} className="tech-item">
-                          {tech.name}
+                          {tech.highlight ? (
+                            <span className="text-highlight">{tech.name}</span>
+                          ) : (
+                            tech.name
+                          )}
                         </span>
                       ))}
                     </p>
