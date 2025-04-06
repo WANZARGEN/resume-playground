@@ -192,75 +192,98 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
 
   return (
     <div className="space-y-6">
-      {employments.map((employment, index) => (
-        <div key={index} className="space-y-4">
-          {/* 회사 정보 */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                회사명
-              </label>
-              <input
-                type="text"
-                value={employment.company || ''}
-                onChange={(e) => handleChange(index, 'company', e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                직위
-              </label>
-              <input
-                type="text"
-                value={employment.position || ''}
-                onChange={(e) => handleChange(index, 'position', e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              />
-            </div>
-          </div>
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold">경력</h2>
+        <Button
+          onClick={handleAdd}
+          variant="secondary"
+          size="sm"
+        >
+          경력 추가
+        </Button>
+      </div>
 
-          {/* 근무 기간 */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                시작일
-              </label>
-              <input
-                type="text"
-                value={employment.period?.start || ''}
-                onChange={(e) =>
-                  handleChange(index, 'period', {
-                    ...(employment.period || {}),
-                    start: e.target.value,
-                  })
-                }
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                placeholder="YYYY.MM"
-              />
+      {employments.map((employment, index) => (
+        <div key={index} className="bg-white rounded-lg shadow p-6 space-y-6">
+          <div className="flex items-start justify-between mb-6">
+            <div className="space-y-4 flex-1">
+              {/* 회사 정보 */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    회사명
+                  </label>
+                  <input
+                    type="text"
+                    value={employment.company || ''}
+                    onChange={(e) => handleChange(index, 'company', e.target.value)}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    직위
+                  </label>
+                  <input
+                    type="text"
+                    value={employment.position || ''}
+                    onChange={(e) => handleChange(index, 'position', e.target.value)}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  />
+                </div>
+              </div>
+
+              {/* 근무 기간 */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    시작일
+                  </label>
+                  <input
+                    type="text"
+                    value={employment.period?.start || ''}
+                    onChange={(e) =>
+                      handleChange(index, 'period', {
+                        ...(employment.period || {}),
+                        start: e.target.value,
+                      })
+                    }
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    placeholder="YYYY.MM"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    종료일
+                  </label>
+                  <input
+                    type="text"
+                    value={employment.period?.end || ''}
+                    onChange={(e) =>
+                      handleChange(index, 'period', {
+                        ...(employment.period || {}),
+                        end: e.target.value,
+                      })
+                    }
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    placeholder="YYYY.MM"
+                  />
+                </div>
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                종료일
-              </label>
-              <input
-                type="text"
-                value={employment.period?.end || ''}
-                onChange={(e) =>
-                  handleChange(index, 'period', {
-                    ...(employment.period || {}),
-                    end: e.target.value,
-                  })
-                }
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                placeholder="YYYY.MM"
-              />
-            </div>
+
+            <Button
+              onClick={() => handleRemove(index)}
+              variant="ghost"
+              size="sm"
+            >
+              삭제
+            </Button>
           </div>
 
           {/* 기술 스택 */}
           <div>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mb-4">
               <label className="block text-sm font-medium text-gray-700">
                 기술 스택
               </label>
@@ -272,34 +295,38 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
                 기술 스택 추가
               </Button>
             </div>
-            <div className="mt-2 space-y-2">
+            <div className="space-y-2">
               {(employment.techStack || []).map((tech, techIndex) => (
-                <div key={techIndex} className="flex gap-2">
-                  <input
-                    type="text"
-                    value={tech.name || ''}
-                    onChange={(e) =>
-                      handleTechStackChange(index, techIndex, e.target.value)
-                    }
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    placeholder="기술명"
-                  />
-                  <Button
-                    onClick={() => handleTechStackRemove(index, techIndex)}
-                    variant="ghost"
-                    size="sm"
-                  >
-                    삭제
-                  </Button>
+                <div key={techIndex} className="relative bg-gray-50 rounded-lg p-4">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={tech.name || ''}
+                      onChange={(e) =>
+                        handleTechStackChange(index, techIndex, e.target.value)
+                      }
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                      placeholder="기술명"
+                    />
+                    <Button
+                      onClick={() => handleTechStackRemove(index, techIndex)}
+                      variant="ghost"
+                      size="sm"
+                    >
+                      삭제
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
 
           {/* 주요 업무 */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium">주요 업무</h3>
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <label className="block text-sm font-medium text-gray-700">
+                주요 업무
+              </label>
               <Button
                 onClick={() => handleDetailAdd(index)}
                 variant="secondary"
@@ -309,116 +336,93 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
               </Button>
             </div>
 
-            {employment.details?.map((detail, detailIndex) => (
-              <div key={detailIndex} className="p-4 border rounded-lg space-y-4">
-                {/* Detail Title */}
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={detail.title}
-                    onChange={(e) => handleDetailChange(index, { ...detail, title: e.target.value })}
-                    placeholder="업무 제목"
-                    className="flex-1 px-2 py-1 border rounded"
-                  />
-                  <Button
-                    onClick={() => handleDetailRemove(index)}
-                    variant="ghost"
-                    size="sm"
-                  >
-                    삭제
-                  </Button>
-                </div>
+            <div className="space-y-4">
+              {employment.details?.map((detail, detailIndex) => (
+                <div key={detailIndex} className="relative bg-gray-50 rounded-lg p-4 space-y-4">
+                  {/* Detail Title */}
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={detail.title}
+                      onChange={(e) => handleDetailChange(index, { ...detail, title: e.target.value })}
+                      placeholder="업무 제목"
+                      className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    />
+                    <Button
+                      onClick={() => handleDetailRemove(index)}
+                      variant="ghost"
+                      size="sm"
+                    >
+                      삭제
+                    </Button>
+                  </div>
 
-                {/* Items */}
-                <div className="space-y-2 pl-4">
-                  {detail.items.map((item, itemIndex) => (
-                    <div key={itemIndex} className="space-y-2">
-                      <div className="flex gap-2 items-start">
-                        <span className="mt-2">•</span>
-                        <textarea
-                          value={item.text}
-                          onChange={(e) => handleItemChange(index, itemIndex, { ...item, text: e.target.value })}
-                          placeholder="업무 내용"
-                          className="flex-1 px-2 py-1 border rounded min-h-[2.5rem]"
-                        />
-                        <div className="space-x-2">
-                          <Button
-                            onClick={() => handleSubItemAdd(index, itemIndex)}
-                            variant="secondary"
-                            size="sm"
-                          >
-                            + 세부항목
-                          </Button>
-                          <Button
-                            onClick={() => handleItemRemove(index, itemIndex)}
-                            variant="ghost"
-                            size="sm"
-                          >
-                            삭제
-                          </Button>
-                        </div>
-                      </div>
-
-                      {/* Sub Items */}
-                      {item.subItems?.map((subItem, subItemIndex) => (
-                        <div key={subItemIndex} className="flex gap-2 items-start pl-6">
-                          <span className="mt-2">◦</span>
+                  {/* Items */}
+                  <div className="space-y-2 pl-4">
+                    {detail.items.map((item, itemIndex) => (
+                      <div key={itemIndex} className="space-y-2">
+                        <div className="flex gap-2 items-start">
+                          <span className="mt-2">•</span>
                           <textarea
-                            value={subItem}
-                            onChange={(e) => handleSubItemChange(index, itemIndex, subItemIndex, e.target.value)}
-                            placeholder="세부 업무 내용"
-                            className="flex-1 px-2 py-1 border rounded min-h-[2.5rem]"
+                            value={item.text}
+                            onChange={(e) => handleItemChange(index, itemIndex, { ...item, text: e.target.value })}
+                            placeholder="업무 내용"
+                            className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm min-h-[2.5rem]"
                           />
-                          <Button
-                            onClick={() => handleSubItemRemove(index, itemIndex, subItemIndex)}
-                            variant="ghost"
-                            size="sm"
-                          >
-                            삭제
-                          </Button>
+                          <div className="space-x-2">
+                            <Button
+                              onClick={() => handleSubItemAdd(index, itemIndex)}
+                              variant="secondary"
+                              size="sm"
+                            >
+                              + 세부항목
+                            </Button>
+                            <Button
+                              onClick={() => handleItemRemove(index, itemIndex)}
+                              variant="ghost"
+                              size="sm"
+                            >
+                              삭제
+                            </Button>
+                          </div>
                         </div>
-                      ))}
-                    </div>
-                  ))}
 
-                  <Button
-                    onClick={() => handleItemAdd(index)}
-                    variant="secondary"
-                    size="sm"
-                  >
-                    + 항목 추가
-                  </Button>
+                        {/* Sub Items */}
+                        {item.subItems?.map((subItem, subItemIndex) => (
+                          <div key={subItemIndex} className="flex gap-2 items-start pl-6">
+                            <span className="mt-2">◦</span>
+                            <textarea
+                              value={subItem}
+                              onChange={(e) => handleSubItemChange(index, itemIndex, subItemIndex, e.target.value)}
+                              placeholder="세부 업무 내용"
+                              className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm min-h-[2.5rem]"
+                            />
+                            <Button
+                              onClick={() => handleSubItemRemove(index, itemIndex, subItemIndex)}
+                              variant="ghost"
+                              size="sm"
+                            >
+                              삭제
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+
+                    <Button
+                      onClick={() => handleItemAdd(index)}
+                      variant="secondary"
+                      size="sm"
+                    >
+                      + 항목 추가
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-
-          {/* 삭제 버튼 */}
-          <div className="flex justify-end">
-            <Button
-              onClick={() => handleRemove(index)}
-              variant="ghost"
-              size="sm"
-            >
-              회사 삭제
-            </Button>
-          </div>
-
-          {index < employments.length - 1 && <hr className="border-gray-200" />}
         </div>
       ))}
-
-      {/* 회사 추가 버튼 */}
-      <div className="flex justify-center">
-        <Button
-          onClick={handleAdd}
-          variant="secondary"
-          size="sm"
-          className="mt-4"
-        >
-          경력 추가
-        </Button>
-      </div>
     </div>
   );
 }; 
