@@ -14,9 +14,10 @@ interface SelectProps {
   options: Option[]
   placeholder?: string
   className?: string
+  size?: 'sm' | 'md'
 }
 
-export const Select = ({ value, onChange, options, placeholder, className }: SelectProps) => {
+export const Select = ({ value, onChange, options, placeholder, className, size = 'md' }: SelectProps) => {
   const selectedOption = options.find(option => option.value === value)
 
   return (
@@ -24,11 +25,13 @@ export const Select = ({ value, onChange, options, placeholder, className }: Sel
       {({ open }) => (
         <div className="relative">
           <Listbox.Button className={twMerge(
-            "relative w-full bg-white px-3 py-1.5 text-left text-sm appearance-none",
+            "relative w-full bg-white text-left text-sm appearance-none",
             "rounded-lg border border-gray-200",
             "hover:bg-gray-50",
             "focus:outline-none focus:ring-2 focus:ring-blue-100",
             "ui-open:ring-2 ui-open:ring-blue-100",
+            size === 'md' && "px-3 py-1.5",
+            size === 'sm' && "px-3 py-1",
             className
           )}>
             <span className={`block truncate ${!selectedOption?.label ? 'text-gray-400' : 'text-gray-900'}`}>
@@ -50,13 +53,19 @@ export const Select = ({ value, onChange, options, placeholder, className }: Sel
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <Listbox.Options className="absolute z-10 mt-1 w-full overflow-auto rounded-lg bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            <Listbox.Options className={twMerge(
+              "absolute z-10 mt-1 w-full overflow-auto rounded-lg bg-white text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none",
+              size === 'md' && "py-1",
+              size === 'sm' && "py-0.5"
+            )}>
               {options.map((option) => (
                 <Listbox.Option
                   key={option.value}
                   value={option.value}
                   className={({ active }) =>
-                    `relative cursor-pointer select-none px-3 py-1.5 ${
+                    `relative cursor-pointer select-none px-3 ${
+                      size === 'md' ? 'py-1.5' : 'py-1'
+                    } ${
                       active ? 'bg-gray-50 text-gray-900' : 'text-gray-700'
                     }`
                   }

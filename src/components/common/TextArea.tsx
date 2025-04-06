@@ -4,10 +4,11 @@ import { twMerge } from 'tailwind-merge'
 interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   error?: string
   autoResize?: boolean
+  wrapperClassName?: string
 }
 
 export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
-  ({ className, error, autoResize = true, ...props }, ref) => {
+  ({ className, wrapperClassName, error, autoResize = true, ...props }, ref) => {
     const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
     const adjustHeight = () => {
@@ -23,7 +24,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
     }, [props.value])
 
     return (
-      <div className="relative">
+      <div className={twMerge("relative", wrapperClassName)}>
         <textarea
           ref={(node) => {
             if (typeof ref === 'function') ref(node)

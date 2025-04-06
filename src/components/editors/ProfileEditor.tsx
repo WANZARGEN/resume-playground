@@ -1,8 +1,11 @@
-import React, { ChangeEvent } from 'react'
+import React, { ChangeEvent, Fragment } from 'react'
 import { Contact, Profile, TextStyle } from '../../types/resume'
 import { Button } from '../common/Button'
 import { TextInput } from '../common/TextInput'
 import { TextArea } from '../common/TextArea'
+import { Listbox, Transition } from '@headlessui/react'
+import { ChevronUpDownIcon } from '@heroicons/react/20/solid'
+import { Select } from '../common/Select'
 
 interface ProfileEditorProps {
   data?: Profile;
@@ -96,6 +99,11 @@ function stringifySegments(segments: TextStyle[] = []): string {
     }
   }).join('')
 }
+
+const contactTypes = [
+  { value: 'email', label: '이메일' },
+  { value: 'github', label: 'GitHub' }
+]
 
 export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange }) => {
   const emptyProfile: Profile = {
@@ -226,22 +234,23 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange }) 
           <div className="space-y-4">
             {(profile.contacts || []).map((contact, index) => (
               <div key={index} className="relative bg-gray-50 rounded-lg p-4">
-                <div className="flex gap-4">
-                  <select
+                <div className="flex gap-2">
+                  <Select
                     value={contact.type || 'email'}
-                    onChange={(e) => handleContactChange(index, 'type', e.target.value as Contact['type'])}
-                    className="block rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  >
-                    <option value="email">이메일</option>
-                    <option value="github">GitHub</option>
-                  </select>
+                    onChange={(value) => handleContactChange(index, 'type', value as Contact['type'])}
+                    options={contactTypes}
+                    placeholder="연락처 유형"
+                    size="sm"
+                    className="min-w-24"
+                  />
                   <TextInput
                     value={contact.value || ''}
                     onChange={(e) => handleContactChange(index, 'value', e.target.value as Contact[keyof Contact])}
                     placeholder={contact.type === 'email' ? '이메일 주소' : 'GitHub 사용자명'}
-                    className="flex-1"
+                    wrapperClassName="grow"
+                    inputSize="sm"
                   />
-                  <Button onClick={() => removeContact(index)} variant="ghost" size="sm">
+                  <Button className="shrink-0" onClick={() => removeContact(index)} variant="ghost" size="sm">
                     삭제
                   </Button>
                 </div>

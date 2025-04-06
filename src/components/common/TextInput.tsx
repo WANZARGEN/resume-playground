@@ -1,21 +1,27 @@
 import { forwardRef, InputHTMLAttributes } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-interface TextInputProps extends InputHTMLAttributes<HTMLInputElement> {
-  error?: string
+interface TextInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
+  error?: string;
+  className?: string;
+  wrapperClassName?: string;
+  inputSize?: 'sm' | 'md';
 }
 
 export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
-  ({ className, error, ...props }, ref) => {
+  ({ className, wrapperClassName, error, inputSize = 'md', ...props }, ref) => {
     return (
-      <div className="relative">
+      <div className={twMerge("relative", wrapperClassName)}>
         <input
           ref={ref}
+          type="text"
           className={twMerge(
-            "block w-full px-2.5 py-1.5 bg-white text-gray-900 placeholder:text-gray-400 text-sm",
-            "border border-gray-300 rounded-md shadow-sm",
-            "focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500",
-            "disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed",
+            "block w-full bg-white text-sm appearance-none",
+            "rounded-lg border border-gray-200",
+            "hover:bg-gray-50",
+            "focus:outline-none focus:ring-2 focus:ring-blue-100",
+            inputSize === 'md' && "px-3 py-1.5",
+            inputSize === 'sm' && "px-3 py-1",
             error && "border-red-500 focus:ring-red-500/20 focus:border-red-500",
             className
           )}

@@ -5,6 +5,8 @@ import { useState, useMemo, Fragment } from 'react';
 import { ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { TextInput } from '../common/TextInput';
 import { TextArea } from '../common/TextArea';
+import { Select } from '../common/Select';
+import {  TrashIcon } from '@heroicons/react/24/outline';
 
 // 현재 년도 기준으로 최근 20년치 년도 목록 생성
 const YEARS = Array.from({ length: 20 }, (_, i) => new Date().getFullYear() - i);
@@ -18,73 +20,34 @@ interface DateInputProps {
 
 const DateInput: React.FC<DateInputProps> = ({ value, onChange, placeholder }) => {
   const [selectedYear, selectedMonth] = value ? value.split('.') : ['', ''];
+
+  const yearOptions = YEARS.map(year => ({
+    value: year.toString(),
+    label: year.toString()
+  }))
+
+  const monthOptions = MONTHS.map(month => ({
+    value: month,
+    label: month
+  }))
   
   return (
     <div className="flex gap-2">
-      <Listbox value={selectedYear} onChange={(year) => onChange(`${year}.${selectedMonth || '01'}`)}>
-        <div className="relative flex-1">
-          <Listbox.Button className="relative w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm">
-            <span className="block truncate">{selectedYear || '년도'}</span>
-            <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-              <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-            </span>
-          </Listbox.Button>
-          <Transition
-            as={Fragment}
-            leave="transition ease-in duration-100"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-              {YEARS.map((year) => (
-                <Listbox.Option
-                  key={year}
-                  value={year}
-                  className={({ active }) =>
-                    `relative cursor-pointer select-none py-2 pl-3 pr-9 ${
-                      active ? 'bg-blue-50 text-blue-700' : 'text-gray-900'
-                    }`
-                  }
-                >
-                  {year}
-                </Listbox.Option>
-              ))}
-            </Listbox.Options>
-          </Transition>
-        </div>
-      </Listbox>
-      <Listbox value={selectedMonth} onChange={(month) => onChange(`${selectedYear || new Date().getFullYear()}.${month}`)}>
-        <div className="relative w-24">
-          <Listbox.Button className="relative w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm">
-            <span className="block truncate">{selectedMonth || '월'}</span>
-            <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-              <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-            </span>
-          </Listbox.Button>
-          <Transition
-            as={Fragment}
-            leave="transition ease-in duration-100"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-              {MONTHS.map((month) => (
-                <Listbox.Option
-                  key={month}
-                  value={month}
-                  className={({ active }) =>
-                    `relative cursor-pointer select-none py-2 pl-3 pr-9 ${
-                      active ? 'bg-blue-50 text-blue-700' : 'text-gray-900'
-                    }`
-                  }
-                >
-                  {month}
-                </Listbox.Option>
-              ))}
-            </Listbox.Options>
-          </Transition>
-        </div>
-      </Listbox>
+      <Select
+        value={selectedYear || ''}
+        onChange={(year) => onChange(`${year}.${selectedMonth || '01'}`)}
+        options={yearOptions}
+        placeholder="년도"
+        size="sm"
+      />
+      <Select
+        value={selectedMonth || ''}
+        onChange={(month) => onChange(`${selectedYear || new Date().getFullYear()}.${month}`)}
+        options={monthOptions}
+        placeholder="월"
+        size="sm"
+        className="w-24"
+      />
     </div>
   );
 };
@@ -125,13 +88,13 @@ const TechStackInput: React.FC<TechStackInputProps> = ({ value, onChange, allTec
         {value.map((tech: TechStack) => (
           <span
             key={tech.name}
-            className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 rounded-md text-sm"
+            className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-gray-100 text-gray-700 rounded-md text-sm"
           >
             {tech.name}
             <button
               type="button"
               onClick={() => removeTech(tech)}
-              className="text-blue-500 hover:text-blue-700"
+              className="text-gray-500 hover:text-gray-700"
             >
               ×
             </button>
@@ -150,21 +113,21 @@ const TechStackInput: React.FC<TechStackInputProps> = ({ value, onChange, allTec
       >
         <div className="relative">
           <Combobox.Input
-            className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+            className="block w-full h-[38px] px-3 py-[9px] rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
             placeholder="기술 스택 입력 (Enter로 추가)"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
           />
           {filteredTech.length > 0 && (
-            <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+            <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm border border-gray-300">
               {filteredTech.map((tech) => (
                 <Combobox.Option
                   key={tech}
                   value={tech}
                   className={({ active }) =>
-                    `relative cursor-pointer select-none py-2 pl-3 pr-9 ${
-                      active ? 'bg-blue-50 text-blue-700' : 'text-gray-900'
+                    `relative cursor-pointer select-none py-2 px-3 ${
+                      active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
                     }`
                   }
                 >
@@ -453,23 +416,30 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
               {employment.details?.map((detail, detailIndex) => (
                 <div key={detailIndex} className="relative bg-gray-50 rounded-lg p-4 space-y-4">
                   {/* Detail Title */}
-                  <div className="flex gap-2">
+                  <Button
+                    onClick={() => handleDetailRemove(index)}
+                    variant="ghost"
+                    className="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-600"
+                    size="sm"
+                  >
+                    <TrashIcon className="w-4 h-4" />
+                  </Button>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      제목
+                    </label>
                     <TextInput
                       value={detail.title}
                       onChange={(e) => handleDetailChange(index, { ...detail, title: e.target.value })}
                       placeholder="업무 제목"
                     />
-                    <Button
-                      onClick={() => handleDetailRemove(index)}
-                      variant="ghost"
-                      size="sm"
-                    >
-                      삭제
-                    </Button>
                   </div>
 
                   {/* Items */}
-                  <div className="space-y-2 pl-4">
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      업무 항목
+                    </label>
                     {detail.items.map((item, itemIndex) => (
                       <div key={itemIndex} className="space-y-2">
                         <div className="flex items-start gap-2">

@@ -58,7 +58,7 @@ export function EmploymentPreview({ employments }: Props) {
                           {detail.items.map((item, itemIndex) => (
                             <li key={itemIndex}>
                               {item.text}
-                              {item.subItems?.length && (
+                              {!!item.subItems?.length && (
                                 <ul className="work-list-nested">
                                   {item.subItems.map((subItem, subItemIndex) => (
                                     <li key={subItemIndex}>{subItem}</li>
