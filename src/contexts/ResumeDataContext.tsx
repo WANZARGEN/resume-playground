@@ -11,7 +11,10 @@ const initialData: Resume = {
     paragraphs: [],
   },
   employments: [],
-  education: [],
+  education: [{
+    type: 'presentation',
+    items: []
+  }],
 }
 
 interface ResumeDataContextType {

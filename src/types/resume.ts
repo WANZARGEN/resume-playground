@@ -57,9 +57,7 @@ export interface Activity {
 
 export interface Education {
   type?: 'presentation' | 'certificate' | 'education' | 'language'
-  title?: string
-  url?: string
-  description?: string
+  items: Activity[]
 }
 
 export interface Resume {

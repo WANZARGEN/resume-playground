@@ -16,7 +16,7 @@ export function EducationPreview({ education }: Props) {
 
   // 각 항목을 해당 섹션에 분류
   education.forEach((item) => {
-    if (item.type && item.type in sections) {
+    if (item?.type && item.type in sections && Array.isArray(item.items)) {
       sections[item.type].items.push(item)
     }
   })
@@ -36,24 +36,26 @@ export function EducationPreview({ education }: Props) {
               <li>
                 <div className="spec-content-container">
                   <ul className="work-list">
-                    {section.items.map((item, itemIndex) => (
-                      <li key={itemIndex}>
-                        {item.title && (
-                          item.url ? (
-                            <a
-                              href={item.url}
-                              className="text-link"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              {item.title}
-                            </a>
-                          ) : (
-                            item.title
-                          )
-                        )}
-                        {item.description && ` - ${item.description}`}
-                      </li>
+                    {section.items.map((item) => (
+                      item.items.map((activity, itemIndex) => (
+                        <li key={itemIndex}>
+                          {activity.title && (
+                            activity.url ? (
+                              <a
+                                href={activity.url}
+                                className="text-link"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {activity.title}
+                              </a>
+                            ) : (
+                              activity.title
+                            )
+                          )}
+                          {activity.description && ` - ${activity.description}`}
+                        </li>
+                      ))
                     ))}
                   </ul>
                 </div>

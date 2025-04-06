@@ -12,7 +12,7 @@ export default function EducationEditor({ data, onChange }: Props) {
       ...data,
       {
         type: 'presentation',
-        items: [],
+        items: []
       },
     ]);
   };
@@ -21,16 +21,32 @@ export default function EducationEditor({ data, onChange }: Props) {
     onChange(data.filter((_, i) => i !== index));
   };
 
-  const handleEducationChange = (index: number, field: keyof Education, value: string) => {
+  const handleEducationChange = (
+    index: number,
+    field: keyof Education,
+    value: Education['type']
+  ) => {
     const newData = [...data];
-    newData[index] = { ...newData[index], [field]: value };
+    newData[index] = {
+      ...newData[index],
+      [field]: value,
+      items: newData[index]?.items || []
+    };
     onChange(newData);
   };
 
   const handleAddActivity = (educationIndex: number) => {
     const newData = [...data];
+    if (!newData[educationIndex]) {
+      newData[educationIndex] = {
+        type: 'presentation',
+        items: []
+      };
+    }
     newData[educationIndex].items.push({
       title: '',
+      url: '',
+      description: ''
     });
     onChange(newData);
   };
@@ -42,9 +58,10 @@ export default function EducationEditor({ data, onChange }: Props) {
     value: string
   ) => {
     const newData = [...data];
+    const activity = newData[educationIndex].items[activityIndex] || { title: '', url: '', description: '' };
     newData[educationIndex].items[activityIndex] = {
-      ...newData[educationIndex].items[activityIndex],
-      [field]: value,
+      ...activity,
+      [field]: value
     };
     onChange(newData);
   };
