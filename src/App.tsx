@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import toast, { Toaster } from 'react-hot-toast'
 import { Resume } from './types/resume'
 import ResumeEditor from './components/ResumeEditor'
+import { convertResumeToHtml } from './utils/htmlConverter'
 import './App.css'
 
 // 초기 데이터
@@ -66,190 +67,6 @@ function App() {
     return () => clearInterval(interval)
   }, [data, autoSaveDirectory])
 
-  const generateHtml = (data: Resume): string => {
-    return `
-      <!DOCTYPE html>
-      <html lang="ko">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>이력서 - ${data.profile.name}</title>
-          <script src="https://cdn.tailwindcss.com"></script>
-          <style>
-            @media print {
-              @page {
-                size: A4;
-                margin: 0;
-              }
-              body {
-                margin: 2cm;
-              }
-            }
-          </style>
-        </head>
-        <body>
-          <div id="resume">
-            <!-- 프로필 -->
-            <div class="mb-8">
-              <div class="flex items-center gap-6 mb-4">
-                ${
-                  data.profile.photo
-                    ? `<img src="${data.profile.photo}" alt="Profile" class="w-32 h-32 rounded-full object-cover">`
-                    : ''
-                }
-                <div>
-                  <h1 class="text-3xl font-bold">${data.profile.name}</h1>
-                  <p class="text-xl text-gray-600">${data.profile.position}</p>
-                </div>
-              </div>
-              <div class="space-y-2">
-                ${data.profile.contacts
-                  .map(
-                    (contact) => `
-                  <p>
-                    <span class="font-medium">${contact.type}:</span>
-                    <a href="${
-                      contact.type === 'email'
-                        ? `mailto:${contact.value}`
-                        : contact.value
-                    }" class="text-blue-600 hover:underline">${contact.value}</a>
-                  </p>
-                `
-                  )
-                  .join('')}
-              </div>
-              ${
-                data.profile.introduction
-                  ? `<p class="mt-4 text-gray-700">${data.profile.introduction}</p>`
-                  : ''
-              }
-            </div>
-
-            <!-- 경력 -->
-            ${
-              data.employments.length > 0
-                ? `
-              <div class="mb-8">
-                <h2 class="text-2xl font-bold mb-4">경력</h2>
-                ${data.employments
-                  .map(
-                    (employment) => `
-                  <div class="mb-6">
-                    <div class="flex justify-between items-baseline mb-2">
-                      <h3 class="text-xl font-semibold">${employment.company}</h3>
-                      <span class="text-gray-600">${employment.period.start} - ${
-                      employment.period.end
-                    }</span>
-                    </div>
-                    <p class="text-lg text-gray-700 mb-2">${employment.position}</p>
-                    ${
-                      employment.techStack.length > 0
-                        ? `
-                      <div class="mb-2">
-                        <h4 class="font-medium mb-1">기술 스택</h4>
-                        <div class="flex flex-wrap gap-2">
-                          ${employment.techStack
-                            .map(
-                              (tech) => `
-                            <span class="px-2 py-1 bg-gray-100 rounded-md text-sm">${tech.name}</span>
-                          `
-                            )
-                            .join('')}
-                        </div>
-                      </div>
-                    `
-                        : ''
-                    }
-                    ${
-                      employment.details.length > 0
-                        ? `
-                      <div>
-                        <h4 class="font-medium mb-1">주요 업무</h4>
-                        <ul class="list-disc list-inside space-y-1">
-                          ${employment.details
-                            .map(
-                              (detail) => `
-                            <li>
-                              <span class="font-medium">${detail.title}</span>
-                              ${
-                                detail.description
-                                  ? ` - ${detail.description}`
-                                  : ''
-                              }
-                            </li>
-                          `
-                            )
-                            .join('')}
-                        </ul>
-                      </div>
-                    `
-                        : ''
-                    }
-                  </div>
-                `
-                  )
-                  .join('')}
-              </div>
-            `
-                : ''
-            }
-
-            <!-- 교육 및 활동 -->
-            ${
-              data.education.length > 0
-                ? `
-              <div>
-                <h2 class="text-2xl font-bold mb-4">교육 및 활동</h2>
-                <div class="space-y-6">
-                  ${data.education
-                    .map(
-                      (item) => `
-                    <div>
-                      <h3 class="text-lg font-semibold">${item.title}</h3>
-                      ${
-                        item.url
-                          ? `<a href="${item.url}" class="text-blue-600 hover:underline">${item.url}</a>`
-                          : ''
-                      }
-                      ${
-                        item.description
-                          ? `<p class="text-gray-700 mt-1">${item.description}</p>`
-                          : ''
-                      }
-                      ${
-                        item.activities && item.activities.length > 0
-                          ? `
-                        <ul class="mt-2 list-disc list-inside space-y-1">
-                          ${item.activities
-                            .map(
-                              (activity) => `
-                            <li>${activity.title}${
-                                activity.description
-                                  ? ` - ${activity.description}`
-                                  : ''
-                              }</li>
-                          `
-                            )
-                            .join('')}
-                        </ul>
-                      `
-                          : ''
-                      }
-                    </div>
-                  `
-                    )
-                    .join('')}
-                </div>
-              </div>
-            `
-                : ''
-            }
-          </div>
-        </body>
-      </html>
-    `
-  }
-
   const handleDownload = async (newData: Resume, format: 'json' | 'html') => {
     try {
       setData(newData)
@@ -257,7 +74,7 @@ function App() {
       const content =
         format === 'json'
           ? JSON.stringify(newData, null, 2)
-          : generateHtml(newData)
+          : convertResumeToHtml(newData)
   
       const blob = new Blob(
         [content],
