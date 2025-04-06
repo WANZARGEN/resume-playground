@@ -1,44 +1,46 @@
 import { useEffect, useRef } from 'react'
 import { Resume } from '../types/resume'
-import { fileService } from '../services/fileService'
 import toast from 'react-hot-toast'
 import { useEditorUI } from '../contexts/EditorUIContext'
+import { fileService } from '../services/fileService'
 
 export const useAutoSave = (data: Resume) => {
-  const { saveDirectory, lastSavedData, setLastSavedData } = useEditorUI()
-  const autoSaveTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const { lastSavedData, setLastSavedData } = useEditorUI()
+  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
-    const autoSave = async () => {
-      if (!saveDirectory) return
-      
-      // 마지막 저장 데이터와 현재 데이터를 비교
-      if (JSON.stringify(lastSavedData) !== JSON.stringify(data)) {
-        try {
-          await fileService.saveToDirectory(data, saveDirectory)
-          setLastSavedData(data)
-          toast.success('자동 저장되었습니다.')
-        } catch (err) {
-          console.error('자동 저장 중 오류가 발생했습니다:', err)
-          toast.error('자동 저장에 실패했습니다.')
-        }
-      }
-    }
+    const lastHandle = fileService.getLastSavedHandle()
+    
+    // 데이터가 변경되지 않았거나 초기 상태면 저장하지 않음
+    if (!lastSavedData || data === lastSavedData) return
 
-    // 이전 타이머 제거
     if (autoSaveTimerRef.current) {
-      clearInterval(autoSaveTimerRef.current)
+      clearTimeout(autoSaveTimerRef.current)
     }
 
-    // 저장 경로가 있는 경우에만 자동 저장 타이머 설정
-    if (saveDirectory) {
-      autoSaveTimerRef.current = setInterval(autoSave, 5000) // 5초마다 실행
-    }
+    autoSaveTimerRef.current = setTimeout(async () => {
+      try {
+        // 파일 핸들이 없으면 저장 알림
+        if (!lastHandle) {
+          toast.loading('수정된 내용을 저장하려면 파일을 선택해주세요.', {
+            duration: 3000
+          })
+          return
+        }
+
+        await fileService.saveToFile(data, lastHandle)
+        setLastSavedData(data)
+        toast.success('자동 저장되었습니다.')
+      } catch (err) {
+        console.error('자동 저장 중 오류가 발생했습니다:', err)
+        toast.error('자동 저장에 실패했습니다.')
+      }
+    }, 5000)
 
     return () => {
       if (autoSaveTimerRef.current) {
-        clearInterval(autoSaveTimerRef.current)
+        clearTimeout(autoSaveTimerRef.current)
       }
     }
-  }, [data, saveDirectory, lastSavedData, setLastSavedData])
+  }, [data, lastSavedData, setLastSavedData])
 } 

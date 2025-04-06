@@ -13,6 +13,8 @@ export type EditorUIContextType = {
   setSelectedFormat: (format: ResumeFormat) => void
   lastSavedData: Resume | null
   setLastSavedData: (data: Resume | null) => void
+  saveDirectory: string | null
+  setSaveDirectory: (path: string | null) => void
 }
 
 export const resumeFormats: ResumeFormat[] = [
@@ -34,6 +36,7 @@ export const EditorUIProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [activeTab, setActiveTab] = useState<ViewMode>('split')
   const [selectedFormat, setSelectedFormat] = useState<ResumeFormat>(resumeFormats[0])
   const [lastSavedData, setLastSavedData] = useState<Resume | null>(null)
+  const [saveDirectory, setSaveDirectory] = useState<string | null>(null)
 
   return (
     <EditorUIContext.Provider
@@ -43,7 +46,9 @@ export const EditorUIProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         selectedFormat,
         setSelectedFormat,
         lastSavedData,
-        setLastSavedData
+        setLastSavedData,
+        saveDirectory,
+        setSaveDirectory
       }}
     >
       {children}
