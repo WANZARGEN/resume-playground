@@ -1,5 +1,6 @@
 import { Fragment } from 'react'
 import { Resume } from '../../types/resume'
+import { ProfilePreview } from './ProfilePreview'
 import '../../styles/resume-preview.css'
 
 interface Props {
@@ -13,7 +14,7 @@ export default function ResumePreview({ data }: Props) {
     <div className="resume-preview">
       {/* 네임카드 */}
       <header className="name-card">
-        {data.profile.photo && (
+        {data.profile?.photo && (
           <img
             src={data.profile.photo}
             alt={`Profile photo of ${data.profile.name}`}
@@ -22,55 +23,48 @@ export default function ResumePreview({ data }: Props) {
         )}
         
         <div className="info">
-          <h1 className="name">{data.profile.name}</h1>
-          <p className="position">{data.profile.position}</p>
+          <h1 className="name">{data.profile?.name}</h1>
+          {data.profile?.position && (
+            <p className="position">{data.profile.position}</p>
+          )}
 
           <hr className="info-divider" />
 
-          <div className="contact-list">
-            {(data.profile.contacts || []).map((contact, index) => (
-              <Fragment key={contact.type}>
-                {index > 0 && <div className="contact-divider" />}
-                <a
-                  href={contact.value}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {contact.type === 'email' ? (
-                    <span>✉️</span>
-                  ) : contact.type === 'github' ? (
-                    <img
-                      src="https://cdn-icons-png.flaticon.com/512/25/25231.png"
-                      alt="GitHub icon"
-                    />
-                  ) : null}
-                  <span>{contact.value}</span>
-                </a>
-              </Fragment>
-            ))}
-          </div>
+          {data.profile?.contacts?.length ? (
+            <div className="contact-list">
+              {data.profile.contacts.map((contact, index) => (
+                <Fragment key={contact.type}>
+                  {index > 0 && <div className="contact-divider" />}
+                  <a
+                    href={contact.url || contact.value}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {contact.type === 'email' ? (
+                      <span>✉️</span>
+                    ) : contact.type === 'github' ? (
+                      <img
+                        src="https://cdn-icons-png.flaticon.com/512/25/25231.png"
+                        alt="GitHub icon"
+                      />
+                    ) : null}
+                    <span>{contact.value}</span>
+                  </a>
+                </Fragment>
+              ))}
+            </div>
+          ) : null}
         </div>
       </header>
 
       <main className="p-8 pb-12 space-y-8">
         {/* Profile */}
-        {data.profile.introduction && (
-          <>
-            <section id="profile" className="text-gray-800">
-              <h2 className="section-title">Profile</h2>
-              <article className="space-y-4 text-gray-700">
-                <p className="paragraph whitespace-pre-wrap">
-                  {data.profile.introduction}
-                </p>
-              </article>
-            </section>
+        {data.profile && <ProfilePreview profile={data.profile} />}
 
-            <hr className="section-divider" />
-          </>
-        )}
+        <hr className="section-divider" />
 
         {/* Employment History */}
-        {(data.employments || []).length > 0 && (
+        {data.employments?.length ? (
           <>
             <section id="employment-history">
               <h2 className="section-title">Employment History</h2>
@@ -79,16 +73,20 @@ export default function ResumePreview({ data }: Props) {
                 {data.employments.map((employment, index) => (
                   <div key={index} className="section-entry">
                     <h3 className="section-sub-title">{employment.company}</h3>
-                    <div className="meta-info">
-                      <span>{employment.position}</span>
-                      <div className="meta-divider" />
-                      <span>
-                        {employment.period.start} ― {employment.period.end}
-                      </span>
-                    </div>
+                    {(employment.position || employment.period) && (
+                      <div className="meta-info">
+                        {employment.position && <span>{employment.position}</span>}
+                        {employment.position && employment.period && <div className="meta-divider" />}
+                        {employment.period && (
+                          <span>
+                            {employment.period.start} ― {employment.period.end}
+                          </span>
+                        )}
+                      </div>
+                    )}
 
                     <ul className="spec-list">
-                      {(employment.techStack || []).length > 0 && (
+                      {employment.techStack?.length ? (
                         <li>
                           <p className="spec-label">사용 기술</p>
                           <div className="spec-content-container">
@@ -101,23 +99,30 @@ export default function ResumePreview({ data }: Props) {
                             </p>
                           </div>
                         </li>
-                      )}
+                      ) : null}
 
-                      {(employment.details || []).length > 0 && (
+                      {employment.details?.length ? (
                         <li>
                           <p className="spec-label">주요 업무</p>
                           <div className="spec-content-container">
                             {employment.details.map((detail, detailIndex) => (
                               <div key={detailIndex}>
-                                <p className="work-header">{detail.title}</p>
-                                <p className="text-gray-600">
-                                  {detail.description}
-                                </p>
+                                {detail.title && <p className="work-header">{detail.title}</p>}
+                                {detail.description && (
+                                  <p className="text-gray-600">{detail.description}</p>
+                                )}
+                                {detail.details?.length && (
+                                  <ul className="work-list">
+                                    {detail.details.map((item, itemIndex) => (
+                                      <li key={itemIndex}>{item}</li>
+                                    ))}
+                                  </ul>
+                                )}
                               </div>
                             ))}
                           </div>
                         </li>
-                      )}
+                      ) : null}
                     </ul>
                   </div>
                 ))}
@@ -126,10 +131,10 @@ export default function ResumePreview({ data }: Props) {
 
             <hr className="section-divider" />
           </>
-        )}
+        ) : null}
 
         {/* Education & Activities */}
-        {(data.education || []).length > 0 && (
+        {data.education?.length ? (
           <section id="education-activities">
             <h2 className="section-title">Education & Activities</h2>
 
@@ -143,14 +148,14 @@ export default function ResumePreview({ data }: Props) {
 
               // 각 항목을 해당 섹션에 분류
               data.education.forEach((item) => {
-                if (item.type in sections) {
+                if (item.type && item.type in sections) {
                   sections[item.type].items.push(item)
                 }
               })
 
               // 항목이 있는 섹션만 렌더링
               return Object.entries(sections).map(([key, section]) => {
-                if (section.items.length === 0) return null
+                if (!section.items.length) return null
 
                 return (
                   <div key={key} className="section-entry">
@@ -161,17 +166,19 @@ export default function ResumePreview({ data }: Props) {
                           <ul className="work-list">
                             {section.items.map((item, itemIndex) => (
                               <li key={itemIndex}>
-                                {item.url ? (
-                                  <a
-                                    href={item.url}
-                                    className="text-link"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    {item.title}
-                                  </a>
-                                ) : (
-                                  item.title
+                                {item.title && (
+                                  item.url ? (
+                                    <a
+                                      href={item.url}
+                                      className="text-link"
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                    >
+                                      {item.title}
+                                    </a>
+                                  ) : (
+                                    item.title
+                                  )
                                 )}
                                 {item.description && ` - ${item.description}`}
                               </li>
@@ -185,7 +192,7 @@ export default function ResumePreview({ data }: Props) {
               })
             })()}
           </section>
-        )}
+        ) : null}
       </main>
     </div>
   )

@@ -1,12 +1,13 @@
 import React from 'react'
 import { Profile, TextStyle } from '../../types/resume'
+import clsx from 'clsx'
 
 interface Props {
   profile: Profile
 }
 
 function StyledText({ style }: { style: TextStyle }) {
-  const { type, text, href } = style
+  const { type = 'normal', text = '', href } = style
   
   switch (type) {
     case 'emphasis':
@@ -23,13 +24,16 @@ function StyledText({ style }: { style: TextStyle }) {
 }
 
 export function ProfilePreview({ profile }: Props) {
+  console.debug('profile', profile)
+  if (!profile.paragraphs?.length) return null
+
   return (
     <section id="profile" className="text-gray-800">
       <h2 className="section-title">Profile</h2>
       <article className="space-y-4 text-gray-700">
         {profile.paragraphs.map((paragraph, index) => (
           <p key={index} className="paragraph">
-            {paragraph.segments.map((segment, sIndex) => (
+            {paragraph.segments?.map((segment, sIndex) => (
               <StyledText key={sIndex} style={segment} />
             ))}
           </p>

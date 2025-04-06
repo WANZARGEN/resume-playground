@@ -1,14 +1,16 @@
 import React, { InputHTMLAttributes } from 'react'
 import clsx from 'clsx'
 
-interface Props extends InputHTMLAttributes<HTMLInputElement> {}
+interface Props extends InputHTMLAttributes<HTMLInputElement> {
+  className?: string
+}
 
 export function TextInput({ className, ...props }: Props) {
   return (
     <input
       type="text"
       className={clsx(
-        'w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
+        'block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm',
         className
       )}
       {...props}

@@ -1,15 +1,18 @@
 import React, { TextareaHTMLAttributes } from 'react'
 import clsx from 'clsx'
 
-interface Props extends TextareaHTMLAttributes<HTMLTextAreaElement> {}
+interface Props extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+  className?: string
+}
 
 export function TextArea({ className, ...props }: Props) {
   return (
     <textarea
       className={clsx(
-        'w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[2.5rem] resize-y',
+        'block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm',
         className
       )}
+      rows={4}
       {...props}
     />
   )

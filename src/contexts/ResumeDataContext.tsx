@@ -8,7 +8,7 @@ const initialData: Resume = {
     name: '',
     position: '',
     contacts: [],
-    introduction: '',
+    paragraphs: [],
   },
   employments: [],
   education: [],
