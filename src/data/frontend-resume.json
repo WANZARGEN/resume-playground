@@ -1,0 +1,175 @@
+{
+  "profile": {
+    "photo": "/images/frontend-profile.png",
+    "name": "김도현",
+    "position": "Frontend Developer",
+    "contacts": [
+      {
+        "type": "email",
+        "value": "dohyun.kim@email.com",
+        "url": "mailto:dohyun.kim@email.com"
+      },
+      {
+        "type": "github",
+        "value": "github.com/dohyun-dev",
+        "url": "https://github.com/dohyun-dev"
+      }
+    ],
+    "paragraphs": [
+      {
+        "segments": [
+          { "text": "5년차 프론트엔드 개발자로서 " },
+          { "type": "emphasis", "text": "React와 Vue.js 기반의 대규모 웹 애플리케이션 개발" },
+          { "text": "을 전문으로 하고 있습니다. 사용자 경험을 최우선으로 생각하며, 성능 최적화와 코드 품질 향상에 깊은 관심을 가지고 있습니다." }
+        ]
+      },
+      {
+        "segments": [
+          { "text": "최근에는 " },
+          { "type": "emphasis", "text": "마이크로프론트엔드 아키텍처 설계 및 구현" },
+          { "text": "을 주도하며, " },
+          { "type": "accent", "text": "Module Federation, Monorepo" },
+          { "text": " 기반의 프로젝트를 성공적으로 이끌었습니다. " },
+          { "type": "accent", "text": "React Query, Zustand" },
+          { "text": "를 활용한 상태 관리 시스템을 구축하고, " },
+          { "type": "accent", "text": "Next.js" },
+          { "text": "를 도입하여 서비스의 SEO와 초기 로딩 성능을 크게 개선했습니다." }
+        ]
+      },
+      {
+        "segments": [
+          { "type": "emphasis", "text": "테스트 주도 개발(TDD)과 클린 코드" },
+          { "text": "를 실천하고 있으며, " },
+          { "type": "accent", "text": "Jest, Testing Library, Cypress" },
+          { "text": "를 활용한 테스트 자동화 시스템을 구축했습니다. 또한 " },
+          { "type": "accent", "text": "Storybook" },
+          { "text": "을 도입하여 컴포넌트 주도 개발(CDD) 문화를 정착시켰습니다." }
+        ]
+      }
+    ]
+  },
+  "employments": [
+    {
+      "company": "TechFin Solutions",
+      "position": "Senior Frontend Developer",
+      "period": {
+        "start": "2021.03",
+        "end": "현재"
+      },
+      "techStack": [
+        { "name": "React", "highlight": true },
+        { "name": "TypeScript", "highlight": true },
+        { "name": "Next.js", "highlight": true },
+        { "name": "Module Federation" },
+        { "name": "React Query" },
+        { "name": "Zustand" },
+        { "name": "Storybook" },
+        { "name": "Jest" },
+        { "name": "Testing Library" },
+        { "name": "Cypress" },
+        { "name": "Webpack" },
+        { "name": "Turborepo" }
+      ],
+      "details": [
+        {
+          "title": "금융 서비스 마이크로프론트엔드 아키텍처 설계 및 구현",
+          "items": [
+            {
+              "text": "Module Federation을 활용한 마이크로프론트엔드 아키텍처 설계 및 구현",
+              "subItems": [
+                "독립적인 배포가 가능한 6개의 마이크로 프론트엔드 애플리케이션 구축",
+                "공통 컴포넌트 및 유틸리티 공유를 위한 모노레포 아키텍처 설계",
+                "배포 파이프라인 자동화로 배포 시간 70% 단축"
+              ]
+            },
+            {
+              "text": "성능 최적화 및 사용자 경험 개선",
+              "subItems": [
+                "Code Splitting과 Lazy Loading 적용으로 초기 로딩 시간 40% 감소",
+                "React Query를 활용한 데이터 캐싱 전략 수립으로 API 호출 50% 감소",
+                "Lighthouse 성능 점수 95점 이상 달성"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "컴포넌트 라이브러리 개발 및 디자인 시스템 구축",
+          "items": [
+            {
+              "text": "50+ 공통 컴포넌트 개발 및 문서화",
+              "subItems": [
+                "Storybook을 활용한 컴포넌트 문서화 및 시각적 테스트 환경 구축",
+                "Jest와 Testing Library를 활용한 단위 테스트 커버리지 90% 달성"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "company": "WebTech Corp",
+      "position": "Frontend Developer",
+      "period": {
+        "start": "2019.01",
+        "end": "2021.02"
+      },
+      "techStack": [
+        { "name": "Vue.js 3", "highlight": true },
+        { "name": "Vuex" },
+        { "name": "TypeScript", "highlight": true },
+        { "name": "Vite" },
+        { "name": "TailwindCSS" },
+        { "name": "Jest" },
+        { "name": "Cypress" }
+      ],
+      "details": [
+        {
+          "title": "SaaS 기반 마케팅 자동화 플랫폼 개발",
+          "items": [
+            {
+              "text": "Vue 3 기반의 대시보드 개발",
+              "subItems": [
+                "Composition API를 활용한 재사용 가능한 로직 설계",
+                "실시간 데이터 시각화 컴포넌트 개발",
+                "다국어 지원 시스템 구축"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "education": [
+    {
+      "type": "presentation",
+      "items": [
+        {
+          "title": "마이크로프론트엔드로 전환하기",
+          "description": "FEConf 2023"
+        },
+        {
+          "title": "React Query로 서버 상태 관리하기",
+          "description": "사내 기술 컨퍼런스 (2022)"
+        }
+      ]
+    },
+    {
+      "type": "certificate",
+      "items": [
+        {
+          "title": "AWS Certified Developer - Associate",
+          "description": "2022"
+        }
+      ]
+    },
+    {
+      "type": "education",
+      "items": [
+        {
+          "title": "서울대학교",
+          "description": "컴퓨터공학과 (2018)"
+        }
+      ]
+    }
+  ]
+} 

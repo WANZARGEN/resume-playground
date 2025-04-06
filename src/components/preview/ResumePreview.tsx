@@ -18,7 +18,7 @@ export default function ResumePreview({ data }: Props) {
       <header className="name-card">
         {data.profile?.photo && (
           <img
-            src={data.profile.photo}
+            src={data.profile.photo.startsWith('http') ? data.profile.photo : `${import.meta.env.BASE_URL}${data.profile.photo}`}
             alt={`Profile photo of ${data.profile.name}`}
             className="profile-photo"
           />

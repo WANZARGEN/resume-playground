@@ -172,7 +172,7 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange }) 
         <div className="flex items-center gap-4">
           {profile.photo && (
             <img
-              src={profile.photo}
+              src={profile.photo.startsWith('http') ? profile.photo : `${import.meta.env.BASE_URL}${profile.photo}`}
               alt="Profile"
               className="w-24 h-24 rounded-full object-cover"
             />
