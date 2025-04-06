@@ -1,4 +1,6 @@
+import { Fragment } from 'react'
 import { Resume } from '../../types/resume'
+import '../../styles/resume-preview.css'
 
 interface Props {
   data: Resume
@@ -8,7 +10,7 @@ export default function ResumePreview({ data }: Props) {
   if (!data) return null
 
   return (
-    <div className="bg-white shadow rounded-xl overflow-hidden">
+    <div className="resume-preview">
       {/* 네임카드 */}
       <header className="name-card">
         {data.profile.photo && (
@@ -27,17 +29,16 @@ export default function ResumePreview({ data }: Props) {
 
           <div className="contact-list">
             {(data.profile.contacts || []).map((contact, index) => (
-              <>
+              <Fragment key={contact.type}>
                 {index > 0 && <div className="contact-divider" />}
                 <a
-                  key={contact.type}
                   href={contact.value}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {contact.type === '이메일' ? (
+                  {contact.type === 'email' ? (
                     <span>✉️</span>
-                  ) : contact.type === 'GitHub' ? (
+                  ) : contact.type === 'github' ? (
                     <img
                       src="https://cdn-icons-png.flaticon.com/512/25/25231.png"
                       alt="GitHub icon"
@@ -45,7 +46,7 @@ export default function ResumePreview({ data }: Props) {
                   ) : null}
                   <span>{contact.value}</span>
                 </a>
-              </>
+              </Fragment>
             ))}
           </div>
         </div>

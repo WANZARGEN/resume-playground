@@ -1,9 +1,10 @@
 import { Listbox } from '@headlessui/react'
 import { useResume, resumeFormats } from '../contexts/ResumeContext'
+import { Resume } from '../types/resume'
 
 interface Props {
-  onDownload: (data: any, format: 'json' | 'html') => void
-  onSave: (data: any, directory: FileSystemDirectoryHandle) => void
+  onDownload: (data: Resume, format: 'json' | 'html') => void
+  onSave: (data: Resume, directory: FileSystemDirectoryHandle) => void
   onLoad: () => void
 }
 

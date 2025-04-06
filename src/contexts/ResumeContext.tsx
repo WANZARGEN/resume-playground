@@ -1,5 +1,37 @@
-import { createContext, useContext, ReactNode, useState } from 'react'
+import React, { createContext, useContext, useState, ReactNode } from 'react'
 import { Resume } from '../types/resume'
+
+// 초기 데이터
+const initialData: Resume = {
+  profile: {
+    photo: '',
+    name: '',
+    position: '',
+    contacts: [],
+    introduction: '',
+  },
+  employments: [],
+  education: [],
+}
+
+type ResumeFormat = {
+  id: 'json' | 'html'
+  name: string
+  description: string
+}
+
+export const resumeFormats: ResumeFormat[] = [
+  {
+    id: 'json',
+    name: 'JSON',
+    description: '데이터 형식으로 저장',
+  },
+  {
+    id: 'html',
+    name: 'HTML',
+    description: '웹 페이지 형식으로 저장',
+  },
+]
 
 interface ResumeContextType {
   activeTab: 'edit' | 'preview'
@@ -8,36 +40,21 @@ interface ResumeContextType {
   setEditData: (data: Resume) => void
   saveDirectory: FileSystemDirectoryHandle | null
   setSaveDirectory: (directory: FileSystemDirectoryHandle | null) => void
-  selectedFormat: { id: 'json' | 'html'; name: string; description: string }
-  setSelectedFormat: (format: { id: 'json' | 'html'; name: string; description: string }) => void
+  selectedFormat: ResumeFormat
+  setSelectedFormat: (format: ResumeFormat) => void
 }
 
 const ResumeContext = createContext<ResumeContextType | null>(null)
 
-export function useResume() {
-  const context = useContext(ResumeContext)
-  if (!context) {
-    throw new Error('useResume must be used within a ResumeProvider')
-  }
-  return context
-}
-
 interface Props {
   children: ReactNode
-  initialData: Resume
-  autoSaveDirectory: FileSystemDirectoryHandle | null
 }
 
-const formats = [
-  { id: 'json' as const, name: 'JSON 형식', description: '나중에 불러오기 가능' },
-  { id: 'html' as const, name: 'HTML 형식', description: '웹 브라우저에서 보기' },
-]
-
-export function ResumeProvider({ children, initialData, autoSaveDirectory }: Props) {
+export function ResumeProvider({ children }: Props) {
   const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit')
   const [editData, setEditData] = useState<Resume>(initialData)
-  const [selectedFormat, setSelectedFormat] = useState(formats[0])
-  const [saveDirectory, setSaveDirectory] = useState<FileSystemDirectoryHandle | null>(autoSaveDirectory)
+  const [saveDirectory, setSaveDirectory] = useState<FileSystemDirectoryHandle | null>(null)
+  const [selectedFormat, setSelectedFormat] = useState<ResumeFormat>(resumeFormats[0])
 
   return (
     <ResumeContext.Provider
@@ -57,4 +74,10 @@ export function ResumeProvider({ children, initialData, autoSaveDirectory }: Pro
   )
 }
 
-export const resumeFormats = formats 
+export function useResume() {
+  const context = useContext(ResumeContext)
+  if (!context) {
+    throw new Error('useResume must be used within a ResumeProvider')
+  }
+  return context
+} 
