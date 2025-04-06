@@ -1,15 +1,93 @@
 import { Employment, TechStack, WorkDetail, WorkItem } from '../../types/resume';
 import { Button } from '../common/Button';
-import { Combobox } from '@headlessui/react';
-import { useState, useMemo } from 'react';
+import { Combobox, Listbox, Transition } from '@headlessui/react';
+import { useState, useMemo, Fragment } from 'react';
+import { ChevronUpDownIcon } from '@heroicons/react/20/solid';
+import { TextInput } from '../common/TextInput';
+import { TextArea } from '../common/TextArea';
 
-// 자주 사용되는 기술 스택 목록
-const COMMON_TECH_STACKS = [
-  'JavaScript', 'TypeScript', 'React', 'Vue.js', 'Angular',
-  'Node.js', 'Python', 'Java', 'Spring', 'Docker',
-  'Kubernetes', 'AWS', 'GCP', 'Azure', 'MySQL',
-  'PostgreSQL', 'MongoDB', 'Redis', 'GraphQL', 'REST API'
-];
+// 현재 년도 기준으로 최근 20년치 년도 목록 생성
+const YEARS = Array.from({ length: 20 }, (_, i) => new Date().getFullYear() - i);
+const MONTHS = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'));
+
+interface DateInputProps {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+}
+
+const DateInput: React.FC<DateInputProps> = ({ value, onChange, placeholder }) => {
+  const [selectedYear, selectedMonth] = value ? value.split('.') : ['', ''];
+  
+  return (
+    <div className="flex gap-2">
+      <Listbox value={selectedYear} onChange={(year) => onChange(`${year}.${selectedMonth || '01'}`)}>
+        <div className="relative flex-1">
+          <Listbox.Button className="relative w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm">
+            <span className="block truncate">{selectedYear || '년도'}</span>
+            <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+              <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+            </span>
+          </Listbox.Button>
+          <Transition
+            as={Fragment}
+            leave="transition ease-in duration-100"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+              {YEARS.map((year) => (
+                <Listbox.Option
+                  key={year}
+                  value={year}
+                  className={({ active }) =>
+                    `relative cursor-pointer select-none py-2 pl-3 pr-9 ${
+                      active ? 'bg-blue-50 text-blue-700' : 'text-gray-900'
+                    }`
+                  }
+                >
+                  {year}
+                </Listbox.Option>
+              ))}
+            </Listbox.Options>
+          </Transition>
+        </div>
+      </Listbox>
+      <Listbox value={selectedMonth} onChange={(month) => onChange(`${selectedYear || new Date().getFullYear()}.${month}`)}>
+        <div className="relative w-24">
+          <Listbox.Button className="relative w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm">
+            <span className="block truncate">{selectedMonth || '월'}</span>
+            <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+              <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+            </span>
+          </Listbox.Button>
+          <Transition
+            as={Fragment}
+            leave="transition ease-in duration-100"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+              {MONTHS.map((month) => (
+                <Listbox.Option
+                  key={month}
+                  value={month}
+                  className={({ active }) =>
+                    `relative cursor-pointer select-none py-2 pl-3 pr-9 ${
+                      active ? 'bg-blue-50 text-blue-700' : 'text-gray-900'
+                    }`
+                  }
+                >
+                  {month}
+                </Listbox.Option>
+              ))}
+            </Listbox.Options>
+          </Transition>
+        </div>
+      </Listbox>
+    </div>
+  );
+};
 
 interface TechStackInputProps {
   value: TechStack[];
@@ -22,7 +100,7 @@ const TechStackInput: React.FC<TechStackInputProps> = ({ value, onChange, allTec
   
   const filteredTech = query === ''
     ? allTechStacks
-    : allTechStacks.filter((tech) =>
+    : allTechStacks.filter((tech: string) =>
         tech.toLowerCase().includes(query.toLowerCase())
       );
 
@@ -30,7 +108,7 @@ const TechStackInput: React.FC<TechStackInputProps> = ({ value, onChange, allTec
     if (e.key === 'Enter' && query.trim()) {
       e.preventDefault();
       const newTech = { name: query.trim() };
-      if (!value.find(t => t.name === newTech.name)) {
+      if (!value.find((t: TechStack) => t.name === newTech.name)) {
         onChange([...value, newTech]);
       }
       setQuery('');
@@ -38,13 +116,13 @@ const TechStackInput: React.FC<TechStackInputProps> = ({ value, onChange, allTec
   };
 
   const removeTech = (techToRemove: TechStack) => {
-    onChange(value.filter(tech => tech.name !== techToRemove.name));
+    onChange(value.filter((tech: TechStack) => tech.name !== techToRemove.name));
   };
 
   return (
     <div className="space-y-2">
       <div className="flex flex-wrap gap-2 mb-2">
-        {value.map((tech) => (
+        {value.map((tech: TechStack) => (
           <span
             key={tech.name}
             className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 rounded-md text-sm"
@@ -64,7 +142,7 @@ const TechStackInput: React.FC<TechStackInputProps> = ({ value, onChange, allTec
         value={query}
         onChange={(newValue: string) => {
           const newTech = { name: newValue };
-          if (!value.find(t => t.name === newTech.name)) {
+          if (!value.find((t: TechStack) => t.name === newTech.name)) {
             onChange([...value, newTech]);
           }
           setQuery('');
@@ -148,50 +226,6 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
     );
   };
 
-  const handleTechStackAdd = (index: number) => {
-    onChange(
-      employments.map((item, i) =>
-        i === index
-          ? {
-              ...item,
-              techStack: [...(item.techStack || []), { name: '' } as TechStack],
-            }
-          : item
-      )
-    );
-  };
-
-  const handleTechStackRemove = (index: number, techIndex: number) => {
-    onChange(
-      employments.map((item, i) =>
-        i === index
-          ? {
-              ...item,
-              techStack: (item.techStack || []).filter((_, j) => j !== techIndex),
-            }
-          : item
-      )
-    );
-  };
-
-  const handleTechStackChange = (
-    index: number,
-    techIndex: number,
-    value: string
-  ) => {
-    onChange(
-      employments.map((item, i) =>
-        i === index
-          ? {
-              ...item,
-              techStack: (item.techStack || []).map((tech, j) =>
-                j === techIndex ? { ...tech, name: value } : tech
-              ),
-            }
-          : item
-      )
-    );
-  };
 
   const handleDetailAdd = (index: number) => {
     const newDetails = [...(employments[index].details || [])]
@@ -226,77 +260,77 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
     )
   }
 
-  const handleItemAdd = (detailIndex: number) => {
-    const newDetails = [...(employments[detailIndex].details || [])]
-    const detail = newDetails[detailIndex]
+  const handleItemAdd = (index: number) => {
+    const newDetails = [...(employments[index].details || [])]
+    const detail = newDetails[index]
     detail.items.push({
       text: '',
       subItems: []
     })
     onChange(
-      employments.map((item, i) =>
-        i === detailIndex ? { ...item, details: newDetails } : item
+      employments.map((employment, idx) =>
+        idx === index ? { ...employment, details: newDetails } : employment
       )
     )
   }
 
-  const handleItemChange = (detailIndex: number, itemIndex: number, item: WorkItem) => {
-    const newDetails = [...(employments[detailIndex].details || [])]
-    const detail = newDetails[detailIndex]
-    detail.items[itemIndex] = item
+  const handleItemChange = (index: number, itemIndex: number, field: keyof WorkItem, value: string) => {
+    const newDetails = [...(employments[index].details || [])]
+    const detail = newDetails[index]
+    detail.items[itemIndex] = { ...detail.items[itemIndex], [field]: value }
     onChange(
       employments.map((item, i) =>
-        i === detailIndex ? { ...item, details: newDetails } : item
+        i === index ? { ...item, details: newDetails } : item
       )
     )
   }
 
-  const handleItemRemove = (detailIndex: number, itemIndex: number) => {
-    const newDetails = [...(employments[detailIndex].details || [])]
-    const detail = newDetails[detailIndex]
+  const handleItemRemove = (index: number, itemIndex: number) => {
+    const newDetails = [...(employments[index].details || [])]
+    const detail = newDetails[index]
     detail.items.splice(itemIndex, 1)
     onChange(
       employments.map((item, i) =>
-        i === detailIndex ? { ...item, details: newDetails } : item
+        i === index ? { ...item, details: newDetails } : item
       )
     )
   }
 
-  const handleSubItemAdd = (detailIndex: number, itemIndex: number) => {
-    const newDetails = [...(employments[detailIndex].details || [])]
-    const detail = newDetails[detailIndex]
+  const handleSubItemAdd = (index: number, itemIndex: number) => {
+    const newDetails = [...(employments[index].details || [])]
+    const detail = newDetails[index]
     const item = detail.items[itemIndex]
     if (!item.subItems) item.subItems = []
     item.subItems.push('')
     onChange(
       employments.map((item, i) =>
-        i === detailIndex ? { ...item, details: newDetails } : item
+        i === index ? { ...item, details: newDetails } : item
       )
     )
   }
 
-  const handleSubItemChange = (detailIndex: number, itemIndex: number, subItemIndex: number, value: string) => {
-    const newDetails = [...(employments[detailIndex].details || [])]
-    const detail = newDetails[detailIndex]
+  const handleSubItemChange = (index: number, itemIndex: number, subItemIndex: number, value: string) => {
+    const newDetails = [...(employments[index].details || [])]
+    const detail = newDetails[index]
     const item = detail.items[itemIndex]
     if (!item.subItems) item.subItems = []
     item.subItems[subItemIndex] = value
     onChange(
       employments.map((item, i) =>
-        i === detailIndex ? { ...item, details: newDetails } : item
+        i === index ? { ...item, details: newDetails } : item
       )
     )
   }
 
-  const handleSubItemRemove = (detailIndex: number, itemIndex: number, subItemIndex: number) => {
-    const newDetails = [...(employments[detailIndex].details || [])]
-    const detail = newDetails[detailIndex]
+  const handleSubItemRemove = (index: number, itemIndex: number, subItemIndex: number) => {
+    const newDetails = [...(employments[index].details || [])]
+    const detail = newDetails[index]
     const item = detail.items[itemIndex]
     if (!item.subItems) return
     item.subItems.splice(subItemIndex, 1)
     onChange(
       employments.map((item, i) =>
-        i === detailIndex ? { ...item, details: newDetails } : item
+        i === index ? { ...item, details: newDetails } : item
       )
     )
   }
@@ -324,22 +358,20 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     회사명
                   </label>
-                  <input
-                    type="text"
+                  <TextInput
                     value={employment.company || ''}
                     onChange={(e) => handleChange(index, 'company', e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    placeholder="회사명을 입력하세요"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     직위
                   </label>
-                  <input
-                    type="text"
+                  <TextInput
                     value={employment.position || ''}
                     onChange={(e) => handleChange(index, 'position', e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    placeholder="직위를 입력하세요"
                   />
                 </div>
               </div>
@@ -350,16 +382,14 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     시작일
                   </label>
-                  <input
-                    type="text"
+                  <DateInput
                     value={employment.period?.start || ''}
-                    onChange={(e) =>
+                    onChange={(value) =>
                       handleChange(index, 'period', {
                         ...(employment.period || {}),
-                        start: e.target.value,
+                        start: value,
                       })
                     }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                     placeholder="YYYY.MM"
                   />
                 </div>
@@ -367,16 +397,14 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     종료일
                   </label>
-                  <input
-                    type="text"
+                  <DateInput
                     value={employment.period?.end || ''}
-                    onChange={(e) =>
+                    onChange={(value) =>
                       handleChange(index, 'period', {
                         ...(employment.period || {}),
-                        end: e.target.value,
+                        end: value,
                       })
                     }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                     placeholder="YYYY.MM"
                   />
                 </div>
@@ -426,12 +454,10 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
                 <div key={detailIndex} className="relative bg-gray-50 rounded-lg p-4 space-y-4">
                   {/* Detail Title */}
                   <div className="flex gap-2">
-                    <input
-                      type="text"
+                    <TextInput
                       value={detail.title}
                       onChange={(e) => handleDetailChange(index, { ...detail, title: e.target.value })}
                       placeholder="업무 제목"
-                      className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                     />
                     <Button
                       onClick={() => handleDetailRemove(index)}
@@ -446,51 +472,53 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
                   <div className="space-y-2 pl-4">
                     {detail.items.map((item, itemIndex) => (
                       <div key={itemIndex} className="space-y-2">
-                        <div className="flex gap-2 items-start">
-                          <span className="mt-2">•</span>
-                          <textarea
-                            value={item.text}
-                            onChange={(e) => handleItemChange(index, itemIndex, { ...item, text: e.target.value })}
-                            placeholder="업무 내용"
-                            className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm min-h-[2.5rem]"
-                          />
-                          <div className="space-x-2">
-                            <Button
-                              onClick={() => handleSubItemAdd(index, itemIndex)}
-                              variant="secondary"
-                              size="sm"
-                            >
-                              + 세부항목
-                            </Button>
-                            <Button
-                              onClick={() => handleItemRemove(index, itemIndex)}
-                              variant="ghost"
-                              size="sm"
-                            >
-                              삭제
-                            </Button>
+                        <div className="flex items-start gap-2">
+                          <div className="flex-1">
+                            <TextArea
+                              value={item.text}
+                              onChange={(e) => handleItemChange(index, itemIndex, 'text', e.target.value)}
+                              placeholder="주요 업무 내용을 입력하세요"
+                              className="min-h-[60px]"
+                            />
                           </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleItemRemove(index, itemIndex)}
+                          >
+                            삭제
+                          </Button>
                         </div>
 
                         {/* Sub Items */}
-                        {item.subItems?.map((subItem, subItemIndex) => (
-                          <div key={subItemIndex} className="flex gap-2 items-start pl-6">
-                            <span className="mt-2">◦</span>
-                            <textarea
-                              value={subItem}
-                              onChange={(e) => handleSubItemChange(index, itemIndex, subItemIndex, e.target.value)}
-                              placeholder="세부 업무 내용"
-                              className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm min-h-[2.5rem]"
-                            />
-                            <Button
-                              onClick={() => handleSubItemRemove(index, itemIndex, subItemIndex)}
-                              variant="ghost"
-                              size="sm"
-                            >
-                              삭제
-                            </Button>
-                          </div>
-                        ))}
+                        <div className="pl-4 space-y-2">
+                          {item.subItems?.map((subItem, subIndex) => (
+                            <div key={subIndex} className="flex items-start gap-2">
+                              <div className="flex-1">
+                                <TextArea
+                                  value={subItem}
+                                  onChange={(e) => handleSubItemChange(index, itemIndex, subIndex, e.target.value)}
+                                  placeholder="세부 업무 내용을 입력하세요"
+                                  className="min-h-[60px]"
+                                />
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleSubItemRemove(index, itemIndex, subIndex)}
+                              >
+                                삭제
+                              </Button>
+                            </div>
+                          ))}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleSubItemAdd(index, itemIndex)}
+                          >
+                            + 세부 업무 추가
+                          </Button>
+                        </div>
                       </div>
                     ))}
 

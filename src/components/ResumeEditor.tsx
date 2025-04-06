@@ -19,7 +19,7 @@ interface PreviewAreaProps {
 }
 
 const EditArea = ({ data, handleProfileChange, handleEmploymentChange, handleEducationChange }: EditAreaProps) => (
-  <div className="flex-1 space-y-6 bg-white shadow-lg rounded-lg p-4">
+  <div className="space-y-6 bg-white shadow-lg rounded-lg p-4">
     <ProfileEditor
       data={data.profile}
       onChange={handleProfileChange}

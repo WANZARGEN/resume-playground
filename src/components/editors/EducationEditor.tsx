@@ -1,6 +1,8 @@
 import type { Education, Activity } from '../../types/resume';
 import {  TrashIcon } from '@heroicons/react/24/outline';
 import { Button } from '../common/Button';
+import { TextInput } from '../common/TextInput';
+import { TextArea } from '../common/TextArea';
 
 interface EducationEditorProps {
   data?: Education[];
@@ -161,18 +163,10 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         제목
                       </label>
-                      <input
-                        type="text"
-                        value={activity.title}
-                        onChange={(e) =>
-                          handleActivityChange(
-                            educationIndex,
-                            activityIndex,
-                            'title',
-                            e.target.value
-                          )
-                        }
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      <TextInput
+                        value={activity.title || ''}
+                        onChange={(e) => handleActivityChange(educationIndex, activityIndex, 'title', e.target.value)}
+                        placeholder="활동 제목"
                       />
                     </div>
 
@@ -181,18 +175,10 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         URL
                       </label>
-                      <input
-                        type="text"
+                      <TextInput
                         value={activity.url || ''}
-                        onChange={(e) =>
-                          handleActivityChange(
-                            educationIndex,
-                            activityIndex,
-                            'url',
-                            e.target.value
-                          )
-                        }
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        onChange={(e) => handleActivityChange(educationIndex, activityIndex, 'url', e.target.value)}
+                        placeholder="URL"
                       />
                     </div>
 
@@ -201,18 +187,10 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         설명
                       </label>
-                      <textarea
+                      <TextArea
                         value={activity.description || ''}
-                        onChange={(e) =>
-                          handleActivityChange(
-                            educationIndex,
-                            activityIndex,
-                            'description',
-                            e.target.value
-                          )
-                        }
-                        rows={2}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        onChange={(e) => handleActivityChange(educationIndex, activityIndex, 'description', e.target.value)}
+                        placeholder="활동 설명"
                       />
                     </div>
                   </div>
