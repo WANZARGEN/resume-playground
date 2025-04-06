@@ -1,4 +1,5 @@
 import { Employment, TechStack, WorkDetail, WorkItem } from '../../types/resume';
+import { Button } from '../common/Button';
 
 interface EmploymentEditorProps {
   data?: Employment[];
@@ -263,13 +264,13 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
               <label className="block text-sm font-medium text-gray-700">
                 기술 스택
               </label>
-              <button
-                type="button"
+              <Button
                 onClick={() => handleTechStackAdd(index)}
-                className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                variant="secondary"
+                size="sm"
               >
-                추가
-              </button>
+                기술 스택 추가
+              </Button>
             </div>
             <div className="mt-2 space-y-2">
               {(employment.techStack || []).map((tech, techIndex) => (
@@ -283,13 +284,13 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     placeholder="기술명"
                   />
-                  <button
-                    type="button"
+                  <Button
                     onClick={() => handleTechStackRemove(index, techIndex)}
-                    className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                    variant="ghost"
+                    size="sm"
                   >
                     삭제
-                  </button>
+                  </Button>
                 </div>
               ))}
             </div>
@@ -299,13 +300,13 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-medium">주요 업무</h3>
-              <button
-                type="button"
+              <Button
                 onClick={() => handleDetailAdd(index)}
-                className="px-2 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded"
+                variant="secondary"
+                size="sm"
               >
-                + 업무 추가
-              </button>
+                업무 내용 추가
+              </Button>
             </div>
 
             {employment.details?.map((detail, detailIndex) => (
@@ -319,13 +320,13 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
                     placeholder="업무 제목"
                     className="flex-1 px-2 py-1 border rounded"
                   />
-                  <button
-                    type="button"
+                  <Button
                     onClick={() => handleDetailRemove(index)}
-                    className="px-2 py-1 text-sm bg-red-100 hover:bg-red-200 rounded"
+                    variant="ghost"
+                    size="sm"
                   >
                     삭제
-                  </button>
+                  </Button>
                 </div>
 
                 {/* Items */}
@@ -341,20 +342,20 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
                           className="flex-1 px-2 py-1 border rounded min-h-[2.5rem]"
                         />
                         <div className="space-x-2">
-                          <button
-                            type="button"
+                          <Button
                             onClick={() => handleSubItemAdd(index, itemIndex)}
-                            className="px-2 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded"
+                            variant="secondary"
+                            size="sm"
                           >
                             + 세부항목
-                          </button>
-                          <button
-                            type="button"
+                          </Button>
+                          <Button
                             onClick={() => handleItemRemove(index, itemIndex)}
-                            className="px-2 py-1 text-sm bg-red-100 hover:bg-red-200 rounded"
+                            variant="ghost"
+                            size="sm"
                           >
                             삭제
-                          </button>
+                          </Button>
                         </div>
                       </div>
 
@@ -368,25 +369,25 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
                             placeholder="세부 업무 내용"
                             className="flex-1 px-2 py-1 border rounded min-h-[2.5rem]"
                           />
-                          <button
-                            type="button"
+                          <Button
                             onClick={() => handleSubItemRemove(index, itemIndex, subItemIndex)}
-                            className="px-2 py-1 text-sm bg-red-100 hover:bg-red-200 rounded"
+                            variant="ghost"
+                            size="sm"
                           >
                             삭제
-                          </button>
+                          </Button>
                         </div>
                       ))}
                     </div>
                   ))}
 
-                  <button
-                    type="button"
+                  <Button
                     onClick={() => handleItemAdd(index)}
-                    className="ml-4 px-2 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded"
+                    variant="secondary"
+                    size="sm"
                   >
                     + 항목 추가
-                  </button>
+                  </Button>
                 </div>
               </div>
             ))}
@@ -394,13 +395,13 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
 
           {/* 삭제 버튼 */}
           <div className="flex justify-end">
-            <button
-              type="button"
+            <Button
               onClick={() => handleRemove(index)}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              variant="ghost"
+              size="sm"
             >
               회사 삭제
-            </button>
+            </Button>
           </div>
 
           {index < employments.length - 1 && <hr className="border-gray-200" />}
@@ -409,13 +410,14 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
 
       {/* 회사 추가 버튼 */}
       <div className="flex justify-center">
-        <button
-          type="button"
+        <Button
           onClick={handleAdd}
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          variant="secondary"
+          size="sm"
+          className="mt-4"
         >
-          회사 추가
-        </button>
+          경력 추가
+        </Button>
       </div>
     </div>
   );

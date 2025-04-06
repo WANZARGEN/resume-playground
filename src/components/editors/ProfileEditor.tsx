@@ -230,13 +230,22 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange }) 
                 placeholder={contact.type === 'email' ? '이메일 주소' : 'GitHub 사용자명'}
                 className="flex-1"
               />
-              <Button onClick={() => removeContact(index)} variant="danger">
+              <Button 
+                onClick={() => removeContact(index)} 
+                variant="ghost" 
+                size="sm"
+              >
                 삭제
               </Button>
             </div>
           ))}
         </div>
-        <Button onClick={addContact} className="mt-4">
+        <Button 
+          onClick={addContact} 
+          variant="secondary" 
+          size="sm" 
+          className="mt-4"
+        >
           연락처 추가
         </Button>
       </div>
@@ -267,7 +276,8 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange }) 
                 <Button
                   onClick={() => removeParagraph(index)}
                   disabled={(profile.paragraphs?.length || 0) <= 1}
-                  variant="danger"
+                  variant="ghost"
+                  size="sm"
                 >
                   단락 삭제
                 </Button>
@@ -275,7 +285,12 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange }) 
             </div>
           ))}
         </div>
-        <Button onClick={addParagraph} className="mt-4">
+        <Button 
+          onClick={addParagraph} 
+          variant="secondary" 
+          size="sm" 
+          className="mt-4"
+        >
           단락 추가
         </Button>
       </div>

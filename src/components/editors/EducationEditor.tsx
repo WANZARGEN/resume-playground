@@ -1,5 +1,6 @@
 import type { Education, Activity } from '../../types/resume';
 import { PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { Button } from '../common/Button';
 
 interface EducationEditorProps {
   data?: Education[];
@@ -80,14 +81,14 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">교육 및 활동</h2>
-        <button
-          type="button"
+        <Button
           onClick={handleAddEducation}
-          className="flex items-center gap-1 px-3 py-1 text-sm rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100"
+          variant="secondary"
+          size="sm"
+          className="mt-4"
         >
-          <PlusIcon className="w-4 h-4" />
-          <span>섹션 추가</span>
-        </button>
+          섹션 추가
+        </Button>
       </div>
 
       {education.map((education, educationIndex) => (
@@ -114,13 +115,13 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
               </div>
             </div>
 
-            <button
-              type="button"
+            <Button
               onClick={() => handleRemoveEducation(educationIndex)}
-              className="ml-4 p-1 text-gray-400 hover:text-gray-600"
+              variant="ghost"
+              size="sm"
             >
-              <TrashIcon className="w-5 h-5" />
-            </button>
+              삭제
+            </Button>
           </div>
 
           {/* 활동 목록 */}
@@ -135,14 +136,13 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
                   ? '학력 목록'
                   : '어학 성적'}
               </label>
-              <button
-                type="button"
+              <Button
                 onClick={() => handleAddActivity(educationIndex)}
-                className="flex items-center gap-1 px-2 py-1 text-xs rounded-lg bg-gray-50 text-gray-700 hover:bg-gray-100"
+                variant="secondary"
+                size="sm"
               >
-                <PlusIcon className="w-3 h-3" />
-                <span>추가</span>
-              </button>
+                항목 추가
+              </Button>
             </div>
             <div className="space-y-4">
               {education.items.map((activity, activityIndex) => (
