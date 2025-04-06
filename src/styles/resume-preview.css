@@ -133,107 +133,80 @@
   list-style: circle;
 }
 
-/* 프린트 스타일 */
-@media print {
-  .resume-preview {
-    @apply shadow-none;
-  }
-
-  .text-link {
-    @apply no-underline;
-  }
-
-  .name-card {
-    @apply flex items-center p-0 my-12 gap-10 text-left bg-white text-gray-900 shadow-none;
-  }
-
-  .name-card .profile-photo {
-    @apply m-0 grayscale w-26 h-26 shadow-lg;
-  }
-
-  .name-card .info {
-    @apply flex flex-col;
-  }
-
-  .name-card .info .name {
-    @apply mt-0;
-  }
-
-  .name-card .info .position {
-    @apply block text-xl text-gray-700 mb-3;
-  }
-
-  .name-card .info .info-divider {
-    @apply hidden;
-  }
-
-  .name-card .info .contact-list {
-    @apply justify-start gap-3 text-gray-500;
-  }
-
-  .name-card .info .contact-list img {
-    @apply w-4 h-4 invert-0;
-  }
-
-  .name-card .info .contact-list .contact-divider {
-    @apply block;
-  }
+/* PDF 모드 스타일 */
+:root.pdf-mode {
+  background-color: #f5f5f5;
 }
 
-/* PDF 미리보기 스타일 */
-.print-preview {
-  background-color: #f5f5f5;
+:root.pdf-mode body {
   min-height: 100vh;
   padding: 2rem;
 }
 
-.print-preview .resume-preview {
-  max-width: 210mm;
+:root.pdf-mode .resume-preview {
+  width: 210mm;
+  min-height: 297mm;
   margin: 0 auto;
   background-color: white;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 0;
 }
 
-.pdf-preview {
-  @apply shadow-none;
+:root.pdf-mode .name-card {
+  @apply flex items-center p-12 gap-10 text-left bg-white text-gray-900 shadow-none rounded-none;
 }
 
-.pdf-preview .text-link {
-  @apply no-underline;
+:root.pdf-mode .name-card .profile-photo {
+  @apply m-0 grayscale w-32 h-32 shadow-lg rounded-full object-cover flex-shrink-0;
 }
 
-.pdf-preview .name-card {
-  @apply flex items-center p-0 my-12 gap-10 text-left bg-white text-gray-900 shadow-none;
+:root.pdf-mode .name-card .info {
+  @apply flex flex-col flex-1;
 }
 
-.pdf-preview .name-card .profile-photo {
-  @apply m-0 grayscale w-26 h-26 shadow-lg;
-}
-
-.pdf-preview .name-card .info {
-  @apply flex flex-col;
-}
-
-.pdf-preview .name-card .info .name {
+:root.pdf-mode .name-card .info .name {
   @apply mt-0;
 }
 
-.pdf-preview .name-card .info .position {
+:root.pdf-mode .name-card .info .position {
   @apply block text-xl text-gray-700 mb-3;
 }
 
-.pdf-preview .name-card .info .info-divider {
+:root.pdf-mode .name-card .info .info-divider {
   @apply hidden;
 }
 
-.pdf-preview .name-card .info .contact-list {
+:root.pdf-mode .name-card .info .contact-list {
   @apply justify-start gap-3 text-gray-500;
 }
 
-.pdf-preview .name-card .info .contact-list img {
+:root.pdf-mode .name-card .info .contact-list img {
   @apply w-4 h-4 invert-0;
 }
 
-.pdf-preview .name-card .info .contact-list .contact-divider {
+:root.pdf-mode .name-card .info .contact-list .contact-divider {
   @apply block;
+}
+
+/* 프린트 스타일 */
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  body {
+    margin: 0;
+  }
+
+  .resume-preview {
+    width: 100%;
+    min-height: 100vh;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .text-link {
+    text-decoration: none;
+  }
 } 

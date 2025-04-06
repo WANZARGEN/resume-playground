@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState } from 'react'
 import { Resume } from '../types/resume'
 
 export type ViewMode = 'edit-only' | 'split' | 'preview-only'
-export type ResumeFormat = { id: 'json' | 'html'; name: string }
+export type ResumeFormat = { id: 'json' | 'html' | 'pdf'; name: string }
 
 export type EditorUIContextType = {
   activeTab: ViewMode
@@ -17,6 +17,7 @@ export type EditorUIContextType = {
 
 export const resumeFormats: ResumeFormat[] = [
   { id: 'html', name: 'HTML' },
+  { id: 'pdf', name: 'PDF' },
   { id: 'json', name: 'JSON' }
 ]
 

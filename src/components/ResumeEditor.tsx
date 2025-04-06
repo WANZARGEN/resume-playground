@@ -35,11 +35,15 @@ const EditArea = ({ data, handleProfileChange, handleEmploymentChange, handleEdu
   </div>
 )
 
-const PreviewArea = ({ data, fullWidth = false }: PreviewAreaProps) => (
-  <div className={`overflow-hidden ${fullWidth ? 'min-w-[1000px] mx-auto' : 'min-w-[800px]'}`}>
-    <ResumePreview data={data} />
-  </div>
-)
+const PreviewArea = ({ data, fullWidth = false }: PreviewAreaProps) => {
+  const { selectedFormat } = useEditorUI()
+  
+  return (
+    <div className={`overflow-hidden ${fullWidth ? 'min-w-[1000px] mx-auto' : 'min-w-[800px]'}`}>
+      <ResumePreview data={data} format={selectedFormat.id} />
+    </div>
+  )
+}
 
 export default function ResumeEditor() {
   const { activeTab } = useEditorUI()

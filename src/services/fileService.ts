@@ -104,7 +104,7 @@ export class FileService {
     }
   }
 
-  async downloadAs(resume: Resume, format: 'json' | 'html'): Promise<void> {
+  async downloadAs(resume: Resume, format: 'json' | 'html' | 'pdf'): Promise<void> {
     const content = format === 'json'
       ? JSON.stringify(resume, null, 2)
       : await convertResumeToHtml(resume)
@@ -117,7 +117,13 @@ export class FileService {
     const a = document.createElement('a')
     a.href = url
     a.download = `resume.${format}`
-    a.click()
+
+    if (format === 'pdf') {
+      window.print()
+    } else {
+      a.click()
+    }
+    
     URL.revokeObjectURL(url)
   }
 
