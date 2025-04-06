@@ -1,8 +1,7 @@
 import { Employment, TechStack, WorkDetail, WorkItem } from '../../types/resume';
 import { Button } from '../common/Button';
-import { Combobox, Listbox, Transition } from '@headlessui/react';
-import { useState, useMemo, Fragment } from 'react';
-import { ChevronUpDownIcon } from '@heroicons/react/20/solid';
+import { Combobox } from '@headlessui/react';
+import { useState, useMemo } from 'react';
 import { TextInput } from '../common/TextInput';
 import { TextArea } from '../common/TextArea';
 import { Select } from '../common/Select';
@@ -213,12 +212,12 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
     )
   }
 
-  const handleDetailRemove = (index: number) => {
-    const newDetails = [...(employments[index].details || [])]
-    newDetails.splice(index, 1)
+  const handleDetailRemove = (employmentIndex: number, detailIndex: number) => {
+    const newDetails = [...(employments[employmentIndex].details || [])]
+    newDetails.splice(detailIndex, 1)
     onChange(
       employments.map((item, i) =>
-        i === index ? { ...item, details: newDetails } : item
+        i === employmentIndex ? { ...item, details: newDetails } : item
       )
     )
   }
@@ -259,15 +258,21 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
     )
   }
 
-  const handleSubItemAdd = (index: number, itemIndex: number) => {
-    const newDetails = [...(employments[index].details || [])]
-    const detail = newDetails[index]
+  const handleSubItemAdd = (index: number, itemIndex: number, detailIndex: number) => {
+    const employment = employments[index]
+    if (!employment.details) return
+
+    const newDetails = [...employment.details]
+    const detail = newDetails[detailIndex]
+    if (!detail || !detail.items[itemIndex]) return
+
     const item = detail.items[itemIndex]
     if (!item.subItems) item.subItems = []
     item.subItems.push('')
+
     onChange(
-      employments.map((item, i) =>
-        i === index ? { ...item, details: newDetails } : item
+      employments.map((emp, i) =>
+        i === index ? { ...emp, details: newDetails } : emp
       )
     )
   }
@@ -417,7 +422,7 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
                 <div key={detailIndex} className="relative bg-gray-50 rounded-lg p-4 space-y-4">
                   {/* Detail Title */}
                   <Button
-                    onClick={() => handleDetailRemove(index)}
+                    onClick={() => handleDetailRemove(index, detailIndex)}
                     variant="ghost"
                     className="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-600"
                     size="sm"
@@ -484,7 +489,7 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => handleSubItemAdd(index, itemIndex)}
+                            onClick={() => handleSubItemAdd(index, itemIndex, detailIndex)}
                           >
                             + 세부 업무 추가
                           </Button>
