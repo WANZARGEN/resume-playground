@@ -111,10 +111,19 @@ export default function ResumePreview({ data }: Props) {
                                 {detail.description && (
                                   <p className="text-gray-600">{detail.description}</p>
                                 )}
-                                {detail.details?.length && (
+                                {detail.items?.length && (
                                   <ul className="work-list">
-                                    {detail.details.map((item, itemIndex) => (
-                                      <li key={itemIndex}>{item}</li>
+                                    {detail.items.map((item, itemIndex) => (
+                                      <li key={itemIndex}>
+                                        {item}
+                                        {detail.subItems?.[itemIndex]?.length && (
+                                          <ul className="work-list-nested">
+                                            {detail.subItems[itemIndex].map((subItem, subItemIndex) => (
+                                              <li key={subItemIndex}>{subItem}</li>
+                                            ))}
+                                          </ul>
+                                        )}
+                                      </li>
                                     ))}
                                   </ul>
                                 )}

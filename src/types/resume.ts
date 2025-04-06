@@ -31,7 +31,8 @@ export interface TechStack {
 export interface WorkDetail {
   title?: string
   description?: string
-  details?: string[]
+  items?: string[]
+  subItems?: { [key: number]: string[] }
 }
 
 export interface Employment {

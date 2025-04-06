@@ -41,7 +41,7 @@ export default function EmploymentEditor({ data, onChange }: Props) {
         i === index
           ? {
               ...item,
-              techStack: [...item.techStack, { name: '' } as TechStack],
+              techStack: [...(item.techStack || []), { name: '' } as TechStack],
             }
           : item
       )
@@ -54,7 +54,7 @@ export default function EmploymentEditor({ data, onChange }: Props) {
         i === index
           ? {
               ...item,
-              techStack: item.techStack.filter((_, j) => j !== techIndex),
+              techStack: (item.techStack || []).filter((_, j) => j !== techIndex),
             }
           : item
       )
@@ -71,7 +71,7 @@ export default function EmploymentEditor({ data, onChange }: Props) {
         i === index
           ? {
               ...item,
-              techStack: item.techStack.map((tech, j) =>
+              techStack: (item.techStack || []).map((tech, j) =>
                 j === techIndex ? { ...tech, name: value } : tech
               ),
             }
@@ -87,10 +87,12 @@ export default function EmploymentEditor({ data, onChange }: Props) {
           ? {
               ...item,
               details: [
-                ...item.details,
+                ...(item.details || []),
                 {
                   title: '',
                   description: '',
+                  items: [],
+                  subItems: {},
                 } as WorkDetail,
               ],
             }
@@ -105,7 +107,7 @@ export default function EmploymentEditor({ data, onChange }: Props) {
         i === index
           ? {
               ...item,
-              details: item.details.filter((_, j) => j !== detailIndex),
+              details: (item.details || []).filter((_, j) => j !== detailIndex),
             }
           : item
       )
@@ -116,6 +118,46 @@ export default function EmploymentEditor({ data, onChange }: Props) {
     index: number,
     detailIndex: number,
     field: keyof WorkDetail,
+    value: any
+  ) => {
+    onChange(
+      data.map((item, i) =>
+        i === index
+          ? {
+              ...item,
+              details: (item.details || []).map((detail, j) =>
+                j === detailIndex ? { ...detail, [field]: value } : detail
+              ),
+            }
+          : item
+      )
+    );
+  };
+
+  const handleItemAdd = (index: number, detailIndex: number) => {
+    onChange(
+      data.map((item, i) =>
+        i === index
+          ? {
+              ...item,
+              details: item.details.map((detail, j) =>
+                j === detailIndex
+                  ? {
+                      ...detail,
+                      items: [...(detail.items || []), ''],
+                    }
+                  : detail
+              ),
+            }
+          : item
+      )
+    );
+  };
+
+  const handleItemChange = (
+    index: number,
+    detailIndex: number,
+    itemIndex: number,
     value: string
   ) => {
     onChange(
@@ -124,7 +166,75 @@ export default function EmploymentEditor({ data, onChange }: Props) {
           ? {
               ...item,
               details: item.details.map((detail, j) =>
-                j === detailIndex ? { ...detail, [field]: value } : detail
+                j === detailIndex
+                  ? {
+                      ...detail,
+                      items: detail.items?.map((item, k) =>
+                        k === itemIndex ? value : item
+                      ),
+                    }
+                  : detail
+              ),
+            }
+          : item
+      )
+    );
+  };
+
+  const handleSubItemAdd = (
+    index: number,
+    detailIndex: number,
+    itemIndex: number
+  ) => {
+    onChange(
+      data.map((item, i) =>
+        i === index
+          ? {
+              ...item,
+              details: item.details.map((detail, j) =>
+                j === detailIndex
+                  ? {
+                      ...detail,
+                      subItems: {
+                        ...(detail.subItems || {}),
+                        [itemIndex]: [
+                          ...(detail.subItems?.[itemIndex] || []),
+                          '',
+                        ],
+                      },
+                    }
+                  : detail
+              ),
+            }
+          : item
+      )
+    );
+  };
+
+  const handleSubItemChange = (
+    index: number,
+    detailIndex: number,
+    itemIndex: number,
+    subItemIndex: number,
+    value: string
+  ) => {
+    onChange(
+      data.map((item, i) =>
+        i === index
+          ? {
+              ...item,
+              details: item.details.map((detail, j) =>
+                j === detailIndex
+                  ? {
+                      ...detail,
+                      subItems: {
+                        ...(detail.subItems || {}),
+                        [itemIndex]: detail.subItems?.[itemIndex]?.map(
+                          (subItem, k) => (k === subItemIndex ? value : subItem)
+                        ) || [],
+                      },
+                    }
+                  : detail
               ),
             }
           : item
@@ -144,7 +254,7 @@ export default function EmploymentEditor({ data, onChange }: Props) {
               </label>
               <input
                 type="text"
-                value={employment.company}
+                value={employment.company || ''}
                 onChange={(e) => handleChange(index, 'company', e.target.value)}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               />
@@ -155,7 +265,7 @@ export default function EmploymentEditor({ data, onChange }: Props) {
               </label>
               <input
                 type="text"
-                value={employment.position}
+                value={employment.position || ''}
                 onChange={(e) => handleChange(index, 'position', e.target.value)}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               />
@@ -170,10 +280,10 @@ export default function EmploymentEditor({ data, onChange }: Props) {
               </label>
               <input
                 type="text"
-                value={employment.period.start}
+                value={employment.period?.start || ''}
                 onChange={(e) =>
                   handleChange(index, 'period', {
-                    ...employment.period,
+                    ...(employment.period || {}),
                     start: e.target.value,
                   })
                 }
@@ -187,10 +297,10 @@ export default function EmploymentEditor({ data, onChange }: Props) {
               </label>
               <input
                 type="text"
-                value={employment.period.end}
+                value={employment.period?.end || ''}
                 onChange={(e) =>
                   handleChange(index, 'period', {
-                    ...employment.period,
+                    ...(employment.period || {}),
                     end: e.target.value,
                   })
                 }
@@ -215,11 +325,11 @@ export default function EmploymentEditor({ data, onChange }: Props) {
               </button>
             </div>
             <div className="mt-2 space-y-2">
-              {employment.techStack.map((tech, techIndex) => (
+              {(employment.techStack || []).map((tech, techIndex) => (
                 <div key={techIndex} className="flex gap-2">
                   <input
                     type="text"
-                    value={tech.name}
+                    value={tech.name || ''}
                     onChange={(e) =>
                       handleTechStackChange(index, techIndex, e.target.value)
                     }
@@ -253,12 +363,12 @@ export default function EmploymentEditor({ data, onChange }: Props) {
               </button>
             </div>
             <div className="mt-2 space-y-4">
-              {employment.details.map((detail, detailIndex) => (
-                <div key={detailIndex} className="space-y-2">
+              {(employment.details || []).map((detail, detailIndex) => (
+                <div key={detailIndex} className="space-y-2 p-4 border rounded-lg bg-white shadow-sm">
                   <div className="flex gap-2">
                     <input
                       type="text"
-                      value={detail.title}
+                      value={detail.title || ''}
                       onChange={(e) =>
                         handleDetailChange(
                           index,
@@ -279,7 +389,7 @@ export default function EmploymentEditor({ data, onChange }: Props) {
                     </button>
                   </div>
                   <textarea
-                    value={detail.description}
+                    value={detail.description || ''}
                     onChange={(e) =>
                       handleDetailChange(
                         index,
@@ -288,10 +398,74 @@ export default function EmploymentEditor({ data, onChange }: Props) {
                         e.target.value
                       )
                     }
-                    rows={3}
+                    rows={2}
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     placeholder="업무 설명"
                   />
+                  <div className="space-y-2">
+                    {(detail.items || []).map((item, itemIndex) => (
+                      <div key={itemIndex} className="space-y-2">
+                        <div className="flex gap-2 items-start">
+                          <span className="mt-2.5">•</span>
+                          <textarea
+                            value={item}
+                            onChange={(e) =>
+                              handleItemChange(
+                                index,
+                                detailIndex,
+                                itemIndex,
+                                e.target.value
+                              )
+                            }
+                            rows={1}
+                            className="block flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            placeholder="주요 업무 내용"
+                          />
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleSubItemAdd(index, detailIndex, itemIndex)
+                            }
+                            className="mt-1 inline-flex items-center px-2 py-1 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                          >
+                            +
+                          </button>
+                        </div>
+                        {detail.subItems?.[itemIndex]?.map(
+                          (subItem, subItemIndex) => (
+                            <div
+                              key={subItemIndex}
+                              className="flex gap-2 items-start ml-6"
+                            >
+                              <span className="mt-2.5">◦</span>
+                              <textarea
+                                value={subItem}
+                                onChange={(e) =>
+                                  handleSubItemChange(
+                                    index,
+                                    detailIndex,
+                                    itemIndex,
+                                    subItemIndex,
+                                    e.target.value
+                                  )
+                                }
+                                rows={1}
+                                className="block flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                placeholder="세부 업무 내용"
+                              />
+                            </div>
+                          )
+                        )}
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => handleItemAdd(index, detailIndex)}
+                      className="mt-2 inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
+                      항목 추가
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
