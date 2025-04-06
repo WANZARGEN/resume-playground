@@ -1,15 +1,11 @@
 import { EditorUIProvider } from './contexts/EditorUIContext'
 import { FileProvider } from './contexts/FileContext'
-import { ResumeDataProvider, useResumeData } from './contexts/ResumeDataContext'
+import { ResumeDataProvider } from './contexts/ResumeDataContext'
 import ResumeEditor from './components/ResumeEditor'
 import ResumeHeader from './components/ResumeHeader'
-import { useAutoSave } from './hooks/useAutoSave'
 import './App.css'
 
-function App() {
-  const { data } = useResumeData()
-  useAutoSave(data)
-
+function AppContent() {
   return (
     <div className="min-h-screen bg-gray-50">
       <ResumeHeader />
@@ -20,16 +16,16 @@ function App() {
   )
 }
 
-function AppWithProviders() {
+function App() {
   return (
     <EditorUIProvider>
       <FileProvider>
         <ResumeDataProvider>
-          <App />
+          <AppContent />
         </ResumeDataProvider>
       </FileProvider>
     </EditorUIProvider>
   )
 }
 
-export default AppWithProviders
+export default App
