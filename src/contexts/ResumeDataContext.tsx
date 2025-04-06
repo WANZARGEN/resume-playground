@@ -17,10 +17,6 @@ const initialData: Resume = {
 interface ResumeDataContextType {
   data: Resume
   setData: Dispatch<SetStateAction<Resume>>
-  saveDirectory: FileSystemDirectoryHandle | null
-  setSaveDirectory: (directory: FileSystemDirectoryHandle | null) => void
-  lastSaved: Date | null
-  setLastSaved: (date: Date | null) => void
 }
 
 const ResumeDataContext = createContext<ResumeDataContextType | null>(null)
@@ -31,18 +27,12 @@ interface Props {
 
 export function ResumeDataProvider({ children }: Props) {
   const [data, setData] = useState<Resume>(initialData)
-  const [saveDirectory, setSaveDirectory] = useState<FileSystemDirectoryHandle | null>(null)
-  const [lastSaved, setLastSaved] = useState<Date | null>(null)
 
   return (
     <ResumeDataContext.Provider
       value={{
         data,
         setData,
-        saveDirectory,
-        setSaveDirectory,
-        lastSaved,
-        setLastSaved,
       }}
     >
       {children}

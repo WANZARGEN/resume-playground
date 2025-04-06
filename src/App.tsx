@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
 import { EditorUIProvider } from './contexts/EditorUIContext'
+import { FileProvider } from './contexts/FileContext'
 import { ResumeDataProvider, useResumeData } from './contexts/ResumeDataContext'
 import ResumeEditor from './components/ResumeEditor'
 import ResumeHeader from './components/ResumeHeader'
-import { fileService } from './services/fileService'
 import { useAutoSave } from './hooks/useAutoSave'
 import './App.css'
 
@@ -24,9 +24,11 @@ function App() {
 function AppWithProviders() {
   return (
     <EditorUIProvider>
-      <ResumeDataProvider>
-        <App />
-      </ResumeDataProvider>
+      <FileProvider>
+        <ResumeDataProvider>
+          <App />
+        </ResumeDataProvider>
+      </FileProvider>
     </EditorUIProvider>
   )
 }
