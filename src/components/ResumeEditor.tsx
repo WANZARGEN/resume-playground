@@ -19,7 +19,7 @@ interface PreviewAreaProps {
 }
 
 const EditArea = ({ data, handleProfileChange, handleEmploymentChange, handleEducationChange }: EditAreaProps) => (
-  <div className="flex-1 space-y-6">
+  <div className="flex-1 space-y-6 bg-white shadow-lg rounded-lg p-4">
     <ProfileEditor
       data={data.profile}
       onChange={handleProfileChange}
@@ -51,7 +51,7 @@ export default function ResumeEditor() {
   } = useResumeActions()
 
   return (
-    <div className="max-w-[2400px] mx-auto px-8 py-6">
+    <div className="max-w-[2400px] mx-auto py-6">
       {activeTab === 'edit-only' && (
         <EditArea
           data={data}

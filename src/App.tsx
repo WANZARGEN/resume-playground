@@ -8,29 +8,15 @@ import { useAutoSave } from './hooks/useAutoSave'
 import './App.css'
 
 function App() {
-  const { data, saveDirectory, setSaveDirectory, setLastSaved } = useResumeData()
-
-  useEffect(() => {
-    const loadAutoSaveDirectory = async () => {
-      try {
-        const handle = await fileService.getAutoSaveDirectory()
-        setSaveDirectory(handle)
-      } catch (err) {
-        console.error('자동 저장 디렉토리를 불러오는데 실패했습니다:', err)
-      }
-    }
-    loadAutoSaveDirectory()
-  }, [setSaveDirectory])
-
-  useAutoSave(data, saveDirectory, {
-    onSave: () => setLastSaved(new Date()),
-    onError: (err) => console.error('자동 저장 중 오류가 발생했습니다:', err),
-  })
+  const { data } = useResumeData()
+  useAutoSave(data)
 
   return (
     <div className="min-h-screen bg-gray-50">
       <ResumeHeader />
-      <ResumeEditor />
+      <main className="max-w-[2400px] mx-auto p-8">
+        <ResumeEditor />
+      </main>
     </div>
   )
 }
