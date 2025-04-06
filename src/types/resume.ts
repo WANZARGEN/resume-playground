@@ -5,12 +5,22 @@ export interface Contact {
   icon?: string
 }
 
+export interface TextStyle {
+  type: 'normal' | 'emphasis' | 'accent' | 'highlight' | 'link'
+  text: string
+  href?: string
+}
+
+export interface Paragraph {
+  segments: TextStyle[]
+}
+
 export interface Profile {
   photo: string
   name: string
   position: string
-  contacts: string[]
-  introduction: string
+  contacts: Contact[]
+  paragraphs: Paragraph[]
 }
 
 export interface TechStack {
