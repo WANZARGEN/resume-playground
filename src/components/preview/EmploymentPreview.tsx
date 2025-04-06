@@ -49,26 +49,21 @@ export function EmploymentPreview({ employments }: Props) {
                   <div className="spec-content-container">
                     {employment.details.map((detail, detailIndex) => (
                       <div key={detailIndex}>
-                        {detail.title && <p className="work-header">{detail.title}</p>}
-                        {detail.description && (
-                          <p className="text-gray-600">{detail.description}</p>
-                        )}
-                        {detail.items?.length && (
-                          <ul className="work-list">
-                            {detail.items.map((item, itemIndex) => (
-                              <li key={itemIndex}>
-                                {item}
-                                {detail.subItems?.[itemIndex]?.length && (
-                                  <ul className="work-list-nested">
-                                    {detail.subItems[itemIndex].map((subItem, subItemIndex) => (
-                                      <li key={subItemIndex}>{subItem}</li>
-                                    ))}
-                                  </ul>
-                                )}
-                              </li>
-                            ))}
-                          </ul>
-                        )}
+                        <p className="work-header">{detail.title}</p>
+                        <ul className="work-list">
+                          {detail.items.map((item, itemIndex) => (
+                            <li key={itemIndex}>
+                              {item.text}
+                              {item.subItems?.length && (
+                                <ul className="work-list-nested">
+                                  {item.subItems.map((subItem, subItemIndex) => (
+                                    <li key={subItemIndex}>{subItem}</li>
+                                  ))}
+                                </ul>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
                       </div>
                     ))}
                   </div>

@@ -24,7 +24,6 @@ function StyledText({ style }: { style: TextStyle }) {
 }
 
 export function ProfilePreview({ profile }: Props) {
-  console.debug('profile', profile)
   if (!profile.paragraphs?.length) return null
 
   return (

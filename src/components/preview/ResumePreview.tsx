@@ -65,7 +65,7 @@ export default function ResumePreview({ data }: Props) {
         <hr className="section-divider" />
 
         {/* Employment History */}
-        {data.employments?.length && (
+        {!!data.employments?.length && (
           <>
             <EmploymentPreview employments={data.employments} />
             <hr className="section-divider" />

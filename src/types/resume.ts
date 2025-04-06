@@ -28,11 +28,14 @@ export interface TechStack {
   highlight?: boolean
 }
 
+export interface WorkItem {
+  text: string
+  subItems?: string[]
+}
+
 export interface WorkDetail {
-  title?: string
-  description?: string
-  items?: string[]
-  subItems?: { [key: number]: string[] }
+  title: string
+  items: WorkItem[]
 }
 
 export interface Employment {
