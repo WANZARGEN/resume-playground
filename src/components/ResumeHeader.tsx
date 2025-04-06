@@ -3,7 +3,6 @@ import { useEditorUI, resumeFormats, ViewMode } from '../contexts/EditorUIContex
 import { useResumeData } from '../contexts/ResumeDataContext'
 import { fileService } from '../services/fileService'
 import toast, { Toaster } from 'react-hot-toast'
-import { FolderIcon } from '@heroicons/react/24/outline'
 import React from 'react'
 
 const viewModes: { id: ViewMode; name: string; icon: JSX.Element }[] = [
@@ -45,7 +44,6 @@ function ResumeHeader() {
     selectedFormat,
     setSelectedFormat,
     setLastSavedData,
-    lastSavedData
   } = useEditorUI()
   const [isLastFileModalOpen, setIsLastFileModalOpen] = React.useState(false)
 

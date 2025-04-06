@@ -1,4 +1,4 @@
-import React, { ButtonHTMLAttributes } from 'react'
+import { ButtonHTMLAttributes } from 'react'
 import clsx from 'clsx'
 
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {

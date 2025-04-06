@@ -1,6 +1,4 @@
-import React from 'react'
 import { Profile, TextStyle } from '../../types/resume'
-import clsx from 'clsx'
 
 interface Props {
   profile: Profile

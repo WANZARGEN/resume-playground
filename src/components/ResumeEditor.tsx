@@ -2,9 +2,9 @@ import { useEditorUI } from '../contexts/EditorUIContext'
 import { useResumeActions } from '../hooks/useResumeActions'
 import { EmploymentEditor } from './editors/EmploymentEditor'
 import { EducationEditor } from './editors/EducationEditor'
-import ResumePreview from './preview/ResumePreview'
 import { Resume, Profile, Employment, Education } from '../types/resume'
 import { ProfileEditor } from './editors/ProfileEditor'
+import { ResumePreview } from './preview/ResumePreview'
 
 interface EditAreaProps {
   data: Resume

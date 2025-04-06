@@ -1,5 +1,105 @@
 import { Employment, TechStack, WorkDetail, WorkItem } from '../../types/resume';
 import { Button } from '../common/Button';
+import { Combobox } from '@headlessui/react';
+import { useState, useMemo } from 'react';
+
+// 자주 사용되는 기술 스택 목록
+const COMMON_TECH_STACKS = [
+  'JavaScript', 'TypeScript', 'React', 'Vue.js', 'Angular',
+  'Node.js', 'Python', 'Java', 'Spring', 'Docker',
+  'Kubernetes', 'AWS', 'GCP', 'Azure', 'MySQL',
+  'PostgreSQL', 'MongoDB', 'Redis', 'GraphQL', 'REST API'
+];
+
+interface TechStackInputProps {
+  value: TechStack[];
+  onChange: (value: TechStack[]) => void;
+  allTechStacks: string[];
+}
+
+const TechStackInput: React.FC<TechStackInputProps> = ({ value, onChange, allTechStacks }) => {
+  const [query, setQuery] = useState('');
+  
+  const filteredTech = query === ''
+    ? allTechStacks
+    : allTechStacks.filter((tech) =>
+        tech.toLowerCase().includes(query.toLowerCase())
+      );
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && query.trim()) {
+      e.preventDefault();
+      const newTech = { name: query.trim() };
+      if (!value.find(t => t.name === newTech.name)) {
+        onChange([...value, newTech]);
+      }
+      setQuery('');
+    }
+  };
+
+  const removeTech = (techToRemove: TechStack) => {
+    onChange(value.filter(tech => tech.name !== techToRemove.name));
+  };
+
+  return (
+    <div className="space-y-2">
+      <div className="flex flex-wrap gap-2 mb-2">
+        {value.map((tech) => (
+          <span
+            key={tech.name}
+            className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 rounded-md text-sm"
+          >
+            {tech.name}
+            <button
+              type="button"
+              onClick={() => removeTech(tech)}
+              className="text-blue-500 hover:text-blue-700"
+            >
+              ×
+            </button>
+          </span>
+        ))}
+      </div>
+      <Combobox
+        value={query}
+        onChange={(newValue: string) => {
+          const newTech = { name: newValue };
+          if (!value.find(t => t.name === newTech.name)) {
+            onChange([...value, newTech]);
+          }
+          setQuery('');
+        }}
+      >
+        <div className="relative">
+          <Combobox.Input
+            className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+            placeholder="기술 스택 입력 (Enter로 추가)"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
+          {filteredTech.length > 0 && (
+            <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+              {filteredTech.map((tech) => (
+                <Combobox.Option
+                  key={tech}
+                  value={tech}
+                  className={({ active }) =>
+                    `relative cursor-pointer select-none py-2 pl-3 pr-9 ${
+                      active ? 'bg-blue-50 text-blue-700' : 'text-gray-900'
+                    }`
+                  }
+                >
+                  {tech}
+                </Combobox.Option>
+              ))}
+            </Combobox.Options>
+          )}
+        </div>
+      </Combobox>
+    </div>
+  );
+};
 
 interface EmploymentEditorProps {
   data?: Employment[];
@@ -8,6 +108,17 @@ interface EmploymentEditorProps {
 
 export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChange }) => {
   const employments = data || [];
+
+  // 전체 employment에서 사용된 기술 스택 목록을 추출
+  const allTechStacks = useMemo(() => {
+    const techSet = new Set<string>();
+    employments.forEach(emp => {
+      emp.techStack?.forEach(tech => {
+        if (tech.name) techSet.add(tech.name);
+      });
+    });
+    return Array.from(techSet);
+  }, [employments]);
 
   const handleAdd = () => {
     onChange([
@@ -287,38 +398,12 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
               <label className="block text-sm font-medium text-gray-700">
                 기술 스택
               </label>
-              <Button
-                onClick={() => handleTechStackAdd(index)}
-                variant="secondary"
-                size="sm"
-              >
-                기술 스택 추가
-              </Button>
             </div>
-            <div className="space-y-2">
-              {(employment.techStack || []).map((tech, techIndex) => (
-                <div key={techIndex} className="relative bg-gray-50 rounded-lg p-4">
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={tech.name || ''}
-                      onChange={(e) =>
-                        handleTechStackChange(index, techIndex, e.target.value)
-                      }
-                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                      placeholder="기술명"
-                    />
-                    <Button
-                      onClick={() => handleTechStackRemove(index, techIndex)}
-                      variant="ghost"
-                      size="sm"
-                    >
-                      삭제
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <TechStackInput
+              value={employment.techStack || []}
+              onChange={(newTechStack) => handleChange(index, 'techStack', newTechStack)}
+              allTechStacks={allTechStacks}
+            />
           </div>
 
           {/* 주요 업무 */}

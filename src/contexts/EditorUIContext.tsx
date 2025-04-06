@@ -1,7 +1,5 @@
 import React, { createContext, useContext, useState } from 'react'
 import { Resume } from '../types/resume'
-import { fileService } from '../services/fileService'
-import toast from 'react-hot-toast'
 
 export type ViewMode = 'edit-only' | 'split' | 'preview-only'
 export type ResumeFormat = { id: 'json' | 'html'; name: string }

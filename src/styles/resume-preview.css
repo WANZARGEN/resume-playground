@@ -178,4 +178,62 @@
   .name-card .info .contact-list .contact-divider {
     @apply block;
   }
+}
+
+/* PDF 미리보기 스타일 */
+.print-preview {
+  background-color: #f5f5f5;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.print-preview .resume-preview {
+  max-width: 210mm;
+  margin: 0 auto;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.pdf-preview {
+  @apply shadow-none;
+}
+
+.pdf-preview .text-link {
+  @apply no-underline;
+}
+
+.pdf-preview .name-card {
+  @apply flex items-center p-0 my-12 gap-10 text-left bg-white text-gray-900 shadow-none;
+}
+
+.pdf-preview .name-card .profile-photo {
+  @apply m-0 grayscale w-26 h-26 shadow-lg;
+}
+
+.pdf-preview .name-card .info {
+  @apply flex flex-col;
+}
+
+.pdf-preview .name-card .info .name {
+  @apply mt-0;
+}
+
+.pdf-preview .name-card .info .position {
+  @apply block text-xl text-gray-700 mb-3;
+}
+
+.pdf-preview .name-card .info .info-divider {
+  @apply hidden;
+}
+
+.pdf-preview .name-card .info .contact-list {
+  @apply justify-start gap-3 text-gray-500;
+}
+
+.pdf-preview .name-card .info .contact-list img {
+  @apply w-4 h-4 invert-0;
+}
+
+.pdf-preview .name-card .info .contact-list .contact-divider {
+  @apply block;
 } 

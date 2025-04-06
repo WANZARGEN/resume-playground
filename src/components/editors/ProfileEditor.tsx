@@ -11,7 +11,6 @@ interface ProfileEditorProps {
 
 function parseText(text: string): TextStyle[] {
   const segments: TextStyle[] = []
-  let currentText = ''
   
   const patterns = [
     { regex: /\*\*(.+?)\*\*/g, type: 'emphasis' as const },
