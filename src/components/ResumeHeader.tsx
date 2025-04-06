@@ -1,9 +1,10 @@
-import { Listbox, RadioGroup } from '@headlessui/react'
+import { Listbox, RadioGroup, Dialog } from '@headlessui/react'
 import { useEditorUI, resumeFormats, ViewMode } from '../contexts/EditorUIContext'
 import { useResumeData } from '../contexts/ResumeDataContext'
 import { fileService } from '../services/fileService'
 import toast, { Toaster } from 'react-hot-toast'
 import { FolderIcon } from '@heroicons/react/24/outline'
+import React from 'react'
 
 const viewModes: { id: ViewMode; name: string; icon: JSX.Element }[] = [
   {
@@ -37,24 +38,143 @@ const viewModes: { id: ViewMode; name: string; icon: JSX.Element }[] = [
 ]
 
 function ResumeHeader() {
-  const { data } = useResumeData()
+  const { data, setData } = useResumeData()
   const {
     activeTab,
     setActiveTab,
-    saveDirectory,
-    setSaveDirectory,
     selectedFormat,
     setSelectedFormat,
-    setLastSavedData
+    setLastSavedData,
+    lastSavedData
   } = useEditorUI()
+  const [isLastFileModalOpen, setIsLastFileModalOpen] = React.useState(false)
+
+  const handleLoad = async (showPicker: boolean = false) => {
+    try {
+      const data = await fileService.loadFile(showPicker)
+      setData(data)
+      setLastSavedData(data)
+      toast.success('이력서를 불러왔습니다.')
+      return data  // 성공 시 데이터 반환
+    } catch (err) {
+      if ((err as Error).name === 'AbortError') {
+        throw err  // AbortError는 상위로 전달
+      }
+      console.error('파일을 불러오는 중 오류가 발생했습니다:', err)
+      toast.error('파일을 불러오는데 실패했습니다.')
+      throw err  // 다른 에러도 상위로 전달
+    }
+  }
+
+  // 페이지 로드 시 마지막 저장 파일 확인
+  React.useEffect(() => {
+    const lastPath = fileService.getLastSavedPath()
+    if (lastPath) {
+      setIsLastFileModalOpen(true)
+    }
+  }, [])
+
+  const handleLoadLastFile = async () => {
+    try {
+      const loadedData = await handleLoad(false)
+      if (loadedData) {  // 데이터가 성공적으로 로드된 경우에만 모달 닫기
+        setIsLastFileModalOpen(false)
+      }
+    } catch (err) {
+      if ((err as Error).name === 'AbortError') {
+        // 파일 선택이 취소된 경우 모달을 유지
+        return
+      }
+      console.error('마지막 파일을 불러오는 중 오류가 발생했습니다:', err)
+      toast.error('마지막 파일을 불러오는데 실패했습니다.')
+    }
+  }
+
+  const handleSelectNewFile = async () => {
+    try {
+      const loadedData = await handleLoad(true)
+      if (loadedData) {  // 데이터가 성공적으로 로드된 경우에만 모달 닫기
+        setIsLastFileModalOpen(false)
+      }
+    } catch (err) {
+      if ((err as Error).name === 'AbortError') {
+        // 파일 선택이 취소된 경우 모달을 유지
+        return
+      }
+      console.error('새 파일을 선택하는 중 오류가 발생했습니다:', err)
+      toast.error('새 파일 선택에 실패했습니다.')
+    }
+  }
+
+  const handleClearLastFile = () => {
+    fileService.clearLastSavedPath()
+    setIsLastFileModalOpen(false)
+  }
+
+  // 자동 저장을 위한 타이머 ref
+  const autoSaveTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // 데이터가 변경될 때마다 자동 저장 타이머 설정
+  React.useEffect(() => {
+    const lastHandle = fileService.getLastSavedHandle()
+    
+    // 데이터가 변경되지 않았거나 초기 상태면 저장하지 않음
+    if (!lastSavedData || data === lastSavedData) return
+
+    if (autoSaveTimerRef.current) {
+      clearTimeout(autoSaveTimerRef.current)
+    }
+
+    autoSaveTimerRef.current = setTimeout(async () => {
+      try {
+        // 파일 핸들이 없으면 저장 알림
+        if (!lastHandle) {
+          toast.loading('수정된 내용을 저장하려면 파일을 선택해주세요.', {
+            duration: 3000
+          })
+          return
+        }
+
+        await fileService.saveToFile(data, lastHandle)
+        setLastSavedData(data)
+        toast.success('자동 저장되었습니다.')
+      } catch (err) {
+        console.error('자동 저장 중 오류가 발생했습니다:', err)
+        toast.error('자동 저장에 실패했습니다.')
+      }
+    }, 5000)
+
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearTimeout(autoSaveTimerRef.current)
+      }
+    }
+  }, [data, lastSavedData])
+
+  const handleSelectSaveFile = async () => {
+    try {
+      await fileService.selectSaveFile()
+      await handleSave()
+    } catch (err) {
+      if ((err as Error).name !== 'AbortError') {
+        console.error('파일 선택 중 오류가 발생했습니다:', err)
+        toast.error('파일 선택에 실패했습니다.')
+      }
+    }
+  }
 
   const handleSave = async () => {
-    if (saveDirectory) {
-      try {
-        await fileService.saveToDirectory(data, saveDirectory)
-        setLastSavedData(data)
-        toast.success('이력서가 저장되었습니다.')
-      } catch (err) {
+    try {
+      const lastHandle = fileService.getLastSavedHandle()
+      if (!lastHandle) {
+        toast.error('먼저 저장할 파일을 선택해주세요.')
+        return
+      }
+      await fileService.saveToFile(data, lastHandle)
+      setLastSavedData(data)
+      toast.success('이력서가 저장되었습니다.')
+    } catch (err) {
+      if ((err as Error).name !== 'AbortError') {
         console.error('저장 중 오류가 발생했습니다:', err)
         toast.error('저장에 실패했습니다.')
       }
@@ -71,37 +191,58 @@ function ResumeHeader() {
     }
   }
 
-  const handleLoad = async () => {
-    try {
-      const loadedData = await fileService.loadFromFile()
-      setSaveDirectory(null)
-      toast.success('이력서를 불러왔습니다.')
-    } catch (err) {
-      if ((err as Error).name !== 'AbortError') {
-        console.error('파일을 불러오는 중 오류가 발생했습니다:', err)
-        toast.error('이력서 불러오기에 실패했습니다.')
-      }
-    }
-  }
-
-  const handleDirectorySelect = async () => {
-    try {
-      const dirHandle = await window.showDirectoryPicker()
-      setSaveDirectory(dirHandle)
-      await fileService.saveToDirectory(data, dirHandle)
-      setLastSavedData(data)
-      toast.success('저장 경로가 설정되었습니다.')
-    } catch (err) {
-      if ((err as Error).name !== 'AbortError') {
-        console.error('디렉토리 선택 중 오류가 발생했습니다:', err)
-        toast.error('저장 경로 설정에 실패했습니다.')
-      }
-    }
-  }
-
   return (
     <>
       <Toaster position="top-center" />
+      <Dialog
+        open={isLastFileModalOpen}
+        onClose={() => {}}
+        className="relative z-50"
+      >
+        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+          <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+            <Dialog.Title
+              as="h3"
+              className="text-lg font-medium leading-6 text-gray-900 mb-4"
+            >
+              이전에 작업하던 이력서가 있습니다
+            </Dialog.Title>
+            <div className="mt-2">
+              <p className="text-sm text-gray-500 mb-2">
+                경로: {fileService.getLastSavedPath()}
+              </p>
+              <p className="text-sm text-gray-500">
+                어떻게 하시겠습니까?
+              </p>
+            </div>
+
+            <div className="mt-6 flex flex-col gap-2">
+              <button
+                type="button"
+                className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 cursor-pointer"
+                onClick={handleLoadLastFile}
+              >
+                이전 파일 불러오기
+              </button>
+              <button
+                type="button"
+                className="inline-flex justify-center rounded-md border border-transparent bg-gray-100 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2 cursor-pointer"
+                onClick={handleSelectNewFile}
+              >
+                다른 파일 선택하기
+              </button>
+              <button
+                type="button"
+                className="inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2 cursor-pointer"
+                onClick={handleClearLastFile}
+              >
+                선택하지 않고 새로 시작하기
+              </button>
+            </div>
+          </Dialog.Panel>
+        </div>
+      </Dialog>
       <div className="bg-white shadow">
         <div className="max-w-[2400px] mx-auto px-8 py-4 flex justify-between items-center">
           <div className="flex items-center gap-8">
@@ -133,47 +274,35 @@ function ResumeHeader() {
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              className="px-6 py-2 bg-gray-600 text-white rounded-lg font-medium hover:bg-gray-700 h-10 cursor-pointer"
-              onClick={handleLoad}
-            >
-              불러오기
-            </button>
-
             <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg h-10">
-              <span className="text-sm text-gray-500">자동 저장:</span>
-              {saveDirectory ? (
-                <div className="flex flex-col">
-                  <button
-                    className="text-gray-700 hover:text-gray-900 cursor-pointer flex items-center gap-1"
-                    onClick={handleDirectorySelect}
-                  >
-                    <span className="text-sm font-medium">{saveDirectory.name}</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                    </svg>
-                  </button>
-                </div>
+              <button
+                className="text-sm text-gray-700 hover:text-gray-900 cursor-pointer"
+                onClick={() => handleLoad(true)}
+              >
+                불러오기
+              </button>
+              <span className="text-gray-300">|</span>
+              <span className="text-sm text-gray-500">저장:</span>
+              {fileService.getLastSavedHandle() ? (
+                <span className="text-sm font-medium">
+                  {fileService.getLastSavedFileName()}
+                </span>
               ) : (
                 <button
-                  className="text-gray-700 hover:text-gray-900 cursor-pointer flex items-center gap-1"
-                  onClick={handleDirectorySelect}
+                  className="text-sm text-gray-700 hover:text-gray-900 cursor-pointer"
+                  onClick={handleSelectSaveFile}
                 >
-                  <span className="text-sm">저장 경로 선택</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M2 6a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1H8a3 3 0 00-3 3v1.5a1.5 1.5 0 01-3 0V6z" clipRule="evenodd" />
-                    <path d="M6 12a2 2 0 012-2h8a2 2 0 012 2v2a2 2 0 01-2 2H2h2a2 2 0 002-2v-2z" />
-                  </svg>
+                  {fileService.getLastSavedPath() || '파일 선택'}
                 </button>
               )}
               <button
-                className={`px-4 py-1 rounded ${
-                  saveDirectory
-                    ? 'bg-green-600 text-white hover:bg-green-700 cursor-pointer'
+                className={`px-4 py-1 rounded-lg font-medium ${
+                  fileService.getLastSavedHandle()
+                    ? 'bg-gray-600 text-white hover:bg-gray-700 cursor-pointer'
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }`}
                 onClick={handleSave}
-                disabled={!saveDirectory}
+                disabled={!fileService.getLastSavedHandle()}
               >
                 저장
               </button>

@@ -36,7 +36,7 @@ const EditArea = ({ data, handleProfileChange, handleEmploymentChange, handleEdu
 )
 
 const PreviewArea = ({ data, fullWidth = false }: PreviewAreaProps) => (
-  <div className={`bg-white shadow-lg rounded-lg overflow-hidden ${fullWidth ? 'min-w-[1000px] mx-auto' : 'min-w-[800px]'}`}>
+  <div className={`overflow-hidden ${fullWidth ? 'min-w-[1000px] mx-auto' : 'min-w-[800px]'}`}>
     <ResumePreview data={data} />
   </div>
 )

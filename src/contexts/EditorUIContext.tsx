@@ -6,11 +6,9 @@ import toast from 'react-hot-toast'
 export type ViewMode = 'edit-only' | 'split' | 'preview-only'
 export type ResumeFormat = { id: 'json' | 'html'; name: string }
 
-export interface EditorUIContextType {
+export type EditorUIContextType = {
   activeTab: ViewMode
   setActiveTab: (tab: ViewMode) => void
-  saveDirectory: FileSystemDirectoryHandle | null
-  setSaveDirectory: (directory: FileSystemDirectoryHandle | null) => void
   selectedFormat: ResumeFormat
   setSelectedFormat: (format: ResumeFormat) => void
   lastSavedData: Resume | null
@@ -34,7 +32,6 @@ export const useEditorUI = () => {
 
 export const EditorUIProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [activeTab, setActiveTab] = useState<ViewMode>('split')
-  const [saveDirectory, setSaveDirectory] = useState<FileSystemDirectoryHandle | null>(null)
   const [selectedFormat, setSelectedFormat] = useState<ResumeFormat>(resumeFormats[0])
   const [lastSavedData, setLastSavedData] = useState<Resume | null>(null)
 
@@ -43,8 +40,6 @@ export const EditorUIProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       value={{
         activeTab,
         setActiveTab,
-        saveDirectory,
-        setSaveDirectory,
         selectedFormat,
         setSelectedFormat,
         lastSavedData,
