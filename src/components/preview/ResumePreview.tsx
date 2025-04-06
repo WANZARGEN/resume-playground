@@ -2,6 +2,7 @@ import { Fragment } from 'react'
 import { Resume } from '../../types/resume'
 import { ProfilePreview } from './ProfilePreview'
 import { EmploymentPreview } from './EmploymentPreview'
+import { EducationPreview } from './EducationPreview'
 import '../../styles/resume-preview.css'
 
 interface Props {
@@ -73,65 +74,12 @@ export default function ResumePreview({ data }: Props) {
         )}
 
         {/* Education & Activities */}
-        {data.education?.length ? (
-          <section id="education-activities">
-            <h2 className="section-title">Education & Activities</h2>
-
-            {(() => {
-              const sections: Record<string, { title: string; items: typeof data.education }> = {
-                presentation: { title: 'Presentations & Seminars', items: [] as typeof data.education },
-                certificate: { title: 'Certificates', items: [] as typeof data.education },
-                education: { title: 'Education', items: [] as typeof data.education },
-                language: { title: 'Language Proficiency', items: [] as typeof data.education },
-              }
-
-              // 각 항목을 해당 섹션에 분류
-              data.education.forEach((item) => {
-                if (item.type && item.type in sections) {
-                  sections[item.type].items.push(item)
-                }
-              })
-
-              // 항목이 있는 섹션만 렌더링
-              return Object.entries(sections).map(([key, section]) => {
-                if (!section.items.length) return null
-
-                return (
-                  <div key={key} className="section-entry">
-                    <h3 className="section-sub-title">{section.title}</h3>
-                    <ul className="spec-list">
-                      <li>
-                        <div className="spec-content-container">
-                          <ul className="work-list">
-                            {section.items.map((item, itemIndex) => (
-                              <li key={itemIndex}>
-                                {item.title && (
-                                  item.url ? (
-                                    <a
-                                      href={item.url}
-                                      className="text-link"
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                    >
-                                      {item.title}
-                                    </a>
-                                  ) : (
-                                    item.title
-                                  )
-                                )}
-                                {item.description && ` - ${item.description}`}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                )
-              })
-            })()}
-          </section>
-        ) : null}
+        {!!data.education?.length && (
+          <>
+            <EducationPreview education={data.education} />
+            <hr className="section-divider" />
+          </>
+        )}
       </main>
     </div>
   )
