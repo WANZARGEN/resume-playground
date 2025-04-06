@@ -105,26 +105,48 @@ export class FileService {
   }
 
   async downloadAs(resume: Resume, format: 'json' | 'html' | 'pdf'): Promise<void> {
-    const content = format === 'json'
-      ? JSON.stringify(resume, null, 2)
-      : await convertResumeToHtml(resume)
-
-    const blob = new Blob([content], {
-      type: format === 'json' ? 'application/json' : 'text/html'
-    })
-
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `resume.${format}`
-
     if (format === 'pdf') {
-      window.print()
+      const content = await convertResumeToHtml(resume)
+      const blob = new Blob([content], { type: 'text/html' })
+      const url = URL.createObjectURL(blob)
+      
+      // 새 창 열기
+      const printWindow = window.open(url, '_blank')
+      if (!printWindow) {
+        alert('팝업이 차단되었습니다. 팝업 차단을 해제해주세요.')
+        return
+      }
+
+      // 프린트 다이얼로그 열기
+      printWindow.onload = () => {
+        printWindow.print()
+        // 프린트 다이얼로그가 닫힐 때 창 닫기
+        const checkPrintDialogClosed = setInterval(() => {
+          if (printWindow.document.readyState === 'complete') {
+            clearInterval(checkPrintDialogClosed)
+            if (!printWindow.document.queryCommandEnabled('print')) {
+              printWindow.close()
+              URL.revokeObjectURL(url)
+            }
+          }
+        }, 1000)
+      }
     } else {
+      const content = format === 'json'
+        ? JSON.stringify(resume, null, 2)
+        : await convertResumeToHtml(resume)
+
+      const blob = new Blob([content], {
+        type: format === 'json' ? 'application/json' : 'text/html'
+      })
+
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `resume.${format}`
       a.click()
+      URL.revokeObjectURL(url)
     }
-    
-    URL.revokeObjectURL(url)
   }
 
   getLastSavedHandle(): FileSystemFileHandle | null {
