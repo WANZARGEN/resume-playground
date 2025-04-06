@@ -1,18 +1,21 @@
 import { Fragment } from 'react'
 import { Profile } from '../../types/resume'
+import { useImageUrl } from '../../hooks/useImageUrl'
 
 interface NameCardProps {
   profile?: Profile
 }
 
 export const NameCard: React.FC<NameCardProps> = ({ profile }) => {
+  const { getImageUrl } = useImageUrl()
+  
   if (!profile) return null
 
   return (
     <header className="name-card">
       {profile.photo && (
         <img
-          src={profile.photo.startsWith('http') ? profile.photo : `${import.meta.env.BASE_URL}${profile.photo}`}
+          src={getImageUrl(profile.photo)}
           alt={`Profile photo of ${profile.name}`}
           className="profile-photo"
         />

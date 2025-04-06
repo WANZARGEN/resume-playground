@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { EditorUIProvider } from './contexts/EditorUIContext'
 import { FileProvider } from './contexts/FileContext'
 import { ResumeDataProvider, useResumeData } from './contexts/ResumeDataContext'

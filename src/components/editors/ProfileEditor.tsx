@@ -1,11 +1,10 @@
-import React, { ChangeEvent, Fragment } from 'react'
+import React, { ChangeEvent } from 'react'
 import { Contact, Profile, TextStyle } from '../../types/resume'
 import { Button } from '../common/Button'
 import { TextInput } from '../common/TextInput'
 import { TextArea } from '../common/TextArea'
-import { Listbox, Transition } from '@headlessui/react'
-import { ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import { Select } from '../common/Select'
+import { useImageUrl } from '../../hooks/useImageUrl'
 
 interface ProfileEditorProps {
   data?: Profile;
@@ -106,6 +105,8 @@ const contactTypes = [
 ]
 
 export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange }) => {
+  const { getImageUrl } = useImageUrl()
+  
   const emptyProfile: Profile = {
     photo: '',
     name: '',
@@ -169,6 +170,15 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange }) 
     reader.readAsDataURL(file)
   }
 
+  const handlePhotoDelete = () => {
+    handleChange('photo', '')
+    // 파일 입력 필드 초기화
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement
+    if (fileInput) {
+      fileInput.value = ''
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -182,11 +192,26 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange }) 
           </label>
           <div className="flex items-center gap-4">
             {profile.photo && (
-              <img
-                src={profile.photo.startsWith('http') ? profile.photo : `${import.meta.env.BASE_URL}${profile.photo}`}
-                alt="Profile"
-                className="w-24 h-24 rounded-full object-cover"
-              />
+              <div className="relative group">
+                <img
+                  src={getImageUrl(profile.photo)}
+                  alt="Profile"
+                  className="w-24 h-24 rounded-full object-cover"
+                />
+                <div className="absolute -top-3 -right-3">
+                  <Button
+                    onClick={handlePhotoDelete}
+                    variant="danger"
+                    size="sm"
+                    className="rounded-full w-7 h-7 flex items-center justify-center !p-0"
+                  >
+                    <span className="sr-only">프로필 사진 삭제</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </Button>
+                </div>
+              </div>
             )}
             <div className="flex-1">
               <input
