@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { generateCompletion } from '../../services/gemini';
 import { AutoCompleteProps } from '../../types/openai';
-import { SparklesIcon } from '@heroicons/react/24/outline';
+import { SparklesIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 export const AutoCompleteEditor: React.FC<AutoCompleteProps> = ({
   value,
@@ -10,16 +10,20 @@ export const AutoCompleteEditor: React.FC<AutoCompleteProps> = ({
   onFocus,
   onBlur,
   placeholder,
-  className = ''
+  className = '',
+  previousContent,
+  resumeContext
 }) => {
-  const [isFocused, setIsFocused] = useState(false);
+  const [showSuggestion, setShowSuggestion] = useState(false);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   const { mutate: getSuggestion, data: suggestion, isPending } = useMutation({
     mutationFn: async () => {
-      if (!value) return null;
-      const response = await generateCompletion(value);
+      const response = await generateCompletion(value || '', previousContent, resumeContext);
+      if (response.text) {
+        setShowSuggestion(true);
+      }
       return response.text || null;
     }
   });
@@ -30,7 +34,8 @@ export const AutoCompleteEditor: React.FC<AutoCompleteProps> = ({
 
   const handleApplySuggestion = () => {
     if (suggestion) {
-      onChange(value + ' ' + suggestion);
+      onChange(suggestion);
+      setShowSuggestion(false);
     }
   };
 
@@ -43,8 +48,9 @@ export const AutoCompleteEditor: React.FC<AutoCompleteProps> = ({
     }
     
     // Escape to dismiss suggestion
-    if (e.key === 'Escape' && suggestion) {
+    if (e.key === 'Escape' && showSuggestion) {
       e.preventDefault();
+      setShowSuggestion(false);
     }
   };
 
@@ -54,14 +60,8 @@ export const AutoCompleteEditor: React.FC<AutoCompleteProps> = ({
         <textarea
           value={value}
           onChange={(e) => handleChange(e.target.value)}
-          onFocus={() => {
-            setIsFocused(true);
-            onFocus?.();
-          }}
-          onBlur={() => {
-            setIsFocused(false);
-            onBlur?.();
-          }}
+          onFocus={onFocus}
+          onBlur={onBlur}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           className={`flex-1 ${className}`}
@@ -70,7 +70,7 @@ export const AutoCompleteEditor: React.FC<AutoCompleteProps> = ({
         />
         <button
           onClick={() => getSuggestion()}
-          disabled={!value || isPending}
+          disabled={isPending}
           className="self-start px-2 py-1.5 text-gray-600 hover:text-blue-600 disabled:text-gray-400 cursor-pointer transition-colors duration-200 ease-in-out rounded hover:bg-gray-100"
           title="AI 제안 받기"
         >
@@ -80,7 +80,7 @@ export const AutoCompleteEditor: React.FC<AutoCompleteProps> = ({
       
       {isPending && (
         <div 
-          className="absolute right-0 translate-x-full pl-4 w-96 z-50"
+          className="absolute top-0 right-0 translate-x-full pl-4 w-96 z-50"
           role="status"
           aria-live="polite"
         >
@@ -91,16 +91,25 @@ export const AutoCompleteEditor: React.FC<AutoCompleteProps> = ({
       )}
 
       {/* Suggestions display */}
-      {!isPending && suggestion && isFocused && (
+      {!isPending && suggestion && showSuggestion && (
         <div 
-          className="absolute right-0 translate-x-full pl-4 w-96 z-50"
+          className="absolute top-0 right-0 translate-x-full pl-4 w-96 z-50"
           id="autocomplete-suggestion"
           ref={suggestionsRef}
           role="complementary"
           aria-label="자동완성 제안"
         >
           <div className="bg-gray-50 p-2 border rounded">
-            <p className="text-gray-600 text-sm whitespace-pre-wrap mb-2">{suggestion}</p>
+            <div className="flex justify-between items-start mb-2">
+              <p className="text-gray-600 text-sm whitespace-pre-wrap">{suggestion}</p>
+              <button
+                onClick={() => setShowSuggestion(false)}
+                className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-200"
+                title="닫기"
+              >
+                <XMarkIcon className="w-4 h-4" />
+              </button>
+            </div>
             <button
               ref={buttonRef}
               onClick={handleApplySuggestion}

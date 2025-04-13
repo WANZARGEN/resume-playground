@@ -24,23 +24,31 @@ interface PreviewAreaProps {
   focusedParagraphIndex?: number | null
 }
 
-const EditArea = ({ data, handleProfileChange, handleEmploymentChange, handleEducationChange, onFocusChange }: EditAreaProps) => (
-  <div className="space-y-6 bg-white shadow-lg rounded-lg p-4 min-w-[320px]">
-    <ProfileEditor
-      data={data.profile}
-      onChange={handleProfileChange}
-      onFocusChange={onFocusChange}
-    />
-    <EmploymentEditor
-      data={data.employments}
-      onChange={handleEmploymentChange}
-    />
-    <EducationEditor
-      data={data.education}
-      onChange={handleEducationChange}
-    />
-  </div>
-)
+const EditArea = ({ data, handleProfileChange, handleEmploymentChange, handleEducationChange, onFocusChange }: EditAreaProps) => {
+  const resumeContext = {
+    employments: data.employments,
+    education: data.education
+  };
+
+  return (
+    <div className="space-y-6 bg-white shadow-lg rounded-lg p-4 min-w-[320px]">
+      <ProfileEditor
+        data={data.profile}
+        onChange={handleProfileChange}
+        onFocusChange={onFocusChange}
+        resumeContext={resumeContext}
+      />
+      <EmploymentEditor
+        data={data.employments}
+        onChange={handleEmploymentChange}
+      />
+      <EducationEditor
+        data={data.education}
+        onChange={handleEducationChange}
+      />
+    </div>
+  )
+}
 
 const PreviewArea = ({ data, fullWidth = false, focusedParagraphIndex }: PreviewAreaProps) => {
   const { selectedFormat } = useEditorUI()

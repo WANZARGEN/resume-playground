@@ -5,11 +5,13 @@ import { TextInput } from '../common/TextInput'
 import { Select } from '../common/Select'
 import { useImageUrl } from '../../hooks/useImageUrl'
 import { AutoCompleteEditor } from '../common/AutoCompleteEditor'
+import { ResumeContext } from '../../types/openai'
 
 interface ProfileEditorProps {
   data?: Profile;
   onChange: (profile: Profile) => void;
   onFocusChange?: (index: number | null) => void;
+  resumeContext?: ResumeContext;
 }
 
 function parseText(text: string): TextStyle[] {
@@ -105,7 +107,7 @@ const contactTypes = [
   { value: 'github', label: 'GitHub' }
 ]
 
-export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange, onFocusChange }) => {
+export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange, onFocusChange, resumeContext }) => {
   const { getImageUrl } = useImageUrl()
   
   const emptyProfile: Profile = {
@@ -295,28 +297,38 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange, on
             </Button>
           </div>
           <div className="space-y-4">
-            {(profile.paragraphs || []).map((paragraph, index) => (
-              <div key={index} className="relative bg-gray-50 rounded-lg p-4">
-                <AutoCompleteEditor
-                  value={stringifySegments(paragraph.segments)}
-                  onChange={(text) => handleParagraphChange(index, text)}
-                  onFocus={() => onFocusChange?.(index)}
-                  onBlur={() => onFocusChange?.(null)}
-                  placeholder="텍스트를 입력하세요"
-                  className="mb-2 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-                <div className="flex justify-end">
-                  <Button
-                    onClick={() => removeParagraph(index)}
-                    disabled={(profile.paragraphs?.length || 0) <= 1}
-                    variant="ghost"
-                    size="sm"
-                  >
-                    단락 삭제
-                  </Button>
+            {(profile.paragraphs || []).map((paragraph, index) => {
+              // 현재 단락 이전의 모든 단락을 컨텍스트로 제공
+              const previousParagraphs = profile.paragraphs
+                ?.slice(0, index)
+                .map(p => stringifySegments(p.segments))
+                .join('\n\n');
+              
+              return (
+                <div key={index} className="relative bg-gray-50 rounded-lg p-4">
+                  <AutoCompleteEditor
+                    value={stringifySegments(paragraph.segments)}
+                    onChange={(text) => handleParagraphChange(index, text)}
+                    onFocus={() => onFocusChange?.(index)}
+                    onBlur={() => onFocusChange?.(null)}
+                    placeholder="텍스트를 입력하세요"
+                    className="mb-2 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    previousContent={previousParagraphs || undefined}
+                    resumeContext={resumeContext}
+                  />
+                  <div className="flex justify-end">
+                    <Button
+                      onClick={() => removeParagraph(index)}
+                      disabled={(profile.paragraphs?.length || 0) <= 1}
+                      variant="ghost"
+                      size="sm"
+                    >
+                      단락 삭제
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

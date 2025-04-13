@@ -1,6 +1,13 @@
+import { Employment, Education } from './resume';
+
 export interface OpenAIResponse {
   text: string;
   error?: string;
+}
+
+export interface ResumeContext {
+  employments?: Employment[];
+  education?: Education[];
 }
 
 export interface AutoCompleteProps {
@@ -10,4 +17,6 @@ export interface AutoCompleteProps {
   onBlur?: () => void;
   placeholder?: string;
   className?: string;
+  previousContent?: string;
+  resumeContext?: ResumeContext;
 } 
