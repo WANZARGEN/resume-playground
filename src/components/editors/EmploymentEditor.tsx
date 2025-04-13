@@ -31,22 +31,25 @@ const DateInput: React.FC<DateInputProps> = ({ value, onChange, placeholder }) =
   }))
   
   return (
-    <div className="flex gap-2">
-      <Select
-        value={selectedYear || ''}
-        onChange={(year) => onChange(`${year}.${selectedMonth || '01'}`)}
-        options={yearOptions}
-        placeholder="년도"
-        size="sm"
-      />
-      <Select
-        value={selectedMonth || ''}
-        onChange={(month) => onChange(`${selectedYear || new Date().getFullYear()}.${month}`)}
-        options={monthOptions}
-        placeholder="월"
-        size="sm"
-        className="w-24"
-      />
+    <div className="flex gap-2 w-full">
+      <div className="w-[120px]">
+        <Select
+          value={selectedYear || ''}
+          onChange={(year) => onChange(`${year}.${selectedMonth || '01'}`)}
+          options={yearOptions}
+          placeholder="년도"
+          size="sm"
+        />
+      </div>
+      <div className="w-[80px]">
+        <Select
+          value={selectedMonth || ''}
+          onChange={(month) => onChange(`${selectedYear || new Date().getFullYear()}.${month}`)}
+          options={monthOptions}
+          placeholder="월"
+          size="sm"
+        />
+      </div>
     </div>
   );
 };
@@ -368,7 +371,7 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
 
               {/* 근무 기간 */}
               <div className="grid grid-cols-2 gap-4">
-                <div>
+                <div className="w-full">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     시작일
                   </label>
@@ -383,7 +386,7 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
                     placeholder="YYYY.MM"
                   />
                 </div>
-                <div>
+                <div className="w-full">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     종료일
                   </label>

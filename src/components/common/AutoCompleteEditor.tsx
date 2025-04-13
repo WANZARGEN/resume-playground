@@ -71,7 +71,7 @@ export const AutoCompleteEditor: React.FC<AutoCompleteProps> = ({
         <button
           onClick={() => getSuggestion()}
           disabled={!value || isPending}
-          className="self-start px-2 py-1.5 text-gray-600 hover:text-blue-600 disabled:text-gray-400"
+          className="self-start px-2 py-1.5 text-gray-600 hover:text-blue-600 disabled:text-gray-400 cursor-pointer transition-colors duration-200 ease-in-out rounded hover:bg-gray-100"
           title="AI 제안 받기"
         >
           <SparklesIcon className="w-5 h-5" />
@@ -104,7 +104,7 @@ export const AutoCompleteEditor: React.FC<AutoCompleteProps> = ({
             <button
               ref={buttonRef}
               onClick={handleApplySuggestion}
-              className="text-sm text-blue-500 hover:text-blue-700"
+              className="text-sm text-blue-500 hover:text-blue-700 cursor-pointer transition-colors duration-200 ease-in-out px-3 py-1.5 rounded hover:bg-blue-50"
               aria-keyshortcuts="Control+Enter Tab"
             >
               제안 적용하기 (Ctrl+Enter 또는 Tab)
