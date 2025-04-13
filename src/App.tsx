@@ -21,7 +21,7 @@ function AppContent() {
   return (
     <div className="min-h-screen bg-gray-50">
       <ResumeHeader />
-      <main className="max-w-[2400px] mx-auto p-8">
+      <main>
         <ResumeEditor />
       </main>
     </div>

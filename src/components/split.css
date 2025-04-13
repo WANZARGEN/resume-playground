@@ -1,0 +1,29 @@
+.split {
+  display: flex;
+  flex-direction: row;
+}
+
+.gutter.gutter-horizontal {
+  background-color: #f3f4f6;
+  position: relative;
+  cursor: col-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 10px;
+}
+
+.gutter.gutter-horizontal:hover {
+  background-color: #e5e7eb;
+}
+
+.gutter.gutter-horizontal::before {
+  content: "⦚";
+  font-size: 20px;
+  line-height: 1;
+  color: #9ca3af;
+}
+
+.gutter.gutter-horizontal:hover::before {
+  color: #6b7280;
+} 
