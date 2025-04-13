@@ -2,9 +2,9 @@ import React, { ChangeEvent } from 'react'
 import { Contact, Profile, TextStyle } from '../../types/resume'
 import { Button } from '../common/Button'
 import { TextInput } from '../common/TextInput'
-import { TextArea } from '../common/TextArea'
 import { Select } from '../common/Select'
 import { useImageUrl } from '../../hooks/useImageUrl'
+import { AutoCompleteEditor } from '../common/AutoCompleteEditor'
 
 interface ProfileEditorProps {
   data?: Profile;
@@ -294,9 +294,9 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange }) 
           <div className="space-y-4">
             {(profile.paragraphs || []).map((paragraph, index) => (
               <div key={index} className="relative bg-gray-50 rounded-lg p-4">
-                <TextArea
+                <AutoCompleteEditor
                   value={stringifySegments(paragraph.segments)}
-                  onChange={(e: ChangeEvent<HTMLTextAreaElement>) => handleParagraphChange(index, e.target.value)}
+                  onChange={(text) => handleParagraphChange(index, text)}
                   placeholder="텍스트를 입력하세요"
                   className="mb-2 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 />
