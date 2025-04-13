@@ -27,18 +27,28 @@ export const generateCompletion = async (prompt: string): Promise<OpenAIResponse
 
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-2.0-flash",
+    });
 
-    const prompt_template = `
-      As a professional resume writer, complete the following text professionally and concisely.
-      Keep the style consistent with the input.
-      
-      Text to complete: ${prompt}
-    `;
+    const result = await model.generateContent({
+      contents: [{ 
+        role: "user",
+        parts: [{ 
+          text: `As a professional resume writer, complete the following text professionally and concisely.
+                Keep the style consistent with the input.
+                Text to complete: ${prompt}`
+        }]
+      }],
+      generationConfig: {
+        temperature: 0.7,
+        topK: 40,
+        topP: 0.95,
+        maxOutputTokens: 100,
+      },
+    });
 
-    const result = await model.generateContent(prompt_template);
     const response = await result.response;
-    
     return {
       text: response.text()
     };
