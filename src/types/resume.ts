@@ -38,26 +38,44 @@ export interface WorkDetail {
   items: WorkItem[]
 }
 
-export interface Employment {
-  company?: string
-  position?: string
-  period?: {
-    start?: string
-    end?: string
-  }
-  techStack?: TechStack[]
-  details?: WorkDetail[]
-}
-
 export interface Activity {
-  title?: string
-  url?: string
+  title: string
   description?: string
 }
 
 export interface Education {
   type?: 'presentation' | 'certificate' | 'education' | 'language'
-  items: Activity[]
+  items?: Activity[]
+  school: string
+  degree: string
+  startDate: string
+  endDate?: string
+  description?: string
+}
+
+export interface Employment {
+  company: string
+  position: string
+  period?: {
+    start: string
+    end?: string
+  }
+  techStack?: {
+    name: string
+    level?: number
+  }[]
+  details?: {
+    title: string
+    items: {
+      text: string
+      subItems?: string[]
+    }[]
+  }[]
+}
+
+export interface ResumeContext {
+  employments?: Employment[]
+  education?: Education[]
 }
 
 export interface Resume {

@@ -3,6 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { generateCompletion } from '../../services/gemini';
 import { AutoCompleteProps } from '../../types/openai';
 import { SparklesIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { ApiKeyDialog } from './ApiKeyDialog';
 
 export const AutoCompleteEditor: React.FC<AutoCompleteProps> = ({
   value,
@@ -15,8 +16,10 @@ export const AutoCompleteEditor: React.FC<AutoCompleteProps> = ({
   resumeContext
 }) => {
   const [showSuggestion, setShowSuggestion] = useState(false);
+  const [showApiKeyDialog, setShowApiKeyDialog] = useState(false);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const pendingRequestRef = useRef<(() => void) | null>(null);
 
   const { mutate: getSuggestion, data: suggestion, isPending } = useMutation({
     mutationFn: async () => {
@@ -27,6 +30,23 @@ export const AutoCompleteEditor: React.FC<AutoCompleteProps> = ({
       return response.text || null;
     }
   });
+
+  const handleGetSuggestion = () => {
+    const apiKey = sessionStorage.getItem('gemini-api-key');
+    if (!apiKey) {
+      pendingRequestRef.current = () => getSuggestion();
+      setShowApiKeyDialog(true);
+      return;
+    }
+    getSuggestion();
+  };
+
+  const handleApiKeySubmit = () => {
+    if (pendingRequestRef.current) {
+      pendingRequestRef.current();
+      pendingRequestRef.current = null;
+    }
+  };
 
   const handleChange = (newValue: string) => {
     onChange(newValue);
@@ -69,7 +89,7 @@ export const AutoCompleteEditor: React.FC<AutoCompleteProps> = ({
           aria-describedby={suggestion ? "autocomplete-suggestion" : undefined}
         />
         <button
-          onClick={() => getSuggestion()}
+          onClick={handleGetSuggestion}
           disabled={isPending}
           className="self-start px-2 py-1.5 text-gray-600 hover:text-blue-600 disabled:text-gray-400 cursor-pointer transition-colors duration-200 ease-in-out rounded hover:bg-gray-100"
           title="AI 제안 받기"
@@ -121,6 +141,12 @@ export const AutoCompleteEditor: React.FC<AutoCompleteProps> = ({
           </div>
         </div>
       )}
+
+      <ApiKeyDialog
+        isOpen={showApiKeyDialog}
+        onClose={() => setShowApiKeyDialog(false)}
+        onSubmit={handleApiKeySubmit}
+      />
     </div>
   );
 }; 
