@@ -37,6 +37,11 @@ export const generateCompletion = async (prompt: string): Promise<OpenAIResponse
         parts: [{ 
           text: `As a professional resume writer, complete the following text professionally and concisely.
                 Keep the style consistent with the input.
+                Use the following text style guide:
+                - Use **text** for emphasis
+                - Use ##text## for accent
+                - Use \`text\` for highlight
+                - Use [text](URL) for links
                 Text to complete: ${prompt}`
         }]
       }],
@@ -44,7 +49,7 @@ export const generateCompletion = async (prompt: string): Promise<OpenAIResponse
         temperature: 0.7,
         topK: 40,
         topP: 0.95,
-        maxOutputTokens: 100,
+        maxOutputTokens: 1000,
       },
     });
 
