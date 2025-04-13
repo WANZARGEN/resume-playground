@@ -8,24 +8,28 @@ import { ResumePreview } from './preview/ResumePreview'
 import Split from 'react-split'
 import './split.css'
 import StyleGuidePin from './common/StyleGuidePin'
+import { useState } from 'react'
 
 interface EditAreaProps {
   data: Resume
   handleProfileChange: (profile: Profile) => void
   handleEmploymentChange: (employments: Employment[]) => void
   handleEducationChange: (education: Education[]) => void
+  onFocusChange: (index: number | null) => void
 }
 
 interface PreviewAreaProps {
   data: Resume
   fullWidth?: boolean
+  focusedParagraphIndex?: number | null
 }
 
-const EditArea = ({ data, handleProfileChange, handleEmploymentChange, handleEducationChange }: EditAreaProps) => (
+const EditArea = ({ data, handleProfileChange, handleEmploymentChange, handleEducationChange, onFocusChange }: EditAreaProps) => (
   <div className="space-y-6 bg-white shadow-lg rounded-lg p-4 min-w-[320px]">
     <ProfileEditor
       data={data.profile}
       onChange={handleProfileChange}
+      onFocusChange={onFocusChange}
     />
     <EmploymentEditor
       data={data.employments}
@@ -38,12 +42,12 @@ const EditArea = ({ data, handleProfileChange, handleEmploymentChange, handleEdu
   </div>
 )
 
-const PreviewArea = ({ data, fullWidth = false }: PreviewAreaProps) => {
+const PreviewArea = ({ data, fullWidth = false, focusedParagraphIndex }: PreviewAreaProps) => {
   const { selectedFormat } = useEditorUI()
   
   return (
     <div className={`min-w-[320px] ${fullWidth ? 'min-w-[1000px] mx-auto' : ''}`}>
-      <ResumePreview data={data} format={selectedFormat.id} />
+      <ResumePreview data={data} format={selectedFormat.id} focusedParagraphIndex={focusedParagraphIndex} />
     </div>
   )
 }
@@ -56,6 +60,7 @@ export default function ResumeEditor() {
     handleEmploymentChange,
     handleEducationChange,
   } = useResumeActions()
+  const [focusedParagraphIndex, setFocusedParagraphIndex] = useState<number | null>(null)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -66,6 +71,7 @@ export default function ResumeEditor() {
             handleProfileChange={handleProfileChange}
             handleEmploymentChange={handleEmploymentChange}
             handleEducationChange={handleEducationChange}
+            onFocusChange={setFocusedParagraphIndex}
           />
         )}
         
@@ -81,8 +87,9 @@ export default function ResumeEditor() {
               handleProfileChange={handleProfileChange}
               handleEmploymentChange={handleEmploymentChange}
               handleEducationChange={handleEducationChange}
+              onFocusChange={setFocusedParagraphIndex}
             />
-            <PreviewArea data={data} />
+            <PreviewArea data={data} focusedParagraphIndex={focusedParagraphIndex} />
           </Split>
         )}
         

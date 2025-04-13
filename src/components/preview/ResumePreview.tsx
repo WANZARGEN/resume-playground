@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Resume } from '../../types/resume'
-import { ProfilePreview } from './ProfilePreview'
+import ProfilePreview from './ProfilePreview'
 import { EmploymentPreview } from './EmploymentPreview'
 import { EducationPreview } from './EducationPreview'
 import '../../styles/resume-preview.css'
@@ -9,9 +9,10 @@ import { NameCard } from './NameCard'
 interface ResumePreviewProps {
   data: Resume
   format?: 'html' | 'pdf' | 'json'
+  focusedParagraphIndex?: number | null
 }
 
-export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, format = 'html' }) => {
+export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, format = 'html', focusedParagraphIndex }) => {
   useEffect(() => {
     if (format === 'pdf') {
       document.body.classList.add('print-preview')
@@ -40,7 +41,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, format = 'ht
     <div className={`resume-preview ${isPdfMode ? 'pdf-preview' : ''}`}>
       <NameCard profile={data.profile} />
       <div className={`${isPdfMode ? 'px-12 py-8' : 'p-8'} space-y-8`}>
-        {data.profile && <ProfilePreview profile={data.profile} />}
+        {data.profile && <ProfilePreview profile={data.profile} focusedParagraphIndex={focusedParagraphIndex} />}
         <hr className="section-divider" />
         {data.employments && <EmploymentPreview employments={data.employments} />}
         <hr className="section-divider" />

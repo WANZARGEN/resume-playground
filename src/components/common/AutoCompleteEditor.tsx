@@ -1,54 +1,42 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState, useRef } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import { generateCompletion } from '../../services/gemini';
 import { AutoCompleteProps } from '../../types/openai';
+import { SparklesIcon } from '@heroicons/react/24/outline';
 
 export const AutoCompleteEditor: React.FC<AutoCompleteProps> = ({
   value,
   onChange,
+  onFocus,
+  onBlur,
   placeholder,
   className = ''
 }) => {
   const [isFocused, setIsFocused] = useState(false);
-  const queryClient = useQueryClient();
-  const abortControllerRef = useRef<AbortController | null>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const { data: suggestion, isLoading } = useQuery({
-    queryKey: ['autoComplete', value],
-    queryFn: async () => {
-      if (!isFocused || !value) return null;
+  const { mutate: getSuggestion, data: suggestion, isPending } = useMutation({
+    mutationFn: async () => {
+      if (!value) return null;
       const response = await generateCompletion(value);
       return response.text || null;
-    },
-    enabled: isFocused && !!value,
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    gcTime: 1000 * 60 * 10,   // Keep unused data for 10 minutes
-    refetchOnWindowFocus: false,
-    retry: 1,
-    networkMode: 'offlineFirst',
+    }
   });
 
   const handleChange = (newValue: string) => {
     onChange(newValue);
-    // Prefetch the next query
-    queryClient.prefetchQuery({
-      queryKey: ['autoComplete', newValue],
-      queryFn: async () => {
-        const response = await generateCompletion(newValue);
-        return response.text || null;
-      },
-    });
   };
 
   const handleApplySuggestion = () => {
-    onChange(value + ' ' + suggestion);
+    if (suggestion) {
+      onChange(value + ' ' + suggestion);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     // Tab or Ctrl+Enter to apply suggestion
-    if (suggestion && !isLoading && 
+    if (suggestion && !isPending && 
         ((e.key === 'Tab' && !e.shiftKey) || (e.key === 'Enter' && e.ctrlKey))) {
       e.preventDefault();
       handleApplySuggestion();
@@ -61,20 +49,36 @@ export const AutoCompleteEditor: React.FC<AutoCompleteProps> = ({
   };
 
   return (
-    <div className="relative flex gap-4">
-      <textarea
-        value={value}
-        onChange={(e) => handleChange(e.target.value)}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-        onKeyDown={handleKeyDown}
-        placeholder={placeholder}
-        className={`flex-1 ${className}`}
-        rows={4}
-        aria-describedby={suggestion ? "autocomplete-suggestion" : undefined}
-      />
+    <div className="relative">
+      <div className="flex gap-2">
+        <textarea
+          value={value}
+          onChange={(e) => handleChange(e.target.value)}
+          onFocus={() => {
+            setIsFocused(true);
+            onFocus?.();
+          }}
+          onBlur={() => {
+            setIsFocused(false);
+            onBlur?.();
+          }}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          className={`flex-1 ${className}`}
+          rows={4}
+          aria-describedby={suggestion ? "autocomplete-suggestion" : undefined}
+        />
+        <button
+          onClick={() => getSuggestion()}
+          disabled={!value || isPending}
+          className="self-start px-2 py-1.5 text-gray-600 hover:text-blue-600 disabled:text-gray-400"
+          title="AI 제안 받기"
+        >
+          <SparklesIcon className="w-5 h-5" />
+        </button>
+      </div>
       
-      {isLoading && (
+      {isPending && (
         <div 
           className="absolute right-0 translate-x-full pl-4 w-96 z-50"
           role="status"
@@ -87,7 +91,7 @@ export const AutoCompleteEditor: React.FC<AutoCompleteProps> = ({
       )}
 
       {/* Suggestions display */}
-      {!isLoading && suggestion && isFocused && (
+      {!isPending && suggestion && isFocused && (
         <div 
           className="absolute right-0 translate-x-full pl-4 w-96 z-50"
           id="autocomplete-suggestion"

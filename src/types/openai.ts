@@ -5,7 +5,9 @@ export interface OpenAIResponse {
 
 export interface AutoCompleteProps {
   value: string;
-  onChange: (value: string) => void;
+  onChange: (text: string) => void;
+  onFocus?: () => void;
+  onBlur?: () => void;
   placeholder?: string;
   className?: string;
 } 

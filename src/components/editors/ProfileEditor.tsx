@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react'
+import React, { ChangeEvent, useState } from 'react'
 import { Contact, Profile, TextStyle } from '../../types/resume'
 import { Button } from '../common/Button'
 import { TextInput } from '../common/TextInput'
@@ -9,6 +9,7 @@ import { AutoCompleteEditor } from '../common/AutoCompleteEditor'
 interface ProfileEditorProps {
   data?: Profile;
   onChange: (profile: Profile) => void;
+  onFocusChange?: (index: number | null) => void;
 }
 
 function parseText(text: string): TextStyle[] {
@@ -104,7 +105,7 @@ const contactTypes = [
   { value: 'github', label: 'GitHub' }
 ]
 
-export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange }) => {
+export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange, onFocusChange }) => {
   const { getImageUrl } = useImageUrl()
   
   const emptyProfile: Profile = {
@@ -116,6 +117,8 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange }) 
   };
   
   const profile = data || emptyProfile;
+
+  const [focusedParagraphIndex, setFocusedParagraphIndex] = useState<number | null>(null);
 
   const handleChange = (field: keyof Profile, value: any) => {
     onChange({
@@ -297,6 +300,8 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange }) 
                 <AutoCompleteEditor
                   value={stringifySegments(paragraph.segments)}
                   onChange={(text) => handleParagraphChange(index, text)}
+                  onFocus={() => onFocusChange?.(index)}
+                  onBlur={() => onFocusChange?.(null)}
                   placeholder="텍스트를 입력하세요"
                   className="mb-2 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 />

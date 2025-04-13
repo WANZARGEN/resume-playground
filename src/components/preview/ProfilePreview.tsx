@@ -2,6 +2,7 @@ import { Profile, TextStyle } from '../../types/resume'
 
 interface Props {
   profile: Profile
+  focusedParagraphIndex?: number | null
 }
 
 function StyledText({ style }: { style: TextStyle }) {
@@ -21,7 +22,7 @@ function StyledText({ style }: { style: TextStyle }) {
   }
 }
 
-export function ProfilePreview({ profile }: Props) {
+export default function ProfilePreview({ profile, focusedParagraphIndex }: Props) {
   if (!profile.paragraphs?.length) return null
 
   return (
@@ -29,11 +30,16 @@ export function ProfilePreview({ profile }: Props) {
       <h2 className="section-title">Profile</h2>
       <article className="space-y-4 text-gray-700">
         {profile.paragraphs.map((paragraph, index) => (
-          <p key={index} className="paragraph">
-            {paragraph.segments?.map((segment, sIndex) => (
-              <StyledText key={sIndex} style={segment} />
-            ))}
-          </p>
+          <div 
+            key={index} 
+            className={`${focusedParagraphIndex === index ? 'ring-2 ring-blue-200 ring-opacity-50 rounded' : ''}`}
+          >
+            <p className="paragraph">
+              {paragraph.segments?.map((segment, sIndex) => (
+                <StyledText key={sIndex} style={segment} />
+              ))}
+            </p>
+          </div>
         ))}
       </article>
     </section>
