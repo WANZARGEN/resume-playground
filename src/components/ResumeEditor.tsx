@@ -7,6 +7,7 @@ import { ProfileEditor } from './editors/ProfileEditor'
 import { ResumePreview } from './preview/ResumePreview'
 import Split from 'react-split'
 import './split.css'
+import StyleGuidePin from './common/StyleGuidePin'
 
 interface EditAreaProps {
   data: Resume
@@ -89,6 +90,7 @@ export default function ResumeEditor() {
           <PreviewArea data={data} fullWidth />
         )}
       </div>
+      <StyleGuidePin />
     </div>
   )
 } 

@@ -314,16 +314,6 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange }) 
             ))}
           </div>
         </div>
-
-        <div className="mt-8 bg-gray-50 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-gray-700 mb-2">텍스트 스타일 가이드</h3>
-          <ul className="space-y-2 text-sm text-gray-600">
-            <li><code>**텍스트**</code> - 강조 텍스트</li>
-            <li><code>##텍스트##</code> - 보조 강조</li>
-            <li><code>`텍스트`</code> - 하이라이트</li>
-            <li><code>[텍스트](URL)</code> - 링크</li>
-          </ul>
-        </div>
       </div>
     </div>
   )
