@@ -9,6 +9,7 @@ export interface TextStyle {
   type?: 'normal' | 'emphasis' | 'accent' | 'highlight' | 'link'
   text?: string
   href?: string
+  url?: string  // For link type
 }
 
 export interface Paragraph {
@@ -29,7 +30,8 @@ export interface TechStack {
 }
 
 export interface WorkItem {
-  text: string
+  text?: string
+  segments?: TextStyle[]  // For rich text with links
   subItems?: string[]
 }
 

@@ -57,7 +57,26 @@ export function EmploymentPreview({ employments }: Props) {
                         <ul className="work-list">
                           {detail.items.map((item, itemIndex) => (
                             <li key={itemIndex}>
-                              {item.text}
+                              {item.segments ? (
+                                item.segments.map((segment, segIndex) => {
+                                  if (segment.type === 'link') {
+                                    return (
+                                      <a
+                                        key={segIndex}
+                                        href={segment.url || segment.href}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-600 hover:underline"
+                                      >
+                                        {segment.text}
+                                      </a>
+                                    )
+                                  }
+                                  return <span key={segIndex}>{segment.text}</span>
+                                })
+                              ) : (
+                                item.text
+                              )}
                               {!!item.subItems?.length && (
                                 <ul className="work-list-nested">
                                   {item.subItems.map((subItem, subItemIndex) => (
