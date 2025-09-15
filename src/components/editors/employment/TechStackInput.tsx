@@ -6,9 +6,11 @@ interface TechStackInputProps {
   value: TechStack[];
   onChange: (value: TechStack[]) => void;
   allTechStacks: string[];
+  onFocus?: () => void;
+  onBlur?: () => void;
 }
 
-export const TechStackInput: React.FC<TechStackInputProps> = ({ value, onChange, allTechStacks }) => {
+export const TechStackInput: React.FC<TechStackInputProps> = ({ value, onChange, allTechStacks, onFocus, onBlur }) => {
   const [query, setQuery] = useState('');
 
   const filteredTech = query === ''
@@ -87,6 +89,8 @@ export const TechStackInput: React.FC<TechStackInputProps> = ({ value, onChange,
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
+            onFocus={onFocus}
+            onBlur={onBlur}
           />
           {filteredTech.length > 0 && (
             <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm border border-gray-300">

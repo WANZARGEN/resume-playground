@@ -2,9 +2,10 @@ import { Employment } from '../../types/resume'
 
 interface Props {
   employments: Employment[]
+  focusedEmployment?: { employmentIndex?: number; detailIndex?: number; itemIndex?: number; subItemIndex?: number } | null
 }
 
-export function EmploymentPreview({ employments }: Props) {
+export function EmploymentPreview({ employments, focusedEmployment }: Props) {
   if (!employments?.length) return null
 
   return (
@@ -12,11 +13,16 @@ export function EmploymentPreview({ employments }: Props) {
       <h2 className="section-title">Employment History</h2>
 
       <div className="section-entries">
-        {employments.map((employment, index) => (
-          <div key={index} className="section-entry">
-            <h3 className="section-sub-title">{employment.company}</h3>
-            {(employment.position || employment.period) && (
-              <div className="meta-info">
+        {employments.map((employment, index) => {
+          const isEmploymentFocused = focusedEmployment?.employmentIndex === index &&
+                                     focusedEmployment?.detailIndex === undefined &&
+                                     focusedEmployment?.itemIndex === undefined
+
+          return (
+            <div key={index} className={`section-entry ${isEmploymentFocused ? 'focused-item' : ''}`}>
+              <h3 className="section-sub-title">{employment.company}</h3>
+              {(employment.position || employment.period) && (
+                <div className="meta-info">
                 {employment.position && <span>{employment.position}</span>}
                 {employment.position && employment.period && <div className="meta-divider" />}
                 {employment.period && (
@@ -29,7 +35,7 @@ export function EmploymentPreview({ employments }: Props) {
 
             <ul className="spec-list">
               {employment.techStack?.length ? (
-                <li>
+                <li className={focusedEmployment?.employmentIndex === index && focusedEmployment?.detailIndex === -1 ? 'focused-item' : ''}>
                   <p className="spec-label">사용 기술</p>
                   <div className="spec-content-container">
                     <p className="tech-list">
@@ -51,16 +57,25 @@ export function EmploymentPreview({ employments }: Props) {
                 <li>
                   <p className="spec-label">주요 업무</p>
                   <div className="spec-content-container">
-                    {employment.details.map((detail, detailIndex) => (
-                      <div key={detailIndex}>
-                        <p className="work-header">{detail.title}</p>
-                        <ul className="work-list">
-                          {detail.items?.map((item, itemIndex) => {
+                    {employment.details.map((detail, detailIndex) => {
+                      const isDetailFocused = focusedEmployment?.employmentIndex === index &&
+                                            focusedEmployment?.detailIndex === detailIndex &&
+                                            focusedEmployment?.itemIndex === undefined
+
+                      return (
+                        <div key={detailIndex} className={isDetailFocused ? 'focused-item' : ''}>
+                          <p className="work-header">{detail.title}</p>
+                          <ul className="work-list">
+                            {detail.items?.map((item, itemIndex) => {
                             // Safe handling of item data
                             if (!item) return null;
 
+                            const isItemFocused = focusedEmployment?.employmentIndex === index &&
+                                                focusedEmployment?.detailIndex === detailIndex &&
+                                                focusedEmployment?.itemIndex === itemIndex
+
                             return (
-                              <li key={itemIndex}>
+                              <li key={itemIndex} className={isItemFocused ? 'focused-item' : ''}>
                                 {item.segments && Array.isArray(item.segments) && item.segments.length > 0 ? (
                                   item.segments.map((segment, segIndex) => {
                                     if (!segment) return null;
@@ -84,9 +99,18 @@ export function EmploymentPreview({ employments }: Props) {
                                 )}
                                 {Array.isArray(item.subItems) && item.subItems.length > 0 && (
                                   <ul className="work-list-nested">
-                                    {item.subItems.map((subItem, subItemIndex) => (
-                                      <li key={subItemIndex}>{subItem}</li>
-                                    ))}
+                                    {item.subItems.map((subItem, subItemIndex) => {
+                                      const isSubItemFocused = focusedEmployment?.employmentIndex === index &&
+                                                              focusedEmployment?.detailIndex === detailIndex &&
+                                                              focusedEmployment?.itemIndex === itemIndex &&
+                                                              focusedEmployment?.subItemIndex === subItemIndex
+
+                                      return (
+                                        <li key={subItemIndex} className={isSubItemFocused ? 'focused-item' : ''}>
+                                          {subItem}
+                                        </li>
+                                      )
+                                    })}
                                   </ul>
                                 )}
                               </li>
@@ -94,13 +118,15 @@ export function EmploymentPreview({ employments }: Props) {
                           })}
                         </ul>
                       </div>
-                    ))}
+                    )
+                  })}
                   </div>
                 </li>
               ) : null}
             </ul>
           </div>
-        ))}
+          )
+        })}
       </div>
     </section>
   )

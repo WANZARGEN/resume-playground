@@ -7,9 +7,10 @@ import { TextArea } from '../common/TextArea';
 interface EducationEditorProps {
   data?: Education[];
   onChange: (education: Education[]) => void;
+  onFocusChange?: (focus: { educationIndex?: number; activityIndex?: number } | null) => void;
 }
 
-export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange }) => {
+export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange, onFocusChange }) => {
   const educationList = data || [];
 
   const handleAddEducation = () => {
@@ -213,6 +214,8 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
                       <TextInput
                         value={activity.title || ''}
                         onChange={(e) => handleActivityChange(educationIndex, activityIndex, 'title', e.target.value)}
+                        onFocus={() => onFocusChange?.({ educationIndex, activityIndex })}
+                        onBlur={() => onFocusChange?.(null)}
                         placeholder="활동 제목"
                       />
                     </div>
@@ -228,6 +231,8 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
                           handleActivityChange(educationIndex, activityIndex, 'url', e.target.value);
                           handleActivityChange(educationIndex, activityIndex, 'link', e.target.value);
                         }}
+                        onFocus={() => onFocusChange?.({ educationIndex, activityIndex })}
+                        onBlur={() => onFocusChange?.(null)}
                         placeholder="https://example.com"
                       />
                     </div>
@@ -240,6 +245,8 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
                       <TextArea
                         value={activity.description || ''}
                         onChange={(e) => handleActivityChange(educationIndex, activityIndex, 'description', e.target.value)}
+                        onFocus={() => onFocusChange?.({ educationIndex, activityIndex })}
+                        onBlur={() => onFocusChange?.(null)}
                         placeholder="활동 설명"
                       />
                     </div>

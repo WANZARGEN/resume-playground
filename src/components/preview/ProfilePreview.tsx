@@ -30,9 +30,9 @@ export default function ProfilePreview({ profile, focusedParagraphIndex }: Props
       <h2 className="section-title">Profile</h2>
       <article className="space-y-4 text-gray-700">
         {profile.paragraphs.map((paragraph, index) => (
-          <div 
-            key={index} 
-            className={`${focusedParagraphIndex === index ? 'ring-2 ring-blue-200 ring-opacity-50 rounded' : ''}`}
+          <div
+            key={index}
+            className={focusedParagraphIndex === index ? 'focused-paragraph' : ''}
           >
             <p className="paragraph">
               {paragraph.segments?.map((segment, sIndex) => (

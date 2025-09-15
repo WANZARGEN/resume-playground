@@ -9,9 +9,11 @@ interface DateInputProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  onFocus?: () => void;
+  onBlur?: () => void;
 }
 
-export const DateInput: React.FC<DateInputProps> = ({ value, onChange, placeholder }) => {
+export const DateInput: React.FC<DateInputProps> = ({ value, onChange, placeholder, onFocus, onBlur }) => {
   const [selectedYear, selectedMonth] = value ? value.split('.') : ['', ''];
 
   const yearOptions = YEARS.map(year => ({
@@ -33,6 +35,8 @@ export const DateInput: React.FC<DateInputProps> = ({ value, onChange, placehold
           options={yearOptions}
           placeholder="년도"
           size="sm"
+          onFocus={onFocus}
+          onBlur={onBlur}
         />
       </div>
       <div className="w-[80px]">
@@ -42,6 +46,8 @@ export const DateInput: React.FC<DateInputProps> = ({ value, onChange, placehold
           options={monthOptions}
           placeholder="월"
           size="sm"
+          onFocus={onFocus}
+          onBlur={onBlur}
         />
       </div>
     </div>

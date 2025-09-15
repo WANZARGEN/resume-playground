@@ -26,6 +26,7 @@ interface WorkDetailEditorProps {
   onSubItemMoveDown: (employmentIndex: number, detailIndex: number, itemIndex: number, subItemIndex: number) => void;
   isFirst: boolean;
   isLast: boolean;
+  onFocusChange?: (focus: { employmentIndex?: number; detailIndex?: number; itemIndex?: number; subItemIndex?: number } | null) => void;
 }
 
 export const WorkDetailEditor: React.FC<WorkDetailEditorProps> = ({
@@ -47,7 +48,8 @@ export const WorkDetailEditor: React.FC<WorkDetailEditorProps> = ({
   onSubItemMoveUp,
   onSubItemMoveDown,
   isFirst,
-  isLast
+  isLast,
+  onFocusChange
 }) => {
   return (
     <div className="relative bg-gray-50 rounded-lg p-4 space-y-4">
@@ -116,6 +118,8 @@ export const WorkDetailEditor: React.FC<WorkDetailEditorProps> = ({
                       onItemChange(employmentIndex, detailIndex, itemIndex, 'segments', undefined);
                     }
                   }}
+                  onFocus={() => onFocusChange?.({ employmentIndex, detailIndex, itemIndex })}
+                  onBlur={() => onFocusChange?.(null)}
                   placeholder="주요 업무 내용을 입력하세요"
                   className="min-h-[60px]"
                 />
@@ -161,6 +165,8 @@ export const WorkDetailEditor: React.FC<WorkDetailEditorProps> = ({
                     <TextArea
                       value={subItem}
                       onChange={(e) => onSubItemChange(employmentIndex, detailIndex, itemIndex, subIndex, e.target.value)}
+                      onFocus={() => onFocusChange?.({ employmentIndex, detailIndex, itemIndex, subItemIndex: subIndex })}
+                      onBlur={() => onFocusChange?.(null)}
                       placeholder="세부 업무 내용을 입력하세요"
                       className="min-h-[60px]"
                     />

@@ -16,15 +16,19 @@ interface EditAreaProps {
   handleEmploymentChange: (employments: Employment[]) => void
   handleEducationChange: (education: Education[]) => void
   onFocusChange: (index: number | null) => void
+  onEmploymentFocus: (focus: { employmentIndex?: number; detailIndex?: number; itemIndex?: number; subItemIndex?: number } | null) => void
+  onEducationFocus: (focus: { educationIndex?: number; activityIndex?: number } | null) => void
 }
 
 interface PreviewAreaProps {
   data: Resume
   fullWidth?: boolean
   focusedParagraphIndex?: number | null
+  focusedEmployment?: { employmentIndex?: number; detailIndex?: number; itemIndex?: number; subItemIndex?: number } | null
+  focusedEducation?: { educationIndex?: number; activityIndex?: number } | null
 }
 
-const EditArea = ({ data, handleProfileChange, handleEmploymentChange, handleEducationChange, onFocusChange }: EditAreaProps) => {
+const EditArea = ({ data, handleProfileChange, handleEmploymentChange, handleEducationChange, onFocusChange, onEmploymentFocus, onEducationFocus }: EditAreaProps) => {
   const resumeContext = {
     employments: data.employments,
     education: data.education
@@ -41,21 +45,29 @@ const EditArea = ({ data, handleProfileChange, handleEmploymentChange, handleEdu
       <EmploymentEditor
         data={data.employments}
         onChange={handleEmploymentChange}
+        onFocusChange={onEmploymentFocus}
       />
       <EducationEditor
         data={data.education}
         onChange={handleEducationChange}
+        onFocusChange={onEducationFocus}
       />
     </div>
   )
 }
 
-const PreviewArea = ({ data, fullWidth = false, focusedParagraphIndex }: PreviewAreaProps) => {
+const PreviewArea = ({ data, fullWidth = false, focusedParagraphIndex, focusedEmployment, focusedEducation }: PreviewAreaProps) => {
   const { selectedFormat } = useEditorUI()
-  
+
   return (
     <div className={`min-w-[320px] ${fullWidth ? 'min-w-[1000px] mx-auto' : ''}`}>
-      <ResumePreview data={data} format={selectedFormat.id} focusedParagraphIndex={focusedParagraphIndex} />
+      <ResumePreview
+        data={data}
+        format={selectedFormat.id}
+        focusedParagraphIndex={focusedParagraphIndex}
+        focusedEmployment={focusedEmployment}
+        focusedEducation={focusedEducation}
+      />
     </div>
   )
 }
@@ -69,6 +81,15 @@ export default function ResumeEditor() {
     handleEducationChange,
   } = useResumeActions()
   const [focusedParagraphIndex, setFocusedParagraphIndex] = useState<number | null>(null)
+  const [focusedEmployment, setFocusedEmployment] = useState<{
+    employmentIndex?: number
+    detailIndex?: number
+    itemIndex?: number
+  } | null>(null)
+  const [focusedEducation, setFocusedEducation] = useState<{
+    educationIndex?: number
+    activityIndex?: number
+  } | null>(null)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -80,11 +101,13 @@ export default function ResumeEditor() {
             handleEmploymentChange={handleEmploymentChange}
             handleEducationChange={handleEducationChange}
             onFocusChange={setFocusedParagraphIndex}
+            onEmploymentFocus={setFocusedEmployment}
+            onEducationFocus={setFocusedEducation}
           />
         )}
-        
+
         {activeTab === 'split' && (
-          <Split 
+          <Split
             sizes={[30, 70]}
             minSize={320}
             gutterSize={10}
@@ -96,13 +119,26 @@ export default function ResumeEditor() {
               handleEmploymentChange={handleEmploymentChange}
               handleEducationChange={handleEducationChange}
               onFocusChange={setFocusedParagraphIndex}
+              onEmploymentFocus={setFocusedEmployment}
+              onEducationFocus={setFocusedEducation}
             />
-            <PreviewArea data={data} focusedParagraphIndex={focusedParagraphIndex} />
+            <PreviewArea
+              data={data}
+              focusedParagraphIndex={focusedParagraphIndex}
+              focusedEmployment={focusedEmployment}
+              focusedEducation={focusedEducation}
+            />
           </Split>
         )}
         
         {activeTab === 'preview-only' && (
-          <PreviewArea data={data} fullWidth />
+          <PreviewArea
+            data={data}
+            fullWidth
+            focusedParagraphIndex={focusedParagraphIndex}
+            focusedEmployment={focusedEmployment}
+            focusedEducation={focusedEducation}
+          />
         )}
       </div>
       <StyleGuidePin />

@@ -10,9 +10,10 @@ import { WorkDetailEditor } from './employment/WorkDetailEditor';
 interface EmploymentEditorProps {
   data?: Employment[];
   onChange: (employments: Employment[]) => void;
+  onFocusChange?: (focus: { employmentIndex?: number; detailIndex?: number; itemIndex?: number; subItemIndex?: number } | null) => void;
 }
 
-export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChange }) => {
+export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChange, onFocusChange }) => {
   const employments = data || [];
 
   // 전체 employment에서 사용된 기술 스택 목록을 추출
@@ -322,6 +323,8 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
                   <TextInput
                     value={employment.company || ''}
                     onChange={(e) => handleChange(index, 'company', e.target.value)}
+                    onFocus={() => onFocusChange?.({ employmentIndex: index })}
+                    onBlur={() => onFocusChange?.(null)}
                     placeholder="회사명을 입력하세요"
                   />
                 </div>
@@ -332,6 +335,8 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
                   <TextInput
                     value={employment.position || ''}
                     onChange={(e) => handleChange(index, 'position', e.target.value)}
+                    onFocus={() => onFocusChange?.({ employmentIndex: index })}
+                    onBlur={() => onFocusChange?.(null)}
                     placeholder="직위를 입력하세요"
                   />
                 </div>
@@ -351,6 +356,8 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
                         start: value,
                       })
                     }
+                    onFocus={() => onFocusChange?.({ employmentIndex: index })}
+                    onBlur={() => onFocusChange?.(null)}
                     placeholder="YYYY.MM"
                   />
                 </div>
@@ -366,6 +373,8 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
                         end: value,
                       })
                     }
+                    onFocus={() => onFocusChange?.({ employmentIndex: index })}
+                    onBlur={() => onFocusChange?.(null)}
                     placeholder="YYYY.MM"
                   />
                 </div>
@@ -416,6 +425,8 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
               value={employment.techStack || []}
               onChange={(newTechStack) => handleChange(index, 'techStack', newTechStack)}
               allTechStacks={allTechStacks}
+              onFocus={() => onFocusChange?.({ employmentIndex: index, detailIndex: -1 })}
+              onBlur={() => onFocusChange?.(null)}
             />
           </div>
 
@@ -473,6 +484,7 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
                   onSubItemMoveDown={handleSubItemMoveDown}
                   isFirst={detailIndex === 0}
                   isLast={detailIndex === (employment.details?.length || 0) - 1}
+                  onFocusChange={onFocusChange}
                 />
               ))}
             </div>

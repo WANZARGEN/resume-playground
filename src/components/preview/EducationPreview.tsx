@@ -2,22 +2,23 @@ import { Education } from '../../types/resume'
 
 interface Props {
   education: Education[]
+  focusedEducation?: { educationIndex?: number; activityIndex?: number } | null
 }
 
-export function EducationPreview({ education }: Props) {
+export function EducationPreview({ education, focusedEducation }: Props) {
   if (!education?.length) return null
 
-  const sections: Record<string, { title: string; items: Education[] }> = {
+  const sections: Record<string, { title: string; items: { education: Education; originalIndex: number }[] }> = {
     presentation: { title: 'Presentations & Seminars', items: [] },
     certificate: { title: 'Certificates', items: [] },
     education: { title: 'Education', items: [] },
     language: { title: 'Language Proficiency', items: [] },
   }
 
-  // 각 항목을 해당 섹션에 분류
-  education.forEach((item) => {
+  // 각 항목을 해당 섹션에 분류 (원본 인덱스 유지)
+  education.forEach((item, index) => {
     if (item?.type && item.type in sections && Array.isArray(item.items)) {
-      sections[item.type].items.push(item)
+      sections[item.type].items.push({ education: item, originalIndex: index })
     }
   })
 
@@ -36,9 +37,13 @@ export function EducationPreview({ education }: Props) {
               <li>
                 <div className="spec-content-container">
                   <ul className="work-list">
-                    {section.items.map((item) => (
-                      item.items.map((activity, itemIndex) => (
-                        <li key={itemIndex}>
+                    {section.items.map(({ education: item, originalIndex }) => (
+                      item.items.map((activity, itemIndex) => {
+                        const isFocused = focusedEducation?.educationIndex === originalIndex &&
+                                        focusedEducation?.activityIndex === itemIndex
+
+                        return (
+                          <li key={itemIndex} className={isFocused ? 'focused-item' : ''}>
                           {activity.title && (
                             (activity.url || activity.link) ? (
                               <a
@@ -55,7 +60,8 @@ export function EducationPreview({ education }: Props) {
                           )}
                           {activity.description && ` - ${activity.description}`}
                         </li>
-                      ))
+                        )
+                      })
                     ))}
                   </ul>
                 </div>

@@ -10,9 +10,11 @@ interface ResumePreviewProps {
   data: Resume
   format?: 'html' | 'pdf' | 'json'
   focusedParagraphIndex?: number | null
+  focusedEmployment?: { employmentIndex?: number; detailIndex?: number; itemIndex?: number } | null
+  focusedEducation?: { educationIndex?: number; activityIndex?: number } | null
 }
 
-export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, format = 'html', focusedParagraphIndex }) => {
+export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, format = 'html', focusedParagraphIndex, focusedEmployment, focusedEducation }) => {
   useEffect(() => {
     if (format === 'pdf') {
       document.body.classList.add('print-preview')
@@ -43,9 +45,9 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, format = 'ht
       <div className={`${isPdfMode ? 'px-12 py-8' : 'p-8'} space-y-8`}>
         {data.profile && <ProfilePreview profile={data.profile} focusedParagraphIndex={focusedParagraphIndex} />}
         <hr className="section-divider" />
-        {data.employments && <EmploymentPreview employments={data.employments} />}
+        {data.employments && <EmploymentPreview employments={data.employments} focusedEmployment={focusedEmployment} />}
         <hr className="section-divider" />
-        {data.education && <EducationPreview education={data.education} />}
+        {data.education && <EducationPreview education={data.education} focusedEducation={focusedEducation} />}
       </div>
     </div>
   )

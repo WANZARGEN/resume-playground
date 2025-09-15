@@ -42,6 +42,58 @@
   @apply h-3 border-r border-gray-300 hidden;
 }
 
+/* 포커스 하이라이트 스타일 */
+.focused-item {
+  @apply relative transition-all duration-200;
+  background-color: rgba(99, 102, 241, 0.05);
+  outline: 2px solid rgba(99, 102, 241, 0.15);
+  outline-offset: 4px;
+  border-radius: 0.125rem;
+}
+
+/* 리스트 아이템이 아닌 경우에만 왼쪽 선 표시 */
+.focused-item:not(li)::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: rgb(99, 102, 241);
+  border-radius: 0.125rem;
+}
+
+/* 리스트 아이템인 경우 bullet 왼쪽에 선 표시 */
+li.focused-item::before {
+  content: '';
+  position: absolute;
+  left: -28px;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: rgb(99, 102, 241);
+  border-radius: 0.125rem;
+}
+
+.focused-paragraph {
+  @apply relative transition-all duration-200;
+  background-color: rgba(99, 102, 241, 0.05);
+  outline: 2px solid rgba(99, 102, 241, 0.15);
+  outline-offset: 4px;
+  border-radius: 0.125rem;
+}
+
+.focused-paragraph::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: rgb(99, 102, 241);
+  border-radius: 0.125rem;
+}
+
 /* 섹션 스타일 */
 .section-title {
   @apply text-2xl font-bold mb-4 text-gray-800;
