@@ -21,7 +21,7 @@ export interface Profile {
   name?: string
   position?: string
   contacts?: Contact[]
-  paragraphs?: Paragraph[]
+  paragraphs?: (Paragraph | string)[]  // Can be either segments object or markdown string
 }
 
 export interface TechStack {
@@ -30,13 +30,13 @@ export interface TechStack {
 }
 
 export interface WorkItem {
-  text?: string
-  segments?: TextStyle[]  // For rich text with links
+  text?: string  // Can contain markdown syntax
+  segments?: TextStyle[]  // For rich text with links (legacy)
   subItems?: string[]
 }
 
 export interface WorkDetail {
-  title: string
+  title: string | TextSegment[]
   items: WorkItem[]
 }
 

@@ -1,4 +1,5 @@
 import { Profile, TextStyle } from '../../types/resume'
+import { parseMarkdownText } from '../../utils/markdownParser'
 
 interface Props {
   profile: Profile
@@ -30,19 +31,26 @@ export default function ProfilePreview({ profile, focusedParagraphIndex, onDoubl
     <section id="profile" className="text-gray-800">
       <h2 className="section-title">Profile</h2>
       <article className="space-y-4 text-gray-700">
-        {profile.paragraphs.map((paragraph, index) => (
-          <div
-            key={index}
-            className={focusedParagraphIndex === index ? 'focused-paragraph' : ''}
-            onDoubleClick={() => onDoubleClick?.(index)}
-          >
-            <p className="paragraph">
-              {paragraph.segments?.map((segment, sIndex) => (
-                <StyledText key={sIndex} style={segment} />
-              ))}
-            </p>
-          </div>
-        ))}
+        {profile.paragraphs.map((paragraph, index) => {
+          // Handle both string (markdown) and segments format
+          const segments = typeof paragraph === 'string'
+            ? parseMarkdownText(paragraph)
+            : paragraph.segments || []
+
+          return (
+            <div
+              key={index}
+              className={focusedParagraphIndex === index ? 'focused-paragraph' : ''}
+              onDoubleClick={() => onDoubleClick?.(index)}
+            >
+              <p className="paragraph">
+                {segments.map((segment, sIndex) => (
+                  <StyledText key={sIndex} style={segment} />
+                ))}
+              </p>
+            </div>
+          )
+        })}
       </article>
     </section>
   )

@@ -1,5 +1,6 @@
 import { Employment } from '../../types/resume'
 import { formatPeriodWithDuration } from '../../utils/dateUtils'
+import { parseMarkdownText } from '../../utils/markdownParser'
 
 interface Props {
   employments: Employment[]
@@ -83,7 +84,62 @@ export function EmploymentPreview({ employments, focusedEmployment, onDoubleClic
                             onDoubleClick?.({ employmentIndex: index, detailIndex })
                           }}
                                     >
-                          <p className="work-header">{detail.title}</p>
+                          <p className="work-header">
+                            {(() => {
+                              if (Array.isArray(detail.title)) {
+                                // Handle segments array
+                                return detail.title.map((segment, segIndex) => {
+                                  if (!segment) return null;
+                                  if (segment.type === 'link') {
+                                    return (
+                                      <a
+                                        key={segIndex}
+                                        href={segment.url || segment.href}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-link"
+                                      >
+                                        {segment.text}
+                                      </a>
+                                    )
+                                  } else if (segment.type === 'emphasis') {
+                                    return <span key={segIndex} className="text-emphasis">{segment.text}</span>
+                                  } else if (segment.type === 'accent') {
+                                    return <span key={segIndex} className="text-accent">{segment.text}</span>
+                                  } else if (segment.type === 'highlight') {
+                                    return <span key={segIndex} className="text-highlight">{segment.text}</span>
+                                  }
+                                  return <span key={segIndex}>{segment.text}</span>
+                                })
+                              } else if (typeof detail.title === 'string') {
+                                // Parse markdown from string
+                                const segments = parseMarkdownText(detail.title)
+                                return segments.map((segment, segIndex) => {
+                                  if (segment.type === 'link') {
+                                    return (
+                                      <a
+                                        key={segIndex}
+                                        href={segment.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-link"
+                                      >
+                                        {segment.text}
+                                      </a>
+                                    )
+                                  } else if (segment.type === 'emphasis') {
+                                    return <span key={segIndex} className="text-emphasis">{segment.text}</span>
+                                  } else if (segment.type === 'accent') {
+                                    return <span key={segIndex} className="text-accent">{segment.text}</span>
+                                  } else if (segment.type === 'highlight') {
+                                    return <span key={segIndex} className="text-highlight">{segment.text}</span>
+                                  }
+                                  return <span key={segIndex}>{segment.text}</span>
+                                })
+                              }
+                              return null
+                            })()}
+                          </p>
                           <ul className="work-list">
                             {detail.items?.map((item, itemIndex) => {
                             // Safe handling of item data
@@ -102,27 +158,61 @@ export function EmploymentPreview({ employments, focusedEmployment, onDoubleClic
                                   onDoubleClick?.({ employmentIndex: index, detailIndex, itemIndex })
                                 }}
                                                 >
-                                {item.segments && Array.isArray(item.segments) && item.segments.length > 0 ? (
-                                  item.segments.map((segment, segIndex) => {
-                                    if (!segment) return null;
-                                    if (segment.type === 'link') {
-                                      return (
-                                        <a
-                                          key={segIndex}
-                                          href={segment.url || segment.href}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          className="text-blue-600 hover:underline"
-                                        >
-                                          {segment.text}
-                                        </a>
-                                      )
-                                    }
-                                    return <span key={segIndex}>{segment.text}</span>
-                                  })
-                                ) : (
-                                  item.text || ''
-                                )}
+                                {(() => {
+                                  // Priority: segments > markdown text > plain text
+                                  if (item.segments && Array.isArray(item.segments) && item.segments.length > 0) {
+                                    // Use existing segments
+                                    return item.segments.map((segment, segIndex) => {
+                                      if (!segment) return null;
+                                      if (segment.type === 'link') {
+                                        return (
+                                          <a
+                                            key={segIndex}
+                                            href={segment.url || segment.href}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-link"
+                                          >
+                                            {segment.text}
+                                          </a>
+                                        )
+                                      } else if (segment.type === 'emphasis') {
+                                        return <span key={segIndex} className="text-emphasis">{segment.text}</span>
+                                      } else if (segment.type === 'accent') {
+                                        return <span key={segIndex} className="text-accent">{segment.text}</span>
+                                      } else if (segment.type === 'highlight') {
+                                        return <span key={segIndex} className="text-highlight">{segment.text}</span>
+                                      }
+                                      return <span key={segIndex}>{segment.text}</span>
+                                    })
+                                  } else if (item.text) {
+                                    // Parse markdown from text
+                                    const segments = parseMarkdownText(item.text)
+                                    return segments.map((segment, segIndex) => {
+                                      if (segment.type === 'link') {
+                                        return (
+                                          <a
+                                            key={segIndex}
+                                            href={segment.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-link"
+                                          >
+                                            {segment.text}
+                                          </a>
+                                        )
+                                      } else if (segment.type === 'emphasis') {
+                                        return <span key={segIndex} className="text-emphasis">{segment.text}</span>
+                                      } else if (segment.type === 'accent') {
+                                        return <span key={segIndex} className="text-accent">{segment.text}</span>
+                                      } else if (segment.type === 'highlight') {
+                                        return <span key={segIndex} className="text-highlight">{segment.text}</span>
+                                      }
+                                      return <span key={segIndex}>{segment.text}</span>
+                                    })
+                                  }
+                                  return ''
+                                })()}
                                 {Array.isArray(item.subItems) && item.subItems.length > 0 && (
                                   <ul className="work-list-nested">
                                     {item.subItems.map((subItem, subItemIndex) => {

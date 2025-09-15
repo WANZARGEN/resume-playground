@@ -1,4 +1,5 @@
 import { Education } from '../../types/resume'
+import { parseMarkdownText } from '../../utils/markdownParser'
 
 interface Props {
   education: Education[]
@@ -49,22 +50,83 @@ export function EducationPreview({ education, focusedEducation, onDoubleClick }:
                             className={isFocused ? 'focused-item' : ''}
                             onDoubleClick={() => onDoubleClick?.({ educationIndex: originalIndex, activityIndex: itemIndex })}
                           >
-                          {activity.title && (
-                            (activity.url || activity.link) ? (
-                              <a
-                                href={activity.url || activity.link}
-                                className="text-link"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                {activity.title}
-                              </a>
-                            ) : (
-                              activity.title
+                          {(() => {
+                            // Parse title with markdown
+                            const titleSegments = activity.title ? parseMarkdownText(activity.title) : []
+                            const descSegments = activity.description ? parseMarkdownText(activity.description) : []
+
+                            return (
+                              <>
+                                {/* Render title with markdown styles */}
+                                {titleSegments.map((segment, segIndex) => {
+                                  if (segment.type === 'link') {
+                                    return (
+                                      <a
+                                        key={segIndex}
+                                        href={segment.url}
+                                        className="text-link"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                      >
+                                        {segment.text}
+                                      </a>
+                                    )
+                                  } else if (segment.type === 'emphasis') {
+                                    return <span key={segIndex} className="text-emphasis">{segment.text}</span>
+                                  } else if (segment.type === 'accent') {
+                                    return <span key={segIndex} className="text-accent">{segment.text}</span>
+                                  } else if (segment.type === 'highlight') {
+                                    return <span key={segIndex} className="text-highlight">{segment.text}</span>
+                                  }
+                                  return <span key={segIndex}>{segment.text}</span>
+                                })}
+
+                                {/* If activity has a separate URL, wrap the whole title in a link */}
+                                {!titleSegments.some(s => s.type === 'link') && (activity.url || activity.link) && (
+                                  <a
+                                    href={activity.url || activity.link}
+                                    className="text-link"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    {' '}↗
+                                  </a>
+                                )}
+
+                                {/* Date */}
+                                {activity.date && ` (${activity.date})`}
+
+                                {/* Description with markdown */}
+                                {descSegments.length > 0 && (
+                                  <>
+                                    {' - '}
+                                    {descSegments.map((segment, segIndex) => {
+                                      if (segment.type === 'link') {
+                                        return (
+                                          <a
+                                            key={segIndex}
+                                            href={segment.url}
+                                            className="text-link"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                          >
+                                            {segment.text}
+                                          </a>
+                                        )
+                                      } else if (segment.type === 'emphasis') {
+                                        return <span key={segIndex} className="text-emphasis">{segment.text}</span>
+                                      } else if (segment.type === 'accent') {
+                                        return <span key={segIndex} className="text-accent">{segment.text}</span>
+                                      } else if (segment.type === 'highlight') {
+                                        return <span key={segIndex} className="text-highlight">{segment.text}</span>
+                                      }
+                                      return <span key={segIndex}>{segment.text}</span>
+                                    })}
+                                  </>
+                                )}
+                              </>
                             )
-                          )}
-                          {activity.date && ` (${activity.date})`}
-                          {activity.description && ` - ${activity.description}`}
+                          })()}
                         </li>
                         )
                       })

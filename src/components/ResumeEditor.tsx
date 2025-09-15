@@ -114,38 +114,51 @@ export default function ResumeEditor() {
     // 포커스 설정
     setFocusedParagraphIndex(paragraphIndex)
 
-    // 편집 영역 스크롤
-    if (editorRef.current) {
-      // ProfileEditor 내의 특정 paragraph input 찾기
-      const paragraphInputs = editorRef.current.querySelectorAll('.profile-paragraph-input')
-      if (paragraphInputs[paragraphIndex]) {
-        const element = paragraphInputs[paragraphIndex] as HTMLElement
-        const container = editorRef.current
-        const elementRect = element.getBoundingClientRect()
-        const containerRect = container.getBoundingClientRect()
+    // 약간의 딜레이 후 스크롤 및 포커스
+    setTimeout(() => {
+      if (editorRef.current) {
+        // ProfileEditor 내의 특정 paragraph input 찾기
+        const paragraphInputs = editorRef.current.querySelectorAll('.profile-paragraph-input')
+        if (paragraphInputs[paragraphIndex]) {
+          const element = paragraphInputs[paragraphIndex] as HTMLElement
+          const container = editorRef.current
+          const elementRect = element.getBoundingClientRect()
+          const containerRect = container.getBoundingClientRect()
 
-        const scrollTop = container.scrollTop + elementRect.top - containerRect.top - 50
+          // 요소가 이미 보이는 영역에 있는지 확인
+          const isInView = elementRect.top >= containerRect.top &&
+                          elementRect.bottom <= containerRect.bottom
 
-        container.scrollTo({
-          top: scrollTop,
-          behavior: 'smooth'
-        })
+          // 보이지 않을 때만 스크롤
+          if (!isInView) {
+            const scrollTop = container.scrollTop + elementRect.top - containerRect.top - 50
 
-        // 포커스도 설정
-        setTimeout(() => {
-          element.focus()
-        }, 300)
+            container.scrollTo({
+              top: scrollTop,
+              behavior: 'smooth'
+            })
+          }
+
+          // 포커스 설정 (스크롤 후)
+          setTimeout(() => {
+            const input = element.querySelector('textarea') || element
+            if (input instanceof HTMLElement) {
+              input.focus()
+            }
+          }, 300)
+        }
       }
-    }
+    }, 50)
   }
 
   const handleEmploymentDoubleClick = (focus: { employmentIndex?: number; detailIndex?: number; itemIndex?: number; subItemIndex?: number }) => {
     // 포커스 설정
     setFocusedEmployment(focus)
 
-    // 편집 영역 스크롤
-    if (editorRef.current && focus.employmentIndex !== undefined) {
-      // EmploymentEditor 내의 특정 섹션 찾기
+    // 약간의 딜레이 후 스크롤 및 포커스
+    setTimeout(() => {
+      if (editorRef.current && focus.employmentIndex !== undefined) {
+        // EmploymentEditor 내의 특정 셉션 찾기
       const employmentSections = editorRef.current.querySelectorAll('.employment-editor-section')
       if (employmentSections[focus.employmentIndex]) {
         const section = employmentSections[focus.employmentIndex]
@@ -186,14 +199,21 @@ export default function ResumeEditor() {
         const elementRect = targetElement.getBoundingClientRect()
         const containerRect = container.getBoundingClientRect()
 
-        const scrollTop = container.scrollTop + elementRect.top - containerRect.top - 50
+        // 요소가 이미 보이는 영역에 있는지 확인
+        const isInView = elementRect.top >= containerRect.top &&
+                        elementRect.bottom <= containerRect.bottom
 
-        container.scrollTo({
-          top: scrollTop,
-          behavior: 'smooth'
-        })
+        // 보이지 않을 때만 스크롤
+        if (!isInView) {
+          const scrollTop = container.scrollTop + elementRect.top - containerRect.top - 50
 
-        // 적절한 input에 포커스
+          container.scrollTo({
+            top: scrollTop,
+            behavior: 'smooth'
+          })
+        }
+
+        // 적절한 input에 포커스 (스크롤 후)
         setTimeout(() => {
           if (focusElement) {
             focusElement.focus()
@@ -206,16 +226,18 @@ export default function ResumeEditor() {
           }
         }, 300)
       }
-    }
+      }
+    }, 50)
   }
 
   const handleEducationDoubleClick = (focus: { educationIndex?: number; activityIndex?: number }) => {
     // 포커스 설정
     setFocusedEducation(focus)
 
-    // 편집 영역 스크롤
-    if (editorRef.current && focus.educationIndex !== undefined) {
-      // EducationEditor 내의 특정 섹션 찾기
+    // 약간의 딜레이 후 스크롤 및 포커스
+    setTimeout(() => {
+      if (editorRef.current && focus.educationIndex !== undefined) {
+        // EducationEditor 내의 특정 셉션 찾기
       const educationSections = editorRef.current.querySelectorAll('.education-editor-section')
       if (educationSections[focus.educationIndex]) {
         const section = educationSections[focus.educationIndex]
@@ -232,14 +254,21 @@ export default function ResumeEditor() {
         const elementRect = targetElement.getBoundingClientRect()
         const containerRect = container.getBoundingClientRect()
 
-        const scrollTop = container.scrollTop + elementRect.top - containerRect.top - 50
+        // 요소가 이미 보이는 영역에 있는지 확인
+        const isInView = elementRect.top >= containerRect.top &&
+                        elementRect.bottom <= containerRect.bottom
 
-        container.scrollTo({
-          top: scrollTop,
-          behavior: 'smooth'
-        })
+        // 보이지 않을 때만 스크롤
+        if (!isInView) {
+          const scrollTop = container.scrollTop + elementRect.top - containerRect.top - 50
 
-        // 첫 번째 input에 포커스
+          container.scrollTo({
+            top: scrollTop,
+            behavior: 'smooth'
+          })
+        }
+
+        // 첫 번째 input에 포커스 (스크롤 후)
         setTimeout(() => {
           const firstInput = targetElement?.querySelector('input, textarea') as HTMLElement
           if (firstInput) {
@@ -247,14 +276,17 @@ export default function ResumeEditor() {
           }
         }, 300)
       }
-    }
+      }
+    }, 50)
   }
 
   // Smart Follow: 포커스 변경 시 미리보기 자동 스크롤
   useEffect(() => {
     if (activeTab !== 'split') return
+    if (!previewRef.current) return
 
-    const scrollToElement = () => {
+    // 약간의 딜레이를 주어 DOM 업데이트 후 실행
+    const timeoutId = setTimeout(() => {
       if (!previewRef.current) return
 
       // 하이라이트된 요소를 직접 찾음
@@ -265,9 +297,9 @@ export default function ResumeEditor() {
         const elementRect = focusedElement.getBoundingClientRect()
         const containerRect = container.getBoundingClientRect()
 
-        // 요소가 이미 보이는 영역에 있는지 확인
-        const isInView = elementRect.top >= containerRect.top &&
-                        elementRect.bottom <= containerRect.bottom
+        // 요소가 이미 보이는 영역에 있는지 확인 (여유 공간 추가)
+        const isInView = elementRect.top >= containerRect.top + 50 &&
+                        elementRect.bottom <= containerRect.bottom - 50
 
         // 보이지 않을 때만 스크롤
         if (!isInView) {
@@ -319,10 +351,9 @@ export default function ResumeEditor() {
           }
         }
       }
-    }
+    }, 100) // 100ms 딜레이로 DOM 업데이트 대기
 
-    // 렌더링 후 스크롤
-    setTimeout(scrollToElement, 50)
+    return () => clearTimeout(timeoutId)
   }, [focusedParagraphIndex, focusedEmployment, focusedEducation, activeTab])
 
   return (
