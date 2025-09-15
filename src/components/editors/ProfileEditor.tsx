@@ -7,7 +7,7 @@ import { Select } from '../common/Select'
 import { useImageUrl } from '../../hooks/useImageUrl'
 import { AutoCompleteEditor } from '../common/AutoCompleteEditor'
 import { ResumeContext } from '../../types/openai'
-import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
+import { ChevronUpIcon, ChevronDownIcon, TrashIcon } from '@heroicons/react/24/outline'
 
 interface ProfileEditorProps {
   data?: Profile;
@@ -212,42 +212,58 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange, on
           <label className="block text-sm font-medium text-gray-700 mb-2">
             프로필 사진
           </label>
-          <div className="flex items-center gap-4">
-            {profile.photo && (
-              <div className="relative group">
-                <img
-                  src={getImageUrl(profile.photo)}
-                  alt="Profile"
-                  className="w-24 h-24 rounded-full object-cover"
-                />
-                <div className="absolute -top-3 -right-3">
-                  <Button
-                    onClick={handlePhotoDelete}
-                    variant="danger"
-                    size="sm"
-                    className="rounded-full w-7 h-7 flex items-center justify-center !p-0"
-                  >
-                    <span className="sr-only">프로필 사진 삭제</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                    </svg>
-                  </Button>
+          <div className="flex items-start gap-4">
+            {profile.photo ? (
+              <>
+                <div className="relative group">
+                  <img
+                    src={getImageUrl(profile.photo)}
+                    alt="Profile"
+                    className="w-24 h-24 rounded-full object-cover"
+                  />
+                  <label className="absolute inset-0 flex items-center justify-center rounded-full cursor-pointer">
+                    <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-40 rounded-full transition-opacity duration-200"></div>
+                    <span className="relative text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 px-3 py-1 rounded-md">
+                      변경
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePhotoChange}
+                      className="sr-only"
+                    />
+                  </label>
+                  <div className="absolute -top-3 -right-3">
+                    <Button
+                      onClick={handlePhotoDelete}
+                      variant="danger"
+                      size="sm"
+                      className="rounded-full w-7 h-7 flex items-center justify-center !p-0"
+                      title="프로필 사진 삭제"
+                    >
+                      <span className="sr-only">프로필 사진 삭제</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </Button>
+                  </div>
                 </div>
+              </>
+            ) : (
+              <div className="flex-1">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoChange}
+                  className="block w-full text-sm text-gray-500
+                    file:mr-4 file:py-2 file:px-4
+                    file:rounded-md file:border-0
+                    file:text-sm file:font-medium
+                    file:bg-indigo-50 file:text-indigo-700
+                    hover:file:bg-indigo-100"
+                />
               </div>
             )}
-            <div className="flex-1">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handlePhotoChange}
-                className="block w-full text-sm text-gray-500
-                  file:mr-4 file:py-2 file:px-4
-                  file:rounded-md file:border-0
-                  file:text-sm file:font-medium
-                  file:bg-indigo-50 file:text-indigo-700
-                  hover:file:bg-indigo-100"
-              />
-            </div>
           </div>
         </div>
         
@@ -298,8 +314,8 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange, on
                     inputSize="sm"
                   />
                 </div>
-                <Button onClick={() => removeContact(index)} variant="ghost" size="sm">
-                  삭제
+                <Button onClick={() => removeContact(index)} variant="ghost" size="sm" className="p-1 text-gray-400 hover:text-gray-600" title="삭제">
+                  <TrashIcon className="w-4 h-4" />
                 </Button>
               </div>
             ))}
@@ -359,8 +375,10 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange, on
                         onClick={() => removeParagraph(index)}
                         variant="ghost"
                         size="sm"
+                        className="p-1 text-gray-400 hover:text-gray-600"
+                        title="삭제"
                       >
-                        삭제
+                        <TrashIcon className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>

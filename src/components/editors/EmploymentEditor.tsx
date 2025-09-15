@@ -558,8 +558,10 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
                 onClick={() => handleRemove(index)}
                 variant="ghost"
                 size="sm"
+                className="p-1 text-gray-400 hover:text-gray-600"
+                title="삭제"
               >
-                삭제
+                <TrashIcon className="w-4 h-4" />
               </Button>
             </div>
           </div>
@@ -706,8 +708,10 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
                               variant="ghost"
                               size="sm"
                               onClick={() => handleItemRemove(index, detailIndex, itemIndex)}
+                              className="p-1 text-gray-400 hover:text-gray-600"
+                              title="삭제"
                             >
-                              삭제
+                              <TrashIcon className="w-4 h-4" />
                             </Button>
                           </div>
                         </div>
@@ -749,9 +753,10 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => handleSubItemRemove(index, detailIndex, itemIndex, subIndex)}
-                                  className="text-xs"
+                                  className="p-1 text-gray-400 hover:text-gray-600"
+                                  title="삭제"
                                 >
-                                  삭제
+                                  <TrashIcon className="w-3 h-3" />
                                 </Button>
                               </div>
                             </div>

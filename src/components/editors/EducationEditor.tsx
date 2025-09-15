@@ -165,8 +165,10 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
                 onClick={() => handleRemoveEducation(educationIndex)}
                 variant="ghost"
                 size="sm"
+                className="p-1 text-gray-400 hover:text-gray-600"
+                title="삭제"
               >
-                삭제
+                <TrashIcon className="w-4 h-4" />
               </Button>
             </div>
           </div>
