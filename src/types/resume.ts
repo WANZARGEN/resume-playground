@@ -43,14 +43,16 @@ export interface WorkDetail {
 export interface Activity {
   title: string
   description?: string
+  link?: string
+  url?: string
 }
 
 export interface Education {
   type?: 'presentation' | 'certificate' | 'education' | 'language'
   items?: Activity[]
-  school: string
-  degree: string
-  startDate: string
+  school?: string
+  degree?: string
+  startDate?: string
   endDate?: string
   description?: string
 }
@@ -62,17 +64,8 @@ export interface Employment {
     start: string
     end?: string
   }
-  techStack?: {
-    name: string
-    level?: number
-  }[]
-  details?: {
-    title: string
-    items: {
-      text: string
-      subItems?: string[]
-    }[]
-  }[]
+  techStack?: TechStack[]
+  details?: WorkDetail[]
 }
 
 export interface ResumeContext {

@@ -41,10 +41,21 @@ export function ResumeDataProvider({ children }: { children: React.ReactNode }) 
       setShowInitialModal(true)
     } else if (savedData) {
       try {
-        setData(JSON.parse(savedData))
+        // 빈 문자열이나 잘못된 데이터 체크
+        if (!savedData || savedData.trim() === '') {
+          console.warn('로컬 스토리지에 빈 데이터가 있습니다.')
+          setData(emptyResume)
+          return
+        }
+
+        const parsedData = JSON.parse(savedData)
+        setData(parsedData)
       } catch (e) {
         console.error('Failed to parse saved data:', e)
-        setShowInitialModal(true)
+        console.error('Invalid data:', savedData?.substring(0, 100))
+        // Show error but still allow user to use the app
+        console.warn('로컬 스토리지 데이터를 불러오는데 실패했습니다. 빈 이력서로 시작합니다.')
+        setData(emptyResume)
       }
     }
   }, [])

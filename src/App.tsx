@@ -6,6 +6,7 @@ import ResumeEditor from './components/ResumeEditor'
 import ResumeHeader from './components/ResumeHeader'
 import { useState } from 'react'
 import { ApiKeyDialog } from './components/common/ApiKeyDialog'
+import { ErrorBoundary } from './components/ErrorBoundary'
 import './App.css'
 
 // Create a client
@@ -38,15 +39,19 @@ function AppContent() {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <EditorUIProvider>
-        <FileProvider>
-          <ResumeDataProvider>
-            <AppContent />
-          </ResumeDataProvider>
-        </FileProvider>
-      </EditorUIProvider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <EditorUIProvider>
+          <FileProvider>
+            <ResumeDataProvider>
+              <ErrorBoundary>
+                <AppContent />
+              </ErrorBoundary>
+            </ResumeDataProvider>
+          </FileProvider>
+        </EditorUIProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   )
 }
 

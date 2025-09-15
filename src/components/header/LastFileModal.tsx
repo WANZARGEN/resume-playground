@@ -31,7 +31,10 @@ export const LastFileModal = ({
           </Dialog.Title>
           <div className="mt-2">
             <p className="text-sm text-gray-500 mb-2">
-              경로: {fileService.getLastSavedPath()}
+              파일명: {fileService.getLastSavedPath()}
+            </p>
+            <p className="text-sm text-gray-500 mb-2">
+              보안상의 이유로 브라우저를 새로 열거나 새로고침한 후에는 파일을 다시 선택해야 합니다.
             </p>
             <p className="text-sm text-gray-500">
               어떻게 하시겠습니까?
@@ -44,7 +47,7 @@ export const LastFileModal = ({
               className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 cursor-pointer"
               onClick={onLoadLastFile}
             >
-              이전 파일 불러오기
+              이전 파일 다시 선택하기
             </button>
             <button
               type="button"

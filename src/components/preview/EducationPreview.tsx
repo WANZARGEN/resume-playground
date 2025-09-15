@@ -40,9 +40,9 @@ export function EducationPreview({ education }: Props) {
                       item.items.map((activity, itemIndex) => (
                         <li key={itemIndex}>
                           {activity.title && (
-                            activity.url ? (
+                            (activity.url || activity.link) ? (
                               <a
-                                href={activity.url}
+                                href={activity.url || activity.link}
                                 className="text-link"
                                 target="_blank"
                                 rel="noopener noreferrer"

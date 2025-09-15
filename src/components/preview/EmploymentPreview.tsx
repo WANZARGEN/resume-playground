@@ -55,37 +55,43 @@ export function EmploymentPreview({ employments }: Props) {
                       <div key={detailIndex}>
                         <p className="work-header">{detail.title}</p>
                         <ul className="work-list">
-                          {detail.items.map((item, itemIndex) => (
-                            <li key={itemIndex}>
-                              {item.segments ? (
-                                item.segments.map((segment, segIndex) => {
-                                  if (segment.type === 'link') {
-                                    return (
-                                      <a
-                                        key={segIndex}
-                                        href={segment.url || segment.href}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-blue-600 hover:underline"
-                                      >
-                                        {segment.text}
-                                      </a>
-                                    )
-                                  }
-                                  return <span key={segIndex}>{segment.text}</span>
-                                })
-                              ) : (
-                                item.text
-                              )}
-                              {!!item.subItems?.length && (
-                                <ul className="work-list-nested">
-                                  {item.subItems.map((subItem, subItemIndex) => (
-                                    <li key={subItemIndex}>{subItem}</li>
-                                  ))}
-                                </ul>
-                              )}
-                            </li>
-                          ))}
+                          {detail.items?.map((item, itemIndex) => {
+                            // Safe handling of item data
+                            if (!item) return null;
+
+                            return (
+                              <li key={itemIndex}>
+                                {item.segments && Array.isArray(item.segments) && item.segments.length > 0 ? (
+                                  item.segments.map((segment, segIndex) => {
+                                    if (!segment) return null;
+                                    if (segment.type === 'link') {
+                                      return (
+                                        <a
+                                          key={segIndex}
+                                          href={segment.url || segment.href}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="text-blue-600 hover:underline"
+                                        >
+                                          {segment.text}
+                                        </a>
+                                      )
+                                    }
+                                    return <span key={segIndex}>{segment.text}</span>
+                                  })
+                                ) : (
+                                  item.text || ''
+                                )}
+                                {Array.isArray(item.subItems) && item.subItems.length > 0 && (
+                                  <ul className="work-list-nested">
+                                    {item.subItems.map((subItem, subItemIndex) => (
+                                      <li key={subItemIndex}>{subItem}</li>
+                                    ))}
+                                  </ul>
+                                )}
+                              </li>
+                            )
+                          })}
                         </ul>
                       </div>
                     ))}

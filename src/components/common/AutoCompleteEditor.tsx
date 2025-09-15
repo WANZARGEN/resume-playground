@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { generateCompletion } from '../../services/gemini';
 import { AutoCompleteProps } from '../../types/openai';
@@ -20,6 +20,7 @@ export const AutoCompleteEditor: React.FC<AutoCompleteProps> = ({
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const pendingRequestRef = useRef<(() => void) | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const { mutate: getSuggestion, data: suggestion, isPending } = useMutation({
     mutationFn: async () => {
@@ -52,32 +53,37 @@ export const AutoCompleteEditor: React.FC<AutoCompleteProps> = ({
     onChange(newValue);
   };
 
-  const handleApplySuggestion = () => {
+  const handleApplySuggestion = useCallback(() => {
     if (suggestion) {
       onChange(suggestion);
       setShowSuggestion(false);
     }
-  };
+  }, [suggestion, onChange]);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    // Only handle keys when suggestion is showing
+    if (!showSuggestion || !suggestion || isPending) return;
+
     // Tab or Ctrl+Enter to apply suggestion
-    if (suggestion && !isPending && 
-        ((e.key === 'Tab' && !e.shiftKey) || (e.key === 'Enter' && e.ctrlKey))) {
+    if ((e.key === 'Tab' && !e.shiftKey) || (e.key === 'Enter' && e.ctrlKey)) {
       e.preventDefault();
       handleApplySuggestion();
+      return;
     }
-    
+
     // Escape to dismiss suggestion
-    if (e.key === 'Escape' && showSuggestion) {
+    if (e.key === 'Escape') {
       e.preventDefault();
       setShowSuggestion(false);
+      return;
     }
-  };
+  }, [showSuggestion, suggestion, isPending, handleApplySuggestion]);
 
   return (
     <div className="relative">
       <div className="flex gap-2">
         <textarea
+          ref={textareaRef}
           value={value}
           onChange={(e) => handleChange(e.target.value)}
           onFocus={onFocus}

@@ -45,9 +45,15 @@ export class FileService {
 
   async loadFile(showPicker: boolean = true): Promise<Resume> {
     try {
-      console.log('파일 불러오기 시작')
-      
-      // 파일 선택 대화상자를 통해 파일 선택
+      console.log('파일 불러오기 시작, showPicker:', showPicker)
+
+      // showPicker가 false이면, 이전에 저장된 파일 핸들을 사용하려 시도
+      // 하지만 보안상 이유로 새 세션에서는 다시 파일을 선택해야 함
+      if (!showPicker) {
+        console.log('이전 파일 불러오기를 시도하지만, 보안상 다시 선택 필요')
+      }
+
+      // 항상 파일 선택 대화상자를 표시해야 함 (브라우저 보안 정책)
       const [handle] = await window.showOpenFilePicker({
         startIn: 'downloads',
         types: [{
@@ -59,11 +65,23 @@ export class FileService {
       console.log('파일 핸들 획득:', handle)
       const file = await handle.getFile()
       console.log('파일 획득:', file.name)
-      
+
       const content = await file.text()
-      const data = JSON.parse(content) as Resume
-      console.log('파일 내용 파싱 완료')
-      
+
+      // JSON 파싱 전에 유효성 검사
+      if (!content || content.trim() === '') {
+        throw new Error('파일이 비어있습니다.')
+      }
+
+      let data: Resume
+      try {
+        data = JSON.parse(content) as Resume
+        console.log('파일 내용 파싱 완료')
+      } catch (parseError) {
+        console.error('JSON 파싱 오류:', parseError)
+        throw new Error('올바른 JSON 형식이 아닙니다.')
+      }
+
       this.lastSavedHandle = handle
       this.saveLastPath(file.name)
       return data

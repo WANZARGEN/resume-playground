@@ -1,5 +1,5 @@
 import type { Education, Activity } from '../../types/resume';
-import {  TrashIcon } from '@heroicons/react/24/outline';
+import { TrashIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import { Button } from '../common/Button';
 import { TextInput } from '../common/TextInput';
 import { TextArea } from '../common/TextArea';
@@ -10,11 +10,11 @@ interface EducationEditorProps {
 }
 
 export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange }) => {
-  const education = data || [];
+  const educationList = data || [];
 
   const handleAddEducation = () => {
     onChange([
-      ...education,
+      ...educationList,
       {
         type: 'presentation',
         items: []
@@ -23,7 +23,21 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
   };
 
   const handleRemoveEducation = (index: number) => {
-    onChange(education.filter((_, i) => i !== index));
+    onChange(educationList.filter((_, i) => i !== index));
+  };
+
+  const handleMoveEducationUp = (index: number) => {
+    if (index === 0) return;
+    const newEducation = [...educationList];
+    [newEducation[index - 1], newEducation[index]] = [newEducation[index], newEducation[index - 1]];
+    onChange(newEducation);
+  };
+
+  const handleMoveEducationDown = (index: number) => {
+    if (index === educationList.length - 1) return;
+    const newEducation = [...educationList];
+    [newEducation[index], newEducation[index + 1]] = [newEducation[index + 1], newEducation[index]];
+    onChange(newEducation);
   };
 
   const handleEducationChange = (
@@ -31,7 +45,7 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
     field: keyof Education,
     value: Education['type']
   ) => {
-    const newData = [...education];
+    const newData = [...educationList];
     newData[index] = {
       ...newData[index],
       [field]: value,
@@ -41,16 +55,20 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
   };
 
   const handleAddActivity = (educationIndex: number) => {
-    const newData = [...education];
+    const newData = [...educationList];
     if (!newData[educationIndex]) {
       newData[educationIndex] = {
         type: 'presentation',
         items: []
       };
     }
-    newData[educationIndex].items.push({
+    if (!newData[educationIndex].items) {
+      newData[educationIndex].items = [];
+    }
+    newData[educationIndex].items!.push({
       title: '',
       url: '',
+      link: '',
       description: ''
     });
     onChange(newData);
@@ -62,9 +80,12 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
     field: keyof Activity,
     value: string
   ) => {
-    const newData = [...education];
-    const activity = newData[educationIndex].items[activityIndex] || { title: '', url: '', description: '' };
-    newData[educationIndex].items[activityIndex] = {
+    const newData = [...educationList];
+    if (!newData[educationIndex]?.items) {
+      return;
+    }
+    const activity = newData[educationIndex].items![activityIndex] || { title: '', url: '', link: '', description: '' };
+    newData[educationIndex].items![activityIndex] = {
       ...activity,
       [field]: value
     };
@@ -72,10 +93,12 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
   };
 
   const handleRemoveActivity = (educationIndex: number, activityIndex: number) => {
-    const newData = [...education];
-    newData[educationIndex].items = newData[educationIndex].items.filter(
-      (_, i) => i !== activityIndex
-    );
+    const newData = [...educationList];
+    if (newData[educationIndex]?.items) {
+      newData[educationIndex].items = newData[educationIndex].items!.filter(
+        (_, i) => i !== activityIndex
+      );
+    }
     onChange(newData);
   };
 
@@ -93,7 +116,7 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
         </Button>
       </div>
 
-      {education.map((education, educationIndex) => (
+      {educationList.map((education, educationIndex) => (
         <div key={educationIndex} className="bg-white rounded-lg shadow p-6">
           <div className="flex items-start justify-between mb-6">
             <div className="space-y-4 flex-1">
@@ -117,13 +140,35 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
               </div>
             </div>
 
-            <Button
-              onClick={() => handleRemoveEducation(educationIndex)}
-              variant="ghost"
-              size="sm"
-            >
-              삭제
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button
+                onClick={() => handleMoveEducationUp(educationIndex)}
+                variant="ghost"
+                size="sm"
+                disabled={educationIndex === 0}
+                className="p-1"
+                title="위로 이동"
+              >
+                <ChevronUpIcon className="w-4 h-4" />
+              </Button>
+              <Button
+                onClick={() => handleMoveEducationDown(educationIndex)}
+                variant="ghost"
+                size="sm"
+                disabled={educationIndex === educationList.length - 1}
+                className="p-1"
+                title="아래로 이동"
+              >
+                <ChevronDownIcon className="w-4 h-4" />
+              </Button>
+              <Button
+                onClick={() => handleRemoveEducation(educationIndex)}
+                variant="ghost"
+                size="sm"
+              >
+                삭제
+              </Button>
+            </div>
           </div>
 
           {/* 활동 목록 */}
@@ -147,7 +192,7 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
               </Button>
             </div>
             <div className="space-y-4">
-              {education.items.map((activity, activityIndex) => (
+              {(education.items || []).map((activity, activityIndex) => (
                 <div key={activityIndex} className="relative bg-gray-50 rounded-lg p-4">
                   <button
                     type="button"
@@ -170,15 +215,18 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
                       />
                     </div>
 
-                    {/* URL */}
+                    {/* URL/Link */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        URL
+                        링크 URL
                       </label>
                       <TextInput
-                        value={activity.url || ''}
-                        onChange={(e) => handleActivityChange(educationIndex, activityIndex, 'url', e.target.value)}
-                        placeholder="URL"
+                        value={activity.url || activity.link || ''}
+                        onChange={(e) => {
+                          handleActivityChange(educationIndex, activityIndex, 'url', e.target.value);
+                          handleActivityChange(educationIndex, activityIndex, 'link', e.target.value);
+                        }}
+                        placeholder="https://example.com"
                       />
                     </div>
 

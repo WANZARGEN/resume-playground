@@ -54,7 +54,7 @@ export const Select = ({ value, onChange, options, placeholder, className, size 
             leaveTo="transform opacity-0 scale-95"
           >
             <Listbox.Options className={twMerge(
-              "absolute z-10 mt-1 w-full overflow-auto rounded-lg bg-white text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none",
+              "absolute z-50 mt-1 w-full overflow-auto rounded-lg bg-white text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none max-h-60",
               size === 'md' && "py-1",
               size === 'sm' && "py-0.5"
             )}>

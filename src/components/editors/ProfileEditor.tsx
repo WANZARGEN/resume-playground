@@ -2,10 +2,12 @@ import React, { ChangeEvent, useState } from 'react'
 import { Contact, Profile, TextStyle } from '../../types/resume'
 import { Button } from '../common/Button'
 import { TextInput } from '../common/TextInput'
+import { TextArea } from '../common/TextArea'
 import { Select } from '../common/Select'
 import { useImageUrl } from '../../hooks/useImageUrl'
 import { AutoCompleteEditor } from '../common/AutoCompleteEditor'
 import { ResumeContext } from '../../types/openai'
+import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
 
 interface ProfileEditorProps {
   data?: Profile;
@@ -147,6 +149,21 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange, on
     handleChange('paragraphs', newParagraphs)
   }
 
+  const moveParagraphUp = (index: number) => {
+    if (index === 0) return
+    const newParagraphs = [...(profile.paragraphs || [])]
+    ;[newParagraphs[index - 1], newParagraphs[index]] = [newParagraphs[index], newParagraphs[index - 1]]
+    handleChange('paragraphs', newParagraphs)
+  }
+
+  const moveParagraphDown = (index: number) => {
+    const paragraphs = profile.paragraphs || []
+    if (index === paragraphs.length - 1) return
+    const newParagraphs = [...paragraphs]
+    ;[newParagraphs[index], newParagraphs[index + 1]] = [newParagraphs[index + 1], newParagraphs[index]]
+    handleChange('paragraphs', newParagraphs)
+  }
+
   const handleContactChange = (index: number, field: keyof Contact, value: Contact[keyof Contact]) => {
     const newContacts = [...(profile.contacts || [])]
     newContacts[index] = { ...newContacts[index], [field]: value }
@@ -261,10 +278,10 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange, on
               연락처 추가
             </Button>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-2">
             {(profile.contacts || []).map((contact, index) => (
-              <div key={index} className="relative bg-gray-50 rounded-lg p-4">
-                <div className="flex gap-2">
+              <div key={index} className="flex items-start gap-2">
+                <div className="flex-1 flex gap-2">
                   <Select
                     value={contact.type || 'email'}
                     onChange={(value) => handleContactChange(index, 'type', value as Contact['type'])}
@@ -280,10 +297,10 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange, on
                     wrapperClassName="grow"
                     inputSize="sm"
                   />
-                  <Button className="shrink-0" onClick={() => removeContact(index)} variant="ghost" size="sm">
-                    삭제
-                  </Button>
                 </div>
+                <Button onClick={() => removeContact(index)} variant="ghost" size="sm">
+                  삭제
+                </Button>
               </div>
             ))}
           </div>
@@ -305,26 +322,47 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange, on
                 .join('\n\n');
               
               return (
-                <div key={index} className="relative bg-gray-50 rounded-lg p-4">
-                  <AutoCompleteEditor
-                    value={stringifySegments(paragraph.segments)}
-                    onChange={(text) => handleParagraphChange(index, text)}
-                    onFocus={() => onFocusChange?.(index)}
-                    onBlur={() => onFocusChange?.(null)}
-                    placeholder="텍스트를 입력하세요"
-                    className="mb-2 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    previousContent={previousParagraphs || undefined}
-                    resumeContext={resumeContext}
-                  />
-                  <div className="flex justify-end">
-                    <Button
-                      onClick={() => removeParagraph(index)}
-                      disabled={(profile.paragraphs?.length || 0) <= 1}
-                      variant="ghost"
-                      size="sm"
-                    >
-                      단락 삭제
-                    </Button>
+                <div key={index} className="space-y-2">
+                  <div className="flex items-start gap-2">
+                    <div className="flex-1 space-y-2">
+                      <TextArea
+                        value={stringifySegments(paragraph.segments)}
+                        onChange={(e) => handleParagraphChange(index, e.target.value)}
+                        onFocus={() => onFocusChange?.(index)}
+                        onBlur={() => onFocusChange?.(null)}
+                        placeholder="프로필 내용을 입력하세요"
+                        className="min-h-[60px]"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <Button
+                        onClick={() => moveParagraphUp(index)}
+                        disabled={index === 0}
+                        variant="ghost"
+                        size="sm"
+                        className="p-1"
+                        title="위로 이동"
+                      >
+                        <ChevronUpIcon className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        onClick={() => moveParagraphDown(index)}
+                        disabled={index === (profile.paragraphs?.length || 0) - 1}
+                        variant="ghost"
+                        size="sm"
+                        className="p-1"
+                        title="아래로 이동"
+                      >
+                        <ChevronDownIcon className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        onClick={() => removeParagraph(index)}
+                        variant="ghost"
+                        size="sm"
+                      >
+                        삭제
+                      </Button>
+                    </div>
                   </div>
                 </div>
               );
