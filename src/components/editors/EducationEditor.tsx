@@ -13,14 +13,29 @@ interface EducationEditorProps {
 export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange, onFocusChange }) => {
   const educationList = data || [];
 
-  const handleAddEducation = () => {
-    onChange([
-      ...educationList,
-      {
-        type: 'presentation',
-        items: []
-      },
-    ]);
+  const handleAddEducation = (position: 'top' | 'bottom' = 'bottom') => {
+    const newEducation = {
+      type: 'presentation' as Education['type'],
+      items: []
+    };
+
+    if (position === 'top') {
+      onChange([newEducation, ...educationList]);
+    } else {
+      onChange([...educationList, newEducation]);
+    }
+  };
+
+  const handleAddEducationAt = (index: number, position: 'before' | 'after') => {
+    const newEducation = {
+      type: 'presentation' as Education['type'],
+      items: []
+    };
+
+    const newList = [...educationList];
+    const insertIndex = position === 'before' ? index : index + 1;
+    newList.splice(insertIndex, 0, newEducation);
+    onChange(newList);
   };
 
   const handleRemoveEducation = (index: number) => {
@@ -55,7 +70,7 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
     onChange(newData);
   };
 
-  const handleAddActivity = (educationIndex: number) => {
+  const handleAddActivity = (educationIndex: number, position: 'top' | 'bottom' = 'bottom') => {
     const newData = [...educationList];
     if (!newData[educationIndex]) {
       newData[educationIndex] = {
@@ -66,12 +81,56 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
     if (!newData[educationIndex].items) {
       newData[educationIndex].items = [];
     }
-    newData[educationIndex].items!.push({
+
+    const newActivity = {
       title: '',
       url: '',
       link: '',
       description: ''
-    });
+    };
+
+    if (position === 'top') {
+      newData[educationIndex].items!.unshift(newActivity);
+    } else {
+      newData[educationIndex].items!.push(newActivity);
+    }
+    onChange(newData);
+  };
+
+  const handleAddActivityAt = (educationIndex: number, activityIndex: number, position: 'before' | 'after') => {
+    const newData = [...educationList];
+    if (!newData[educationIndex]?.items) return;
+
+    const newActivity = {
+      title: '',
+      url: '',
+      link: '',
+      description: ''
+    };
+
+    const insertIndex = position === 'before' ? activityIndex : activityIndex + 1;
+    newData[educationIndex].items!.splice(insertIndex, 0, newActivity);
+    onChange(newData);
+  };
+
+  const handleMoveActivityUp = (educationIndex: number, activityIndex: number) => {
+    if (activityIndex === 0) return;
+    const newData = [...educationList];
+    if (!newData[educationIndex]?.items) return;
+
+    const items = newData[educationIndex].items!;
+    [items[activityIndex - 1], items[activityIndex]] = [items[activityIndex], items[activityIndex - 1]];
+    onChange(newData);
+  };
+
+  const handleMoveActivityDown = (educationIndex: number, activityIndex: number) => {
+    const newData = [...educationList];
+    if (!newData[educationIndex]?.items) return;
+
+    const items = newData[educationIndex].items!;
+    if (activityIndex === items.length - 1) return;
+
+    [items[activityIndex], items[activityIndex + 1]] = [items[activityIndex + 1], items[activityIndex]];
     onChange(newData);
   };
 
@@ -107,14 +166,24 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">교육 및 활동</h2>
-        <Button
-          onClick={handleAddEducation}
-          variant="secondary"
-          size="sm"
-          className="mt-4"
-        >
-          섹션 추가
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={() => handleAddEducation('top')}
+            variant="secondary"
+            size="sm"
+            className="mt-4"
+          >
+            위에 섹션 추가
+          </Button>
+          <Button
+            onClick={() => handleAddEducation('bottom')}
+            variant="secondary"
+            size="sm"
+            className="mt-4"
+          >
+            아래에 섹션 추가
+          </Button>
+        </div>
       </div>
 
       {educationList.map((education, educationIndex) => (
@@ -186,24 +255,57 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
                   ? '학력 목록'
                   : '어학 성적'}
               </label>
-              <Button
-                onClick={() => handleAddActivity(educationIndex)}
-                variant="secondary"
-                size="sm"
-              >
-                항목 추가
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => handleAddActivity(educationIndex, 'top')}
+                  variant="secondary"
+                  size="sm"
+                >
+                  위에 추가
+                </Button>
+                <Button
+                  onClick={() => handleAddActivity(educationIndex, 'bottom')}
+                  variant="secondary"
+                  size="sm"
+                >
+                  아래에 추가
+                </Button>
+              </div>
             </div>
             <div className="space-y-4">
               {(education.items || []).map((activity, activityIndex) => (
                 <div key={activityIndex} className="relative bg-gray-50 rounded-lg p-4">
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveActivity(educationIndex, activityIndex)}
-                    className="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-600"
-                  >
-                    <TrashIcon className="w-4 h-4" />
-                  </button>
+                  <div className="absolute top-2 right-2 flex items-center gap-1">
+                    <Button
+                      onClick={() => handleMoveActivityUp(educationIndex, activityIndex)}
+                      variant="ghost"
+                      size="sm"
+                      disabled={activityIndex === 0}
+                      className="p-1"
+                      title="위로 이동"
+                    >
+                      <ChevronUpIcon className="w-3 h-3" />
+                    </Button>
+                    <Button
+                      onClick={() => handleMoveActivityDown(educationIndex, activityIndex)}
+                      variant="ghost"
+                      size="sm"
+                      disabled={activityIndex === (education.items?.length || 0) - 1}
+                      className="p-1"
+                      title="아래로 이동"
+                    >
+                      <ChevronDownIcon className="w-3 h-3" />
+                    </Button>
+                    <Button
+                      onClick={() => handleRemoveActivity(educationIndex, activityIndex)}
+                      variant="ghost"
+                      size="sm"
+                      className="p-1 text-gray-400 hover:text-gray-600"
+                      title="삭제"
+                    >
+                      <TrashIcon className="w-3 h-3" />
+                    </Button>
+                  </div>
 
                   <div className="space-y-4">
                     {/* 제목 */}
@@ -251,6 +353,20 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
                       />
                     </div>
                   </div>
+
+                  {/* 항목 사이에 추가 버튼 */}
+                  {activityIndex < (education.items?.length || 0) - 1 && (
+                    <div className="flex justify-center mt-2">
+                      <Button
+                        onClick={() => handleAddActivityAt(educationIndex, activityIndex, 'after')}
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs"
+                      >
+                        + 여기에 항목 추가
+                      </Button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

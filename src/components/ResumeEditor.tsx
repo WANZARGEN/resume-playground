@@ -8,7 +8,7 @@ import { ResumePreview } from './preview/ResumePreview'
 import Split from 'react-split'
 import './split.css'
 import StyleGuidePin from './common/StyleGuidePin'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 interface EditAreaProps {
   data: Resume
@@ -85,11 +85,88 @@ export default function ResumeEditor() {
     employmentIndex?: number
     detailIndex?: number
     itemIndex?: number
+    subItemIndex?: number
   } | null>(null)
   const [focusedEducation, setFocusedEducation] = useState<{
     educationIndex?: number
     activityIndex?: number
   } | null>(null)
+  const previewRef = useRef<HTMLDivElement>(null)
+
+  // Smart Follow: 포커스 변경 시 미리보기 자동 스크롤
+  useEffect(() => {
+    if (activeTab !== 'split') return
+
+    const scrollToElement = () => {
+      if (!previewRef.current) return
+
+      // 하이라이트된 요소를 직접 찾음
+      const focusedElement = previewRef.current.querySelector('.focused-item, .focused-paragraph')
+
+      if (focusedElement) {
+        const container = previewRef.current
+        const elementRect = focusedElement.getBoundingClientRect()
+        const containerRect = container.getBoundingClientRect()
+
+        // 요소가 이미 보이는 영역에 있는지 확인
+        const isInView = elementRect.top >= containerRect.top &&
+                        elementRect.bottom <= containerRect.bottom
+
+        // 보이지 않을 때만 스크롤
+        if (!isInView) {
+          const scrollTop = container.scrollTop + elementRect.top - containerRect.top - 100 // 100px offset from top
+
+          container.scrollTo({
+            top: scrollTop,
+            behavior: 'smooth'
+          })
+        }
+      } else {
+        // 하이라이트된 요소가 없는 경우 섹션으로 스크롤
+        let sectionSelector = null
+
+        if (focusedParagraphIndex !== null) {
+          sectionSelector = '#profile'
+        } else if (focusedEmployment?.employmentIndex !== undefined) {
+          // 특정 회사 섹션으로 스크롤 (인덱스 기반)
+          const employmentSections = previewRef.current.querySelectorAll('#employment-history .section-entry')
+          const targetSection = employmentSections[focusedEmployment.employmentIndex]
+          if (targetSection) {
+            const container = previewRef.current
+            const elementRect = targetSection.getBoundingClientRect()
+            const containerRect = container.getBoundingClientRect()
+            const scrollTop = container.scrollTop + elementRect.top - containerRect.top - 100
+
+            container.scrollTo({
+              top: scrollTop,
+              behavior: 'smooth'
+            })
+          }
+          return
+        } else if (focusedEducation?.educationIndex !== undefined) {
+          sectionSelector = '#education-activities'
+        }
+
+        if (sectionSelector) {
+          const element = previewRef.current.querySelector(sectionSelector)
+          if (element) {
+            const container = previewRef.current
+            const elementRect = element.getBoundingClientRect()
+            const containerRect = container.getBoundingClientRect()
+            const scrollTop = container.scrollTop + elementRect.top - containerRect.top - 100
+
+            container.scrollTo({
+              top: scrollTop,
+              behavior: 'smooth'
+            })
+          }
+        }
+      }
+    }
+
+    // 렌더링 후 스크롤
+    setTimeout(scrollToElement, 50)
+  }, [focusedParagraphIndex, focusedEmployment, focusedEducation, activeTab])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -107,28 +184,35 @@ export default function ResumeEditor() {
         )}
 
         {activeTab === 'split' && (
-          <Split
-            sizes={[30, 70]}
-            minSize={320}
-            gutterSize={10}
-            style={{ display: 'flex', width: '100%' }}
-          >
-            <EditArea
-              data={data}
-              handleProfileChange={handleProfileChange}
-              handleEmploymentChange={handleEmploymentChange}
-              handleEducationChange={handleEducationChange}
-              onFocusChange={setFocusedParagraphIndex}
-              onEmploymentFocus={setFocusedEmployment}
-              onEducationFocus={setFocusedEducation}
-            />
-            <PreviewArea
-              data={data}
-              focusedParagraphIndex={focusedParagraphIndex}
-              focusedEmployment={focusedEmployment}
-              focusedEducation={focusedEducation}
-            />
-          </Split>
+          <div style={{ height: 'calc(100vh - 120px)' }}>
+            <Split
+              sizes={[30, 70]}
+              minSize={320}
+              gutterSize={10}
+              style={{ display: 'flex', width: '100%', height: '100%' }}
+              direction="horizontal"
+            >
+              <div style={{ height: '100%', overflow: 'auto' }}>
+                <EditArea
+                  data={data}
+                  handleProfileChange={handleProfileChange}
+                  handleEmploymentChange={handleEmploymentChange}
+                  handleEducationChange={handleEducationChange}
+                  onFocusChange={setFocusedParagraphIndex}
+                  onEmploymentFocus={setFocusedEmployment}
+                  onEducationFocus={setFocusedEducation}
+                />
+              </div>
+              <div ref={previewRef} style={{ height: '100%', overflow: 'auto' }} className="preview-scroll-container">
+                <PreviewArea
+                  data={data}
+                  focusedParagraphIndex={focusedParagraphIndex}
+                  focusedEmployment={focusedEmployment}
+                  focusedEducation={focusedEducation}
+                />
+              </div>
+            </Split>
+          </div>
         )}
         
         {activeTab === 'preview-only' && (

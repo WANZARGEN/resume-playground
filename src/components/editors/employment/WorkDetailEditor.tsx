@@ -91,6 +91,8 @@ export const WorkDetailEditor: React.FC<WorkDetailEditorProps> = ({
         <TextInput
           value={detail.title}
           onChange={(e) => onDetailChange(employmentIndex, detailIndex, { ...detail, title: e.target.value })}
+          onFocus={() => onFocusChange?.({ employmentIndex, detailIndex })}
+          onBlur={() => onFocusChange?.(null)}
           placeholder="업무 제목"
         />
       </div>
