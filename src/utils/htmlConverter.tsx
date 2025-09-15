@@ -3,7 +3,7 @@ import { Resume } from '../types/resume'
 import { ResumePreview } from '../components/preview/ResumePreview'
 
 export const convertResumeToHtml = (data: Resume): string => {
-  const content = ReactDOMServer.renderToString(<ResumePreview data={data} format="html" />)
+  const content = ReactDOMServer.renderToString(<ResumePreview data={data} format="pdf" />)
   
   return `
     <!DOCTYPE html>
