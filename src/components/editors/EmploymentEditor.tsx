@@ -311,7 +311,7 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
       </div>
 
       {employments.map((employment, index) => (
-        <div key={index} className="bg-white rounded-lg shadow p-6 space-y-6">
+        <div key={index} className="bg-white rounded-lg shadow p-6 space-y-6 employment-editor-section">
           <div className="flex items-start justify-between mb-6">
             <div className="space-y-4 flex-1">
               {/* 회사 정보 */}
@@ -415,7 +415,7 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
           </div>
 
           {/* 기술 스택 */}
-          <div>
+          <div className="tech-stack-section">
             <div className="flex items-center justify-between mb-4">
               <label className="block text-sm font-medium text-gray-700">
                 기술 스택

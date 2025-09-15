@@ -202,7 +202,7 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange, on
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 profile-editor">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">기본 정보</h2>
       </div>
@@ -338,7 +338,7 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange, on
                 .join('\n\n');
               
               return (
-                <div key={index} className="space-y-2">
+                <div key={index} className="space-y-2 profile-paragraph-item">
                   <div className="flex items-start gap-2">
                     <div className="flex-1 space-y-2">
                       <TextArea
@@ -347,7 +347,7 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ data, onChange, on
                         onFocus={() => onFocusChange?.(index)}
                         onBlur={() => onFocusChange?.(null)}
                         placeholder="프로필 내용을 입력하세요"
-                        className="min-h-[60px]"
+                        className="min-h-[60px] profile-paragraph-input"
                       />
                     </div>
                     <div className="flex flex-col gap-1">

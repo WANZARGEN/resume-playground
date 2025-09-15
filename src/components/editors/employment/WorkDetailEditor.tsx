@@ -52,7 +52,7 @@ export const WorkDetailEditor: React.FC<WorkDetailEditorProps> = ({
   onFocusChange
 }) => {
   return (
-    <div className="relative bg-gray-50 rounded-lg p-4 space-y-4">
+    <div className="relative bg-gray-50 rounded-lg p-4 space-y-4 detail-section">
       {/* Detail controls */}
       <div className="absolute top-2 right-2 flex items-center gap-1">
         <Button
@@ -103,7 +103,7 @@ export const WorkDetailEditor: React.FC<WorkDetailEditorProps> = ({
           업무 항목
         </label>
         {detail.items.map((item, itemIndex) => (
-          <div key={itemIndex} className="space-y-2">
+          <div key={itemIndex} className="space-y-2 work-item-container">
             <div className="flex items-start gap-2">
               <div className="flex-1 space-y-2">
                 <TextArea
@@ -123,7 +123,7 @@ export const WorkDetailEditor: React.FC<WorkDetailEditorProps> = ({
                   onFocus={() => onFocusChange?.({ employmentIndex, detailIndex, itemIndex })}
                   onBlur={() => onFocusChange?.(null)}
                   placeholder="주요 업무 내용을 입력하세요"
-                  className="min-h-[60px]"
+                  className="min-h-[60px] work-item-input"
                 />
               </div>
               <div className="flex flex-col gap-1">

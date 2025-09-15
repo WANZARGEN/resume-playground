@@ -3,6 +3,7 @@ import { Profile, TextStyle } from '../../types/resume'
 interface Props {
   profile: Profile
   focusedParagraphIndex?: number | null
+  onDoubleClick?: (paragraphIndex: number) => void
 }
 
 function StyledText({ style }: { style: TextStyle }) {
@@ -22,7 +23,7 @@ function StyledText({ style }: { style: TextStyle }) {
   }
 }
 
-export default function ProfilePreview({ profile, focusedParagraphIndex }: Props) {
+export default function ProfilePreview({ profile, focusedParagraphIndex, onDoubleClick }: Props) {
   if (!profile.paragraphs?.length) return null
 
   return (
@@ -33,6 +34,7 @@ export default function ProfilePreview({ profile, focusedParagraphIndex }: Props
           <div
             key={index}
             className={focusedParagraphIndex === index ? 'focused-paragraph' : ''}
+            onDoubleClick={() => onDoubleClick?.(index)}
           >
             <p className="paragraph">
               {paragraph.segments?.map((segment, sIndex) => (

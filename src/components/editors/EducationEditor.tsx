@@ -187,7 +187,7 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
       </div>
 
       {educationList.map((education, educationIndex) => (
-        <div key={educationIndex} className="bg-white rounded-lg shadow p-6">
+        <div key={educationIndex} className="bg-white rounded-lg shadow p-6 education-editor-section">
           <div className="flex items-start justify-between mb-6">
             <div className="space-y-4 flex-1">
               {/* 섹션 타입 */}
@@ -274,7 +274,7 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
             </div>
             <div className="space-y-4">
               {(education.items || []).map((activity, activityIndex) => (
-                <div key={activityIndex} className="relative bg-gray-50 rounded-lg p-4">
+                <div key={activityIndex} className="relative bg-gray-50 rounded-lg p-4 activity-item">
                   <div className="absolute top-2 right-2 flex items-center gap-1">
                     <Button
                       onClick={() => handleMoveActivityUp(educationIndex, activityIndex)}

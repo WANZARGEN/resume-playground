@@ -3,9 +3,10 @@ import { Education } from '../../types/resume'
 interface Props {
   education: Education[]
   focusedEducation?: { educationIndex?: number; activityIndex?: number } | null
+  onDoubleClick?: (focus: { educationIndex?: number; activityIndex?: number }) => void
 }
 
-export function EducationPreview({ education, focusedEducation }: Props) {
+export function EducationPreview({ education, focusedEducation, onDoubleClick }: Props) {
   if (!education?.length) return null
 
   const sections: Record<string, { title: string; items: { education: Education; originalIndex: number }[] }> = {
@@ -43,7 +44,11 @@ export function EducationPreview({ education, focusedEducation }: Props) {
                                         focusedEducation?.activityIndex === itemIndex
 
                         return (
-                          <li key={itemIndex} className={isFocused ? 'focused-item' : ''}>
+                          <li
+                            key={itemIndex}
+                            className={isFocused ? 'focused-item' : ''}
+                            onDoubleClick={() => onDoubleClick?.({ educationIndex: originalIndex, activityIndex: itemIndex })}
+                          >
                           {activity.title && (
                             (activity.url || activity.link) ? (
                               <a

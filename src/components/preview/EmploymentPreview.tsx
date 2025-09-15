@@ -3,9 +3,10 @@ import { Employment } from '../../types/resume'
 interface Props {
   employments: Employment[]
   focusedEmployment?: { employmentIndex?: number; detailIndex?: number; itemIndex?: number; subItemIndex?: number } | null
+  onDoubleClick?: (focus: { employmentIndex?: number; detailIndex?: number; itemIndex?: number; subItemIndex?: number }) => void
 }
 
-export function EmploymentPreview({ employments, focusedEmployment }: Props) {
+export function EmploymentPreview({ employments, focusedEmployment, onDoubleClick }: Props) {
   if (!employments?.length) return null
 
   return (
@@ -19,7 +20,11 @@ export function EmploymentPreview({ employments, focusedEmployment }: Props) {
                                      focusedEmployment?.itemIndex === undefined
 
           return (
-            <div key={index} className={`section-entry ${isEmploymentFocused ? 'focused-item' : ''}`}>
+            <div
+              key={index}
+              className={`section-entry ${isEmploymentFocused ? 'focused-item' : ''}`}
+              onDoubleClick={() => onDoubleClick?.({ employmentIndex: index })}
+            >
               <h3 className="section-sub-title">{employment.company}</h3>
               {(employment.position || employment.period) && (
                 <div className="meta-info">
@@ -35,7 +40,13 @@ export function EmploymentPreview({ employments, focusedEmployment }: Props) {
 
             <ul className="spec-list">
               {employment.techStack?.length ? (
-                <li className={focusedEmployment?.employmentIndex === index && focusedEmployment?.detailIndex === -1 ? 'focused-item' : ''}>
+                <li
+                  className={focusedEmployment?.employmentIndex === index && focusedEmployment?.detailIndex === -1 ? 'focused-item' : ''}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation()
+                    onDoubleClick?.({ employmentIndex: index, detailIndex: -1 })
+                  }}
+                    >
                   <p className="spec-label">사용 기술</p>
                   <div className="spec-content-container">
                     <p className="tech-list">
@@ -63,7 +74,14 @@ export function EmploymentPreview({ employments, focusedEmployment }: Props) {
                                             focusedEmployment?.itemIndex === undefined
 
                       return (
-                        <div key={detailIndex} className={isDetailFocused ? 'focused-item' : ''}>
+                        <div
+                          key={detailIndex}
+                          className={isDetailFocused ? 'focused-item' : ''}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation()
+                            onDoubleClick?.({ employmentIndex: index, detailIndex })
+                          }}
+                                    >
                           <p className="work-header">{detail.title}</p>
                           <ul className="work-list">
                             {detail.items?.map((item, itemIndex) => {
@@ -75,7 +93,14 @@ export function EmploymentPreview({ employments, focusedEmployment }: Props) {
                                                 focusedEmployment?.itemIndex === itemIndex
 
                             return (
-                              <li key={itemIndex} className={isItemFocused ? 'focused-item' : ''}>
+                              <li
+                                key={itemIndex}
+                                className={isItemFocused ? 'focused-item' : ''}
+                                onDoubleClick={(e) => {
+                                  e.stopPropagation()
+                                  onDoubleClick?.({ employmentIndex: index, detailIndex, itemIndex })
+                                }}
+                                                >
                                 {item.segments && Array.isArray(item.segments) && item.segments.length > 0 ? (
                                   item.segments.map((segment, segIndex) => {
                                     if (!segment) return null;
@@ -106,7 +131,14 @@ export function EmploymentPreview({ employments, focusedEmployment }: Props) {
                                                               focusedEmployment?.subItemIndex === subItemIndex
 
                                       return (
-                                        <li key={subItemIndex} className={isSubItemFocused ? 'focused-item' : ''}>
+                                        <li
+                                          key={subItemIndex}
+                                          className={isSubItemFocused ? 'focused-item' : ''}
+                                          onDoubleClick={(e) => {
+                                            e.stopPropagation()
+                                            onDoubleClick?.({ employmentIndex: index, detailIndex, itemIndex, subItemIndex })
+                                          }}
+                                                                    >
                                           {subItem}
                                         </li>
                                       )

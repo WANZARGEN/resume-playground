@@ -26,6 +26,9 @@ interface PreviewAreaProps {
   focusedParagraphIndex?: number | null
   focusedEmployment?: { employmentIndex?: number; detailIndex?: number; itemIndex?: number; subItemIndex?: number } | null
   focusedEducation?: { educationIndex?: number; activityIndex?: number } | null
+  onProfileDoubleClick?: (paragraphIndex: number) => void
+  onEmploymentDoubleClick?: (focus: { employmentIndex?: number; detailIndex?: number; itemIndex?: number; subItemIndex?: number }) => void
+  onEducationDoubleClick?: (focus: { educationIndex?: number; activityIndex?: number }) => void
 }
 
 const EditArea = ({ data, handleProfileChange, handleEmploymentChange, handleEducationChange, onFocusChange, onEmploymentFocus, onEducationFocus }: EditAreaProps) => {
@@ -56,7 +59,16 @@ const EditArea = ({ data, handleProfileChange, handleEmploymentChange, handleEdu
   )
 }
 
-const PreviewArea = ({ data, fullWidth = false, focusedParagraphIndex, focusedEmployment, focusedEducation }: PreviewAreaProps) => {
+const PreviewArea = ({
+  data,
+  fullWidth = false,
+  focusedParagraphIndex,
+  focusedEmployment,
+  focusedEducation,
+  onProfileDoubleClick,
+  onEmploymentDoubleClick,
+  onEducationDoubleClick
+}: PreviewAreaProps) => {
   const { selectedFormat } = useEditorUI()
 
   return (
@@ -67,6 +79,9 @@ const PreviewArea = ({ data, fullWidth = false, focusedParagraphIndex, focusedEm
         focusedParagraphIndex={focusedParagraphIndex}
         focusedEmployment={focusedEmployment}
         focusedEducation={focusedEducation}
+        onProfileDoubleClick={onProfileDoubleClick}
+        onEmploymentDoubleClick={onEmploymentDoubleClick}
+        onEducationDoubleClick={onEducationDoubleClick}
       />
     </div>
   )
@@ -92,6 +107,148 @@ export default function ResumeEditor() {
     activityIndex?: number
   } | null>(null)
   const previewRef = useRef<HTMLDivElement>(null)
+  const editorRef = useRef<HTMLDivElement>(null)
+
+  // Reverse Smart Scroll: 미리보기 더블클릭 시 편집 영역 스크롤
+  const handleProfileDoubleClick = (paragraphIndex: number) => {
+    // 포커스 설정
+    setFocusedParagraphIndex(paragraphIndex)
+
+    // 편집 영역 스크롤
+    if (editorRef.current) {
+      // ProfileEditor 내의 특정 paragraph input 찾기
+      const paragraphInputs = editorRef.current.querySelectorAll('.profile-paragraph-input')
+      if (paragraphInputs[paragraphIndex]) {
+        const element = paragraphInputs[paragraphIndex] as HTMLElement
+        const container = editorRef.current
+        const elementRect = element.getBoundingClientRect()
+        const containerRect = container.getBoundingClientRect()
+
+        const scrollTop = container.scrollTop + elementRect.top - containerRect.top - 50
+
+        container.scrollTo({
+          top: scrollTop,
+          behavior: 'smooth'
+        })
+
+        // 포커스도 설정
+        setTimeout(() => {
+          element.focus()
+        }, 300)
+      }
+    }
+  }
+
+  const handleEmploymentDoubleClick = (focus: { employmentIndex?: number; detailIndex?: number; itemIndex?: number; subItemIndex?: number }) => {
+    // 포커스 설정
+    setFocusedEmployment(focus)
+
+    // 편집 영역 스크롤
+    if (editorRef.current && focus.employmentIndex !== undefined) {
+      // EmploymentEditor 내의 특정 섹션 찾기
+      const employmentSections = editorRef.current.querySelectorAll('.employment-editor-section')
+      if (employmentSections[focus.employmentIndex]) {
+        const section = employmentSections[focus.employmentIndex]
+        let targetElement: HTMLElement | null = section as HTMLElement
+
+        // 더 구체적인 요소 찾기
+        let focusElement: HTMLElement | null = null
+
+        if (focus.detailIndex !== undefined && focus.detailIndex >= 0) {
+          const detailSections = section.querySelectorAll('.detail-section')
+          if (detailSections[focus.detailIndex]) {
+            targetElement = detailSections[focus.detailIndex] as HTMLElement
+
+            if (focus.itemIndex !== undefined) {
+              const items = targetElement.querySelectorAll('.work-item-input')
+              if (items[focus.itemIndex]) {
+                targetElement = items[focus.itemIndex] as HTMLElement
+                focusElement = targetElement // 특정 work item input에 직접 포커스
+              }
+            } else {
+              // detail의 제목 input에 포커스
+              focusElement = targetElement.querySelector('input[placeholder="업무 제목"]') as HTMLElement
+            }
+          }
+        } else if (focus.detailIndex === -1) {
+          // Tech stack section
+          const techSection = section.querySelector('.tech-stack-section')
+          if (techSection) {
+            targetElement = techSection as HTMLElement
+            focusElement = techSection.querySelector('input') as HTMLElement
+          }
+        } else {
+          // employment level - 회사명 input에 포커스
+          focusElement = section.querySelector('input[placeholder="회사명을 입력하세요"]') as HTMLElement
+        }
+
+        const container = editorRef.current
+        const elementRect = targetElement.getBoundingClientRect()
+        const containerRect = container.getBoundingClientRect()
+
+        const scrollTop = container.scrollTop + elementRect.top - containerRect.top - 50
+
+        container.scrollTo({
+          top: scrollTop,
+          behavior: 'smooth'
+        })
+
+        // 적절한 input에 포커스
+        setTimeout(() => {
+          if (focusElement) {
+            focusElement.focus()
+          } else {
+            // fallback: 첫 번째 input에 포커스
+            const firstInput = targetElement?.querySelector('input, textarea') as HTMLElement
+            if (firstInput) {
+              firstInput.focus()
+            }
+          }
+        }, 300)
+      }
+    }
+  }
+
+  const handleEducationDoubleClick = (focus: { educationIndex?: number; activityIndex?: number }) => {
+    // 포커스 설정
+    setFocusedEducation(focus)
+
+    // 편집 영역 스크롤
+    if (editorRef.current && focus.educationIndex !== undefined) {
+      // EducationEditor 내의 특정 섹션 찾기
+      const educationSections = editorRef.current.querySelectorAll('.education-editor-section')
+      if (educationSections[focus.educationIndex]) {
+        const section = educationSections[focus.educationIndex]
+        let targetElement: HTMLElement | null = section as HTMLElement
+
+        if (focus.activityIndex !== undefined) {
+          const activityInputs = section.querySelectorAll('.activity-item')
+          if (activityInputs[focus.activityIndex]) {
+            targetElement = activityInputs[focus.activityIndex] as HTMLElement
+          }
+        }
+
+        const container = editorRef.current
+        const elementRect = targetElement.getBoundingClientRect()
+        const containerRect = container.getBoundingClientRect()
+
+        const scrollTop = container.scrollTop + elementRect.top - containerRect.top - 50
+
+        container.scrollTo({
+          top: scrollTop,
+          behavior: 'smooth'
+        })
+
+        // 첫 번째 input에 포커스
+        setTimeout(() => {
+          const firstInput = targetElement?.querySelector('input, textarea') as HTMLElement
+          if (firstInput) {
+            firstInput.focus()
+          }
+        }, 300)
+      }
+    }
+  }
 
   // Smart Follow: 포커스 변경 시 미리보기 자동 스크롤
   useEffect(() => {
@@ -192,7 +349,7 @@ export default function ResumeEditor() {
               style={{ display: 'flex', width: '100%', height: '100%' }}
               direction="horizontal"
             >
-              <div style={{ height: '100%', overflow: 'auto' }}>
+              <div ref={editorRef} style={{ height: '100%', overflow: 'auto' }}>
                 <EditArea
                   data={data}
                   handleProfileChange={handleProfileChange}
@@ -209,6 +366,9 @@ export default function ResumeEditor() {
                   focusedParagraphIndex={focusedParagraphIndex}
                   focusedEmployment={focusedEmployment}
                   focusedEducation={focusedEducation}
+                  onProfileDoubleClick={handleProfileDoubleClick}
+                  onEmploymentDoubleClick={handleEmploymentDoubleClick}
+                  onEducationDoubleClick={handleEducationDoubleClick}
                 />
               </div>
             </Split>
