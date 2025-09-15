@@ -1,6 +1,7 @@
 import { Fragment } from 'react'
 import { Profile } from '../../types/resume'
 import { useImageUrl } from '../../hooks/useImageUrl'
+import { parseMarkdownText } from '../../utils/markdownParser'
 
 interface NameCardProps {
   profile?: Profile
@@ -22,9 +23,55 @@ export const NameCard: React.FC<NameCardProps> = ({ profile }) => {
       )}
       
       <div className="info">
-        <h1 className="name">{profile.name}</h1>
+        <h1 className="name">
+          {profile.name && parseMarkdownText(profile.name).map((segment, segIndex) => {
+            if (segment.type === 'link') {
+              return (
+                <a
+                  key={segIndex}
+                  href={segment.url}
+                  className="text-link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {segment.text}
+                </a>
+              )
+            } else if (segment.type === 'emphasis') {
+              return <span key={segIndex} className="text-emphasis">{segment.text}</span>
+            } else if (segment.type === 'accent') {
+              return <span key={segIndex} className="text-accent">{segment.text}</span>
+            } else if (segment.type === 'highlight') {
+              return <span key={segIndex} className="text-highlight">{segment.text}</span>
+            }
+            return <span key={segIndex}>{segment.text}</span>
+          })}
+        </h1>
         {profile.position && (
-          <p className="position">{profile.position}</p>
+          <p className="position">
+            {parseMarkdownText(profile.position).map((segment, segIndex) => {
+              if (segment.type === 'link') {
+                return (
+                  <a
+                    key={segIndex}
+                    href={segment.url}
+                    className="text-link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {segment.text}
+                  </a>
+                )
+              } else if (segment.type === 'emphasis') {
+                return <span key={segIndex} className="text-emphasis">{segment.text}</span>
+              } else if (segment.type === 'accent') {
+                return <span key={segIndex} className="text-accent">{segment.text}</span>
+              } else if (segment.type === 'highlight') {
+                return <span key={segIndex} className="text-highlight">{segment.text}</span>
+              }
+              return <span key={segIndex}>{segment.text}</span>
+            })}
+          </p>
         )}
 
         <hr className="info-divider" />

@@ -92,6 +92,23 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
     )
   }
 
+  const handleDetailAddAt = (employmentIndex: number, detailIndex: number, position: 'before' | 'after') => {
+    const newDetails = [...(employments[employmentIndex].details || [])]
+    const newDetail = {
+      title: '',
+      items: []
+    }
+
+    const insertIndex = position === 'before' ? detailIndex : detailIndex + 1
+    newDetails.splice(insertIndex, 0, newDetail)
+
+    onChange(
+      employments.map((item, i) =>
+        i === employmentIndex ? { ...item, details: newDetails } : item
+      )
+    )
+  }
+
   const handleDetailChange = (employmentIndex: number, detailIndex: number, detail: WorkDetail) => {
     const newDetails = [...(employments[employmentIndex].details || [])]
     newDetails[detailIndex] = detail
@@ -463,29 +480,44 @@ export const EmploymentEditor: React.FC<EmploymentEditorProps> = ({ data, onChan
 
             <div className="space-y-4">
               {employment.details?.map((detail, detailIndex) => (
-                <WorkDetailEditor
-                  key={detailIndex}
-                  detail={detail}
-                  detailIndex={detailIndex}
-                  employmentIndex={index}
-                  onDetailChange={handleDetailChange}
-                  onDetailRemove={handleDetailRemove}
-                  onDetailMoveUp={handleDetailMoveUp}
-                  onDetailMoveDown={handleDetailMoveDown}
-                  onItemAdd={handleItemAdd}
-                  onItemChange={handleItemChange}
-                  onItemRemove={handleItemRemove}
-                  onItemMoveUp={handleItemMoveUp}
-                  onItemMoveDown={handleItemMoveDown}
-                  onSubItemAdd={handleSubItemAdd}
-                  onSubItemChange={handleSubItemChange}
-                  onSubItemRemove={handleSubItemRemove}
-                  onSubItemMoveUp={handleSubItemMoveUp}
-                  onSubItemMoveDown={handleSubItemMoveDown}
-                  isFirst={detailIndex === 0}
-                  isLast={detailIndex === (employment.details?.length || 0) - 1}
-                  onFocusChange={onFocusChange}
-                />
+                <div key={detailIndex}>
+                  <WorkDetailEditor
+                    detail={detail}
+                    detailIndex={detailIndex}
+                    employmentIndex={index}
+                    onDetailChange={handleDetailChange}
+                    onDetailRemove={handleDetailRemove}
+                    onDetailMoveUp={handleDetailMoveUp}
+                    onDetailMoveDown={handleDetailMoveDown}
+                    onItemAdd={handleItemAdd}
+                    onItemChange={handleItemChange}
+                    onItemRemove={handleItemRemove}
+                    onItemMoveUp={handleItemMoveUp}
+                    onItemMoveDown={handleItemMoveDown}
+                    onSubItemAdd={handleSubItemAdd}
+                    onSubItemChange={handleSubItemChange}
+                    onSubItemRemove={handleSubItemRemove}
+                    onSubItemMoveUp={handleSubItemMoveUp}
+                    onSubItemMoveDown={handleSubItemMoveDown}
+                    isFirst={detailIndex === 0}
+                    isLast={detailIndex === (employment.details?.length || 0) - 1}
+                    onFocusChange={onFocusChange}
+                  />
+
+                  {/* 주요 업무 사이에 추가 버튼 */}
+                  {detailIndex < (employment.details?.length || 0) - 1 && (
+                    <div className="flex justify-center mt-2">
+                      <Button
+                        onClick={() => handleDetailAddAt(index, detailIndex, 'after')}
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs"
+                      >
+                        + 여기에 주요 업무 추가
+                      </Button>
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           </div>

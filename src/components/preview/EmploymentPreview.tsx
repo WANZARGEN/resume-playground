@@ -27,10 +27,58 @@ export function EmploymentPreview({ employments, focusedEmployment, onDoubleClic
               className={`section-entry ${isEmploymentFocused ? 'focused-item' : ''}`}
               onDoubleClick={() => onDoubleClick?.({ employmentIndex: index })}
             >
-              <h3 className="section-sub-title">{employment.company}</h3>
+              <h3 className="section-sub-title">
+                {parseMarkdownText(employment.company).map((segment, segIndex) => {
+                  if (segment.type === 'link') {
+                    return (
+                      <a
+                        key={segIndex}
+                        href={segment.url}
+                        className="text-link"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {segment.text}
+                      </a>
+                    )
+                  } else if (segment.type === 'emphasis') {
+                    return <span key={segIndex} className="text-emphasis">{segment.text}</span>
+                  } else if (segment.type === 'accent') {
+                    return <span key={segIndex} className="text-accent">{segment.text}</span>
+                  } else if (segment.type === 'highlight') {
+                    return <span key={segIndex} className="text-highlight">{segment.text}</span>
+                  }
+                  return <span key={segIndex}>{segment.text}</span>
+                })}
+              </h3>
               {(employment.position || employment.period) && (
                 <div className="meta-info">
-                {employment.position && <span>{employment.position}</span>}
+                {employment.position && (
+                  <span>
+                    {parseMarkdownText(employment.position).map((segment, segIndex) => {
+                      if (segment.type === 'link') {
+                        return (
+                          <a
+                            key={segIndex}
+                            href={segment.url}
+                            className="text-link"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {segment.text}
+                          </a>
+                        )
+                      } else if (segment.type === 'emphasis') {
+                        return <span key={segIndex} className="text-emphasis">{segment.text}</span>
+                      } else if (segment.type === 'accent') {
+                        return <span key={segIndex} className="text-accent">{segment.text}</span>
+                      } else if (segment.type === 'highlight') {
+                        return <span key={segIndex} className="text-highlight">{segment.text}</span>
+                      }
+                      return <span key={segIndex}>{segment.text}</span>
+                    })}
+                  </span>
+                )}
                 {employment.position && employment.period && <div className="meta-divider" />}
                 {employment.period && (
                   <span>
@@ -230,7 +278,28 @@ export function EmploymentPreview({ employments, focusedEmployment, onDoubleClic
                                             onDoubleClick?.({ employmentIndex: index, detailIndex, itemIndex, subItemIndex })
                                           }}
                                                                     >
-                                          {subItem}
+                                          {parseMarkdownText(subItem).map((segment, segIndex) => {
+                                            if (segment.type === 'link') {
+                                              return (
+                                                <a
+                                                  key={segIndex}
+                                                  href={segment.url}
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  className="text-link"
+                                                >
+                                                  {segment.text}
+                                                </a>
+                                              )
+                                            } else if (segment.type === 'emphasis') {
+                                              return <span key={segIndex} className="text-emphasis">{segment.text}</span>
+                                            } else if (segment.type === 'accent') {
+                                              return <span key={segIndex} className="text-accent">{segment.text}</span>
+                                            } else if (segment.type === 'highlight') {
+                                              return <span key={segIndex} className="text-highlight">{segment.text}</span>
+                                            }
+                                            return <span key={segIndex}>{segment.text}</span>
+                                          })}
                                         </li>
                                       )
                                     })}
