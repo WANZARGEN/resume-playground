@@ -1,9 +1,10 @@
 @import "tailwindcss";
 
-body {
-  @apply bg-gray-50;
+html, body {
+  @apply h-full overflow-hidden bg-gray-50;
 }
+
 #root {
-  @apply mx-auto py-6 px-4 sm:px-6 lg:px-8;
+  @apply h-full;
 }
 

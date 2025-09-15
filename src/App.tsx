@@ -24,9 +24,11 @@ function AppContent() {
   const [isApiKeyDialogOpen, setIsApiKeyDialogOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <ResumeHeader />
-      <main>
+    <div className="h-screen flex flex-col bg-gray-50 overflow-hidden">
+      <div className="flex-shrink-0">
+        <ResumeHeader />
+      </div>
+      <main className="flex-1 overflow-hidden">
         <ResumeEditor />
       </main>
       <ApiKeyDialog

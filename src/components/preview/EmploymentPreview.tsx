@@ -1,4 +1,5 @@
 import { Employment } from '../../types/resume'
+import { formatPeriodWithDuration } from '../../utils/dateUtils'
 
 interface Props {
   employments: Employment[]
@@ -32,7 +33,7 @@ export function EmploymentPreview({ employments, focusedEmployment, onDoubleClic
                 {employment.position && employment.period && <div className="meta-divider" />}
                 {employment.period && (
                   <span>
-                    {employment.period.start} ― {employment.period.end}
+                    {formatPeriodWithDuration(employment.period.start, employment.period.end)}
                   </span>
                 )}
               </div>

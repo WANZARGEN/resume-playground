@@ -86,7 +86,8 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
       title: '',
       url: '',
       link: '',
-      description: ''
+      description: '',
+      date: ''
     };
 
     if (position === 'top') {
@@ -105,7 +106,8 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
       title: '',
       url: '',
       link: '',
-      description: ''
+      description: '',
+      date: ''
     };
 
     const insertIndex = position === 'before' ? activityIndex : activityIndex + 1;
@@ -336,6 +338,20 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ data, onChange
                         onFocus={() => onFocusChange?.({ educationIndex, activityIndex })}
                         onBlur={() => onFocusChange?.(null)}
                         placeholder="https://example.com"
+                      />
+                    </div>
+
+                    {/* 날짜 */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        날짜
+                      </label>
+                      <TextInput
+                        value={activity.date || ''}
+                        onChange={(e) => handleActivityChange(educationIndex, activityIndex, 'date', e.target.value)}
+                        onFocus={() => onFocusChange?.({ educationIndex, activityIndex })}
+                        onBlur={() => onFocusChange?.(null)}
+                        placeholder="2023 또는 2023.03"
                       />
                     </div>
 

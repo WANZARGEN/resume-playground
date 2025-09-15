@@ -45,6 +45,7 @@ export interface Activity {
   description?: string
   link?: string
   url?: string
+  date?: string  // Format: "YYYY" or "YYYY.MM"
 }
 
 export interface Education {

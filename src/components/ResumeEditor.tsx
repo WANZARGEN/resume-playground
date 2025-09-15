@@ -326,10 +326,11 @@ export default function ResumeEditor() {
   }, [focusedParagraphIndex, focusedEmployment, focusedEducation, activeTab])
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-[2400px] mx-auto px-6 py-6">
+    <div className="h-full bg-gray-50">
+      <div className="h-full max-w-[2400px] mx-auto px-6 py-6">
         {activeTab === 'edit-only' && (
-          <EditArea
+          <div className="h-full overflow-auto">
+            <EditArea
             data={data}
             handleProfileChange={handleProfileChange}
             handleEmploymentChange={handleEmploymentChange}
@@ -337,11 +338,12 @@ export default function ResumeEditor() {
             onFocusChange={setFocusedParagraphIndex}
             onEmploymentFocus={setFocusedEmployment}
             onEducationFocus={setFocusedEducation}
-          />
+            />
+          </div>
         )}
 
         {activeTab === 'split' && (
-          <div style={{ height: 'calc(100vh - 120px)' }}>
+          <div className="h-full">
             <Split
               sizes={[30, 70]}
               minSize={320}
@@ -376,13 +378,15 @@ export default function ResumeEditor() {
         )}
         
         {activeTab === 'preview-only' && (
-          <PreviewArea
-            data={data}
-            fullWidth
-            focusedParagraphIndex={focusedParagraphIndex}
-            focusedEmployment={focusedEmployment}
-            focusedEducation={focusedEducation}
-          />
+          <div className="h-full overflow-auto">
+            <PreviewArea
+              data={data}
+              fullWidth
+              focusedParagraphIndex={focusedParagraphIndex}
+              focusedEmployment={focusedEmployment}
+              focusedEducation={focusedEducation}
+            />
+          </div>
         )}
       </div>
       <StyleGuidePin />

@@ -63,6 +63,7 @@ export function EducationPreview({ education, focusedEducation, onDoubleClick }:
                               activity.title
                             )
                           )}
+                          {activity.date && ` (${activity.date})`}
                           {activity.description && ` - ${activity.description}`}
                         </li>
                         )
